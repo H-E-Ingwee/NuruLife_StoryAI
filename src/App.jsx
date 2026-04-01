@@ -1,16 +1,13 @@
 import React, { useState } from 'react';
+import Sidebar from './components/Sidebar'; 
 import { 
-  LayoutDashboard, 
   FileText, 
   Image as ImageIcon, 
-  Users, 
-  Settings, 
   Sparkles, 
   Download, 
   Lock, 
   RefreshCw, 
   ChevronRight,
-  UserCircle,
   Wand2
 } from 'lucide-react';
 
@@ -28,8 +25,6 @@ export default function App() {
   const [isParsing, setIsParsing] = useState(false);
   const [scenes, setScenes] = useState([]);
   const [generatingId, setGeneratingId] = useState(null);
-
-  const characters = ["Kamau"];
 
   const handleParseScript = () => {
     setIsParsing(true);
@@ -78,44 +73,9 @@ export default function App() {
 
   return (
     <div className="flex h-screen overflow-hidden font-sans bg-[#F4F5F7]">
-      
-      {/* SIDEBAR */}
-      <aside className="w-64 flex-shrink-0 flex flex-col shadow-2xl z-20 bg-[#0A233A]">
-        <div className="p-6 flex items-center justify-center border-b border-gray-700/50">
-          <div className="flex flex-col items-center">
-            <div className="text-2xl font-black tracking-tighter flex items-center">
-              <span className="text-[#F28C00]">NURU</span>
-              <span className="text-white">LIFE</span>
-            </div>
-            <div className="text-[10px] tracking-[0.2em] font-bold mt-1 text-[#7B1823]">
-              PRODUCTIONS
-            </div>
-          </div>
-        </div>
+      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
-        <nav className="flex-1 py-6 px-3 space-y-2">
-          <NavItem icon={<LayoutDashboard size={20} />} label="Dashboard" />
-          <NavItem icon={<FileText size={20} />} label="Workspace" active={activeTab === 'workspace'} onClick={() => setActiveTab('workspace')} />
-          <NavItem icon={<ImageIcon size={20} />} label="Storyboards" active={activeTab === 'storyboards'} onClick={() => setActiveTab('storyboards')} />
-          <NavItem icon={<Users size={20} />} label="Characters" />
-        </nav>
-
-        <div className="p-4 border-t border-gray-700/50">
-          <NavItem icon={<Settings size={20} />} label="Settings" />
-          <div className="mt-4 flex items-center gap-3 px-3 py-2">
-            <UserCircle size={32} className="text-gray-400" />
-            <div>
-              <p className="text-sm font-medium text-white">Brian Ingwee</p>
-              <p className="text-xs text-gray-400">Pro Plan</p>
-            </div>
-          </div>
-        </div>
-      </aside>
-
-      {/* MAIN CONTENT */}
       <main className="flex-1 flex flex-col h-full relative">
-        
-        {/* TOP BAR */}
         <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 shadow-sm z-10">
           <div className="flex items-center gap-2 text-sm font-medium text-gray-600">
             <span>Projects</span>
@@ -132,10 +92,7 @@ export default function App() {
           </div>
         </header>
 
-        {/* WORKSPACE AREA */}
         <div className="flex-1 overflow-hidden flex">
-          
-          {/* LEFT PANEL: Script Editor */}
           <div className="w-1/3 min-w-[350px] bg-white border-r border-gray-200 flex flex-col">
             <div className="p-4 border-b border-gray-200 flex justify-between items-center bg-gray-50">
               <h2 className="text-sm font-bold text-gray-700 flex items-center gap-2">
@@ -147,7 +104,7 @@ export default function App() {
                 className="flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-white rounded-md transition-all disabled:opacity-70 bg-[#0A233A] hover:bg-opacity-90"
               >
                 {isParsing ? <RefreshCw size={14} className="animate-spin" /> : <Wand2 size={14} />}
-                {isParsing ? 'Analyzing NLP...' : 'Auto-Generate Scenes'}
+                {isParsing ? 'Analyzing...' : 'Auto-Generate Scenes'}
               </button>
             </div>
             <div className="flex-1 p-6 overflow-y-auto">
@@ -159,7 +116,6 @@ export default function App() {
             </div>
           </div>
 
-          {/* RIGHT PANEL: Storyboard Canvas */}
           <div className="flex-1 bg-[#F8F9FA] overflow-y-auto p-8">
             <div className="max-w-4xl mx-auto">
               <div className="flex justify-between items-end mb-8">
@@ -179,15 +135,13 @@ export default function App() {
                 <div className="space-y-8">
                   {scenes.map((scene, index) => (
                     <div key={scene.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col md:flex-row transition-all hover:shadow-md">
-                      
-                      {/* Image Preview Area */}
                       <div className="md:w-5/12 bg-gray-100 border-r border-gray-200 relative min-h-[250px] flex items-center justify-center group">
                         {scene.image ? (
                           <img src={scene.image} alt="Storyboard Panel" className="w-full h-full object-cover" />
                         ) : generatingId === scene.id ? (
                           <div className="flex flex-col items-center">
                             <div className="w-10 h-10 border-4 rounded-full border-t-transparent border-[#7B1823] animate-spin mb-3"></div>
-                            <span className="text-xs font-bold text-[#0A233A]">Generating details...</span>
+                            <span className="text-xs font-bold text-[#0A233A]">Generating...</span>
                           </div>
                         ) : (
                           <div className="text-center p-6">
@@ -195,8 +149,6 @@ export default function App() {
                             <span className="text-xs text-gray-400 font-medium">Panel {index + 1} Preview</span>
                           </div>
                         )}
-                        
-                        {/* Generate Button Overlay */}
                         <div className={`absolute inset-0 bg-black/40 flex items-center justify-center transition-opacity ${scene.image ? 'opacity-0 group-hover:opacity-100' : 'opacity-100 bg-transparent'}`}>
                           {generatingId !== scene.id && (
                             <button 
@@ -210,14 +162,12 @@ export default function App() {
                         </div>
                       </div>
 
-                      {/* Prompt & Controls Area */}
                       <div className="p-5 flex-1 flex flex-col">
                         <div className="mb-3">
                           <span className="inline-block px-2 py-1 bg-gray-100 text-gray-600 text-[10px] font-bold uppercase tracking-wider rounded">Panel {index + 1}</span>
                           <h3 className="text-sm font-bold text-gray-900 mt-2">{scene.heading}</h3>
                           <p className="text-xs text-gray-500 mt-1 italic border-l-2 pl-2 border-gray-300">{scene.action}</p>
                         </div>
-
                         <div className="flex-1 mt-2">
                           <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wide mb-1 flex items-center justify-between">
                             AI Prompt
@@ -229,8 +179,6 @@ export default function App() {
                             className="w-full h-24 text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-[#F28C00] resize-none"
                           />
                         </div>
-
-                        {/* Consistency Controls */}
                         <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
                           <div className="flex items-center gap-3">
                             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold bg-orange-50 text-orange-800 border border-orange-200">
@@ -240,7 +188,6 @@ export default function App() {
                             <button className="text-[11px] text-gray-500 hover:text-gray-800 underline">Add Reference Image +</button>
                           </div>
                         </div>
-
                       </div>
                     </div>
                   ))}
@@ -250,22 +197,6 @@ export default function App() {
           </div>
         </div>
       </main>
-    </div>
-  );
-}
-
-// Helper Component for Sidebar Items
-function NavItem({ icon, label, active, onClick }) {
-  return (
-    <div 
-      onClick={onClick}
-      className={`flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer transition-all duration-200 group
-        ${active ? 'bg-white/10 text-white' : 'text-gray-400 hover:bg-white/5 hover:text-gray-200'}`}
-    >
-      <div className={`${active ? 'text-[#F28C00]' : 'group-hover:text-[#F28C00] transition-colors'}`}>
-        {icon}
-      </div>
-      <span className="text-sm font-medium">{label}</span>
     </div>
   );
 }
