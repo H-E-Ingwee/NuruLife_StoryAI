@@ -13,10 +13,153 @@ import {
   ChevronRight,
   Wand2,
   Upload,
-  X
+  X,
+  ArrowRight,
+  Mail,
+  LogOut,
+  Chrome
 } from 'lucide-react';
 
-// --- COMPONENTS ---
+// --- LANDING PAGE COMPONENT ---
+function LandingPage({ onNavigate }) {
+  return (
+    <div className="min-h-screen bg-[#F4F5F7] flex flex-col font-sans">
+      {/* Navbar */}
+      <nav className="h-20 bg-[#0A233A] flex items-center justify-between px-8 shadow-md">
+        <div className="flex flex-col items-center">
+          <div className="text-2xl font-black tracking-tighter flex items-center">
+            <span className="text-[#F28C00]">NURU</span>
+            <span className="text-white">LIFE</span>
+          </div>
+          <div className="text-[10px] tracking-[0.2em] font-bold mt-1 text-[#7B1823]">
+            PRODUCTIONS
+          </div>
+        </div>
+        <button 
+          onClick={() => onNavigate('login')}
+          className="px-6 py-2 text-sm font-bold text-white bg-[#7B1823] rounded-full hover:bg-opacity-90 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+        >
+          Login to Workspace <ArrowRight size={16} />
+        </button>
+      </nav>
+
+      {/* Hero Section */}
+      <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
+        <div className="inline-block px-4 py-1.5 rounded-full bg-orange-100 text-[#F28C00] font-bold text-sm mb-6 border border-orange-200">
+          ✨ StoryAI Version 1.0 is Live
+        </div>
+        <h1 className="text-5xl md:text-7xl font-black text-[#0A233A] max-w-4xl tracking-tight leading-tight mb-6">
+          Turn your scripts into <span className="text-[#F28C00]">cinematic visuals</span> instantly.
+        </h1>
+        <p className="text-xl text-gray-600 max-w-2xl mb-10 leading-relaxed">
+          The ultimate AI-powered co-pilot for independent creators. Generate consistent storyboards, characters, and concept art directly from your screenplay.
+        </p>
+        <div className="flex gap-4">
+          <button 
+            onClick={() => onNavigate('login')}
+            className="px-8 py-4 text-lg font-bold text-white bg-[#0A233A] rounded-lg hover:bg-opacity-90 transition-all shadow-xl flex items-center gap-2"
+          >
+            Start Creating Free <Wand2 size={20} />
+          </button>
+          <button className="px-8 py-4 text-lg font-bold text-[#0A233A] bg-white border-2 border-gray-200 rounded-lg hover:border-[#0A233A] transition-all">
+            View Documentation
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// --- LOGIN PAGE COMPONENT ---
+function LoginPage({ onLogin, onNavigate }) {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // In a real app, you'd validate credentials here.
+    // For now, we just log them in to the dashboard!
+    onLogin();
+  };
+
+  return (
+    <div className="min-h-screen bg-[#F4F5F7] flex items-center justify-center font-sans p-4">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden">
+        <div className="bg-[#0A233A] p-8 text-center flex flex-col items-center">
+          <div className="text-3xl font-black tracking-tighter flex items-center mb-2">
+            <span className="text-[#F28C00]">NURU</span>
+            <span className="text-white">LIFE</span>
+          </div>
+          <p className="text-gray-300 text-sm">Sign in to your workspace</p>
+        </div>
+
+        <div className="p-8">
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-1">Email Address</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Mail size={18} className="text-gray-400" />
+                </div>
+                <input 
+                  type="email" 
+                  required
+                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F28C00] focus:border-transparent transition-all"
+                  placeholder="creator@nurulife.com"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-1">Password</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Lock size={18} className="text-gray-400" />
+                </div>
+                <input 
+                  type="password" 
+                  required
+                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F28C00] focus:border-transparent transition-all"
+                  placeholder="••••••••"
+                />
+              </div>
+            </div>
+
+            <button 
+              type="submit"
+              className="w-full py-3 bg-[#7B1823] hover:bg-opacity-90 text-white font-bold rounded-lg transition-all shadow-md"
+            >
+              Sign In
+            </button>
+          </form>
+
+          <div className="mt-6 flex items-center justify-center">
+            <div className="border-t border-gray-200 flex-grow"></div>
+            <span className="px-3 text-xs text-gray-400 font-medium uppercase">Or continue with</span>
+            <div className="border-t border-gray-200 flex-grow"></div>
+          </div>
+
+          <div className="mt-6 space-y-3">
+            <button className="w-full py-2.5 border border-gray-300 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-50 transition-all text-sm font-semibold text-gray-700">
+              <Chrome size={18} className="text-blue-500" /> Google
+            </button>
+          </div>
+
+          <div className="mt-8 text-center">
+            <p className="text-sm text-gray-600">
+              Don't have an account? <button className="text-[#F28C00] font-bold hover:underline">Sign up</button>
+            </p>
+            <button 
+              onClick={() => onNavigate('landing')}
+              className="text-xs text-gray-400 mt-4 hover:text-gray-600 underline"
+            >
+              Back to Home
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// --- DASHBOARD COMPONENTS ---
 
 function NavItem({ icon, label, active, onClick }) {
   return (
@@ -33,7 +176,7 @@ function NavItem({ icon, label, active, onClick }) {
   );
 }
 
-function Sidebar({ activeTab, setActiveTab }) {
+function Sidebar({ activeTab, setActiveTab, onLogout }) {
   return (
     <aside className="w-64 flex-shrink-0 flex flex-col shadow-2xl z-20 bg-[#0A233A]">
       <div className="p-6 flex items-center justify-center border-b border-gray-700/50">
@@ -67,13 +210,21 @@ function Sidebar({ activeTab, setActiveTab }) {
 
       <div className="p-4 border-t border-gray-700/50">
         <NavItem icon={<Settings size={20} />} label="Settings" />
-        <div className="mt-4 flex items-center gap-3 px-3 py-2">
-          <UserCircle size={32} className="text-gray-400" />
-          <div>
-            <p className="text-sm font-medium text-white">Brian Ingwee</p>
-            <p className="text-xs text-gray-400">Pro Plan</p>
+        <div className="mt-2 flex items-center justify-between px-3 py-2">
+          <div className="flex items-center gap-3">
+            <UserCircle size={32} className="text-gray-400" />
+            <div>
+              <p className="text-sm font-medium text-white">Brian Ingwee</p>
+              <p className="text-xs text-gray-400">Pro Plan</p>
+            </div>
           </div>
         </div>
+        <button 
+          onClick={onLogout}
+          className="w-full mt-4 flex items-center justify-center gap-2 px-4 py-2 bg-red-500/10 text-red-400 hover:bg-red-500/20 hover:text-red-300 rounded-lg text-sm font-semibold transition-colors"
+        >
+          <LogOut size={16} /> Logout
+        </button>
       </div>
     </aside>
   );
@@ -197,7 +348,7 @@ function StoryboardCanvas({ scenes, generatingId, handleGenerateImage, updatePro
   );
 }
 
-// --- MAIN APP ---
+// --- MAIN WORKSPACE DASHBOARD ---
 
 const defaultScript = `EXT. NAIROBI STREETS - DAY
 
@@ -207,14 +358,13 @@ INT. MATATU - CONTINUOUS
 
 Kamau squeezes into a seat at the back. The neon lights of the interior cast a colorful glow on his face. He looks out the window, a determined look in his eyes.`;
 
-export default function App() {
+function Dashboard({ onLogout }) {
   const [activeTab, setActiveTab] = useState('workspace');
   const [script, setScript] = useState(defaultScript);
   const [isParsing, setIsParsing] = useState(false);
   const [scenes, setScenes] = useState([]);
   const [generatingId, setGeneratingId] = useState(null);
   
-  // New States for the Reference Image Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeCharacter, setActiveCharacter] = useState("");
 
@@ -270,7 +420,7 @@ export default function App() {
 
   return (
     <div className="flex h-screen overflow-hidden font-sans bg-[#F4F5F7]">
-      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} onLogout={onLogout} />
 
       <main className="flex-1 flex flex-col h-full relative">
         <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 shadow-sm z-10">
@@ -352,4 +502,21 @@ export default function App() {
       </main>
     </div>
   );
+}
+
+// --- ROOT APP COMPONENT (ROUTER) ---
+
+export default function App() {
+  const [currentView, setCurrentView] = useState('landing');
+
+  // Simple state-based router
+  if (currentView === 'landing') {
+    return <LandingPage onNavigate={setCurrentView} />;
+  }
+
+  if (currentView === 'login') {
+    return <LoginPage onLogin={() => setCurrentView('dashboard')} onNavigate={setCurrentView} />;
+  }
+
+  return <Dashboard onLogout={() => setCurrentView('landing')} />;
 }
