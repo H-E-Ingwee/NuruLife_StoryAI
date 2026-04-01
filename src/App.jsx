@@ -28,11 +28,11 @@ function LandingPage({ onNavigate }) {
       <nav className="h-20 bg-[#0A233A] flex items-center justify-between px-8 shadow-md">
         <div className="flex flex-col items-center">
           <div className="text-2xl font-black tracking-tighter flex items-center">
-            <span className="text-[#F28C00]">NURU</span>
-            <span className="text-white">LIFE</span>
+            <span className="text-[#F28C00]">STORYAI </span>
+            <span className="text-white">  </span>
           </div>
           <div className="text-[10px] tracking-[0.2em] font-bold mt-1 text-[#7B1823]">
-            PRODUCTIONS
+            Nurulife Productions
           </div>
         </div>
         <button 
