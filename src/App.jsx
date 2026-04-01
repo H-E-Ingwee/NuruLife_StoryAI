@@ -11,7 +11,9 @@ import {
   Lock, 
   RefreshCw, 
   ChevronRight,
-  Wand2
+  Wand2,
+  Upload,
+  X
 } from 'lucide-react';
 
 // --- COMPONENTS ---
@@ -79,7 +81,7 @@ function Sidebar({ activeTab, setActiveTab }) {
 
 function ScriptEditor({ script, setScript, isParsing, handleParseScript }) {
   return (
-    <div className="w-1/3 min-w-[350px] bg-white border-r border-gray-200 flex flex-col">
+    <div className="w-1/3 min-w-[350px] bg-white border-r border-gray-200 flex flex-col z-10">
       <div className="p-4 border-b border-gray-200 flex justify-between items-center bg-gray-50">
         <h2 className="text-sm font-bold text-gray-700 flex items-center gap-2">
           <FileText size={18} className="text-[#F28C00]" /> Script Editor
@@ -104,9 +106,9 @@ function ScriptEditor({ script, setScript, isParsing, handleParseScript }) {
   );
 }
 
-function StoryboardCanvas({ scenes, generatingId, handleGenerateImage, updatePrompt }) {
+function StoryboardCanvas({ scenes, generatingId, handleGenerateImage, updatePrompt, openModal }) {
   return (
-    <div className="flex-1 bg-[#F8F9FA] overflow-y-auto p-8">
+    <div className="flex-1 bg-[#F8F9FA] overflow-y-auto p-8 z-0 relative">
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-end mb-8">
           <div>
@@ -177,7 +179,12 @@ function StoryboardCanvas({ scenes, generatingId, handleGenerateImage, updatePro
                         <Lock size={12} className="text-[#F28C00]" />
                         Character: {scene.lockedCharacter}
                       </div>
-                      <button className="text-[11px] text-gray-500 hover:text-gray-800 underline">Add Reference Image +</button>
+                      <button 
+                        onClick={() => openModal(scene.lockedCharacter)}
+                        className="text-[11px] font-medium text-[#0A233A] hover:text-[#F28C00] underline transition-colors"
+                      >
+                        Add Reference Image +
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -206,6 +213,10 @@ export default function App() {
   const [isParsing, setIsParsing] = useState(false);
   const [scenes, setScenes] = useState([]);
   const [generatingId, setGeneratingId] = useState(null);
+  
+  // New States for the Reference Image Modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activeCharacter, setActiveCharacter] = useState("");
 
   const handleParseScript = () => {
     setIsParsing(true);
@@ -252,6 +263,11 @@ export default function App() {
     setScenes(scenes.map(s => s.id === id ? { ...s, prompt: newPrompt } : s));
   };
 
+  const openModal = (characterName) => {
+    setActiveCharacter(characterName);
+    setIsModalOpen(true);
+  };
+
   return (
     <div className="flex h-screen overflow-hidden font-sans bg-[#F4F5F7]">
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
@@ -273,7 +289,7 @@ export default function App() {
           </div>
         </header>
 
-        <div className="flex-1 overflow-hidden flex">
+        <div className="flex-1 overflow-hidden flex relative">
           <ScriptEditor 
             script={script} 
             setScript={setScript} 
@@ -285,8 +301,53 @@ export default function App() {
             scenes={scenes} 
             generatingId={generatingId} 
             handleGenerateImage={handleGenerateImage} 
-            updatePrompt={updatePrompt} 
+            updatePrompt={updatePrompt}
+            openModal={openModal}
           />
+          
+          {/* REFERENCE IMAGE MODAL */}
+          {isModalOpen && (
+            <div className="absolute inset-0 bg-black/60 z-50 flex items-center justify-center backdrop-blur-sm transition-opacity">
+              <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 animate-in fade-in zoom-in duration-200">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-bold text-[#0A233A]">Character Consistency Lock</h3>
+                  <button 
+                    onClick={() => setIsModalOpen(false)}
+                    className="p-1 hover:bg-gray-100 rounded-full text-gray-500 transition-colors"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+                
+                <p className="text-sm text-gray-600 mb-6">
+                  Upload a reference image for <strong className="text-[#F28C00]">{activeCharacter}</strong>. StoryAI will use IP-Adapter techniques to maintain this face/style across generations.
+                </p>
+
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer group">
+                  <div className="bg-white p-3 rounded-full shadow-sm mb-3 group-hover:scale-110 transition-transform">
+                    <Upload size={24} className="text-[#7B1823]" />
+                  </div>
+                  <span className="text-sm font-semibold text-gray-700">Click to upload image</span>
+                  <span className="text-xs text-gray-400 mt-1">PNG, JPG up to 5MB</span>
+                </div>
+
+                <div className="mt-6 flex justify-end gap-3">
+                  <button 
+                    onClick={() => setIsModalOpen(false)}
+                    className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-md transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    onClick={() => setIsModalOpen(false)}
+                    className="px-4 py-2 text-sm font-medium text-white bg-[#0A233A] hover:bg-opacity-90 rounded-md transition-colors"
+                  >
+                    Save Reference
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </main>
     </div>
