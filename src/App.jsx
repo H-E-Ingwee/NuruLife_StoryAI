@@ -32,12 +32,17 @@ import {
   Maximize2,
   Eye,
   Share2,
-  Video
+  Video,
+  Monitor,
+  Filter,
+  Grid,
+  List,
+  Search
 } from 'lucide-react';
 
 // --- CUSTOM GOOGLE ICON ---
 const GoogleIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+  <svg width="20" height="20" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
     <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/>
     <path d="M9 18c2.43 0 4.467-.806 5.956-2.184L12.048 13.558c-.806.54-1.836.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z" fill="#34A853"/>
     <path d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.173 0 7.548 0 9s.347 2.827.957 4.039l3.007-2.332z" fill="#FBBC05"/>
@@ -60,7 +65,7 @@ function Logo({ light = true }) {
   );
 }
 
-// --- LANDING PAGE COMPONENT ---
+// --- LANDING PAGE ---
 function LandingPage({ onNavigate }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -72,10 +77,10 @@ function LandingPage({ onNavigate }) {
   }, []);
 
   return (
-    <div className="landing-scope min-h-screen bg-white flex flex-col font-sans selection:bg-[#F28C00] selection:text-white scroll-smooth overflow-x-hidden">
-      {/* Navbar */}
+    <div className="landing-scope w-full min-h-screen bg-white flex flex-col font-sans selection:bg-[#F28C00] selection:text-white scroll-smooth overflow-x-hidden">
+      {/* Centered Navbar */}
       <nav className={`fixed top-0 w-full z-50 transition-all duration-500 ${scrolled ? 'bg-[#0A233A]/95 backdrop-blur-lg py-3 shadow-2xl' : 'bg-transparent py-6'}`}>
-        <div className="container mx-auto px-6 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
           <Logo />
           
           <div className="hidden lg:flex items-center gap-10">
@@ -89,7 +94,7 @@ function LandingPage({ onNavigate }) {
               <button onClick={() => onNavigate('login')} className="text-white font-bold text-sm hover:text-[#F28C00] transition-colors">Login</button>
               <button 
                 onClick={() => onNavigate('signup')}
-                className="px-6 py-2.5 text-sm font-black text-white bg-[#7B1823] rounded-xl hover:bg-opacity-90 hover:shadow-[0_0_30px_rgba(123,24,35,0.5)] transition-all flex items-center gap-2"
+                className="px-6 py-2.5 text-sm font-black text-white bg-[#7B1823] rounded-xl hover:bg-opacity-90 hover:shadow-[0_0_30px_rgba(123,24,35,0.5)] transition-all"
               >
                 Sign Up
               </button>
@@ -100,44 +105,28 @@ function LandingPage({ onNavigate }) {
             {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
         </div>
-
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="lg:hidden absolute top-full left-0 w-full bg-[#0A233A] border-t border-white/5 p-8 animate-in slide-in-from-top-5 duration-300 shadow-2xl">
-            <div className="flex flex-col gap-6 text-xl font-bold text-gray-300 mb-10 text-center">
-              <a href="#features" onClick={() => setIsMenuOpen(false)}>Features</a>
-              <a href="#process" onClick={() => setIsMenuOpen(false)}>How It Works</a>
-              <a href="#pricing" onClick={() => setIsMenuOpen(false)}>Pricing</a>
-              <a href="#who-it-is-for" onClick={() => setIsMenuOpen(false)}>For Creators</a>
-            </div>
-            <div className="flex flex-col gap-4">
-              <button onClick={() => onNavigate('login')} className="w-full py-4 bg-white/5 rounded-2xl text-white font-bold">Login</button>
-              <button onClick={() => onNavigate('signup')} className="w-full py-4 bg-[#7B1823] rounded-2xl text-white font-bold">Sign Up Now</button>
-            </div>
-          </div>
-        )}
       </nav>
 
-      {/* Hero Section - Perfectly Centered */}
-      <section className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden text-center">
+      {/* Hero Section - Centered Content */}
+      <section className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden text-center bg-[#0A233A]">
         <div className="absolute inset-0 z-0">
-          <img src="https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&q=80&w=2000" alt="Cinema" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#0A233A]/95 via-[#0A233A]/85 to-white"></div>
+          <img src="https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&w=2000&auto=format&fit=crop" alt="Cinema" className="w-full h-full object-cover opacity-40" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0A233A]/80 to-white"></div>
         </div>
 
-        <div className="container mx-auto px-6 relative z-10">
+        <div className="container max-w-5xl mx-auto px-6 relative z-10">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 text-white border border-white/20 text-xs font-black uppercase tracking-[0.2em] mb-10 animate-in fade-in zoom-in duration-1000">
             <Sparkles size={14} className="text-[#F28C00]" /> 
             <span>AI-Powered Storyboarding for Independent Creators</span>
           </div>
-          <h1 className="text-5xl md:text-8xl font-black text-white tracking-tighter leading-[0.9] mb-8 animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-200">
+          <h1 className="text-5xl md:text-8xl font-black text-white tracking-tighter leading-[0.9] mb-8">
             Transform scripts into<br/>
             <span className="text-[#F28C00]">professional storyboards.</span>
           </h1>
-          <p className="text-lg md:text-2xl text-gray-300 mb-12 font-medium leading-relaxed max-w-4xl mx-auto">
+          <p className="text-lg md:text-2xl text-gray-300 mb-12 font-medium leading-relaxed max-w-3xl mx-auto">
             StoryAI bridges the gap between creative vision and visual reality. Whether you're a filmmaker, writer, student, or creative professional, turn your written ideas into compelling storyboard frames and concept art instantly.
           </p>
-          <div className="flex flex-col sm:flex-row gap-5 justify-center animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-500">
+          <div className="flex flex-col sm:flex-row gap-5 justify-center">
             <button 
               onClick={() => onNavigate('signup')}
               className="px-12 py-5 text-lg font-black text-white bg-[#7B1823] rounded-2xl hover:scale-105 hover:shadow-[0_20px_60px_rgba(123,24,35,0.5)] transition-all flex items-center justify-center gap-3 group"
@@ -151,13 +140,15 @@ function LandingPage({ onNavigate }) {
         </div>
       </section>
 
-      {/* Benefits Section */}
-      <section id="features" className="py-32 bg-white">
-        <div className="container mx-auto px-6 text-center">
+      {/* Empowering Creators Section */}
+      <section id="features" className="py-32 bg-white flex justify-center">
+        <div className="container max-w-6xl px-6 text-center">
           <div className="max-w-4xl mx-auto mb-24">
             <h2 className="text-sm font-black text-[#F28C00] uppercase tracking-[0.4em] mb-6">Empowering African Creators</h2>
-            <p className="text-4xl md:text-6xl font-black text-[#0A233A] tracking-tighter mb-8">Shining light through story.</p>
-            <p className="text-xl text-gray-500 font-medium">StoryAI is built to support the full visual storytelling journey, from raw script text to scene breakdown, AI prompt refinement, and polished presentation output.</p>
+            <p className="text-4xl md:text-6xl font-black text-[#0A233A] tracking-tighter mb-8 italic">"Shining light through story."</p>
+            <p className="text-xl text-gray-500 font-medium leading-relaxed">
+              StoryAI is built to support the full visual storytelling journey, from raw script text to scene breakdown, AI prompt refinement, and polished presentation output.
+            </p>
           </div>
           
           <div className="grid md:grid-cols-3 gap-12">
@@ -169,19 +160,17 @@ function LandingPage({ onNavigate }) {
       </section>
 
       {/* Live Workspace Preview - Beneath the Silence */}
-      <section className="py-32 bg-gray-50 border-y border-gray-100 relative overflow-hidden">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-black text-[#0A233A] tracking-tight">Live Workspace Preview</h2>
-            <p className="text-gray-400 font-bold uppercase tracking-widest mt-4 text-xs italic text-center">Project: Beneath the Silence</p>
-          </div>
-
-          <div className="max-w-6xl mx-auto bg-white rounded-[3rem] shadow-2xl border border-gray-200 p-6 md:p-10 relative group overflow-hidden">
-             {/* Preview Labels */}
-             <div className="flex flex-wrap gap-4 mb-10 justify-center">
-                <span className="px-4 py-2 bg-orange-50 text-[#F28C00] text-[10px] font-black uppercase rounded-lg border border-orange-100">Prompt Builder</span>
-                <span className="px-4 py-2 bg-red-50 text-[#7B1823] text-[10px] font-black uppercase rounded-lg border border-red-100">AI Ready</span>
-                <span className="px-4 py-2 bg-blue-50 text-blue-600 text-[10px] font-black uppercase rounded-lg border border-blue-100">Character Lock</span>
+      <section className="py-32 bg-gray-50 border-y border-gray-100 overflow-hidden flex justify-center">
+        <div className="container max-w-7xl px-6 text-center">
+          <h2 className="text-3xl md:text-5xl font-black text-[#0A233A] tracking-tight mb-4">Creative Workspace Preview</h2>
+          <p className="text-gray-400 font-bold uppercase tracking-widest text-xs italic mb-16">Project: Beneath the Silence</p>
+          
+          <div className="bg-white rounded-[3rem] shadow-2xl border border-gray-200 p-6 md:p-10 mx-auto">
+             <div className="flex flex-wrap gap-4 mb-12 justify-center">
+                <span className="px-5 py-2.5 bg-orange-50 text-[#F28C00] text-[10px] font-black uppercase rounded-xl border border-orange-100">Prompt Builder</span>
+                <span className="px-5 py-2.5 bg-red-50 text-[#7B1823] text-[10px] font-black uppercase rounded-xl border border-red-100">AI Ready</span>
+                <span className="px-5 py-2.5 bg-blue-50 text-blue-600 text-[10px] font-black uppercase rounded-xl border border-blue-100">Scene Notes</span>
+                <span className="px-5 py-2.5 bg-green-50 text-green-600 text-[10px] font-black uppercase rounded-xl border border-green-100">Character Lock</span>
              </div>
 
              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -191,125 +180,82 @@ function LandingPage({ onNavigate }) {
                 <MockFrame img="https://images.unsplash.com/photo-1555364134-8c01b4c91a0c" frame="04" label="Export Board" sub="PDF Ready • Contact Sheet" />
              </div>
 
-             <div className="mt-12 p-8 bg-[#0A233A] rounded-3xl text-center">
-                <p className="text-white font-bold text-lg mb-2">Creative Workspace Preview</p>
-                <p className="text-gray-400 text-sm leading-relaxed">Experience the intuitive interface designed for storytellers, with tools that help you visualize and refine your creative vision.</p>
+             <div className="mt-16 p-10 bg-[#0A233A] rounded-[2.5rem] text-center max-w-4xl mx-auto">
+                <p className="text-white font-bold text-xl mb-3 uppercase tracking-tighter">Intuitive Interface for Storytellers</p>
+                <p className="text-gray-400 text-sm leading-relaxed font-medium">Tools that help you visualize and refine your creative vision with the precision of a professional film studio.</p>
              </div>
           </div>
         </div>
       </section>
 
-      {/* Why StoryAI Exists - Problem / Solution */}
-      <section className="py-32 bg-white">
-        <div className="container mx-auto px-6 text-center">
-          <h2 className="text-4xl md:text-6xl font-black text-[#0A233A] tracking-tighter mb-20 text-center">Why StoryAI exists</h2>
-          
+      {/* Why StoryAI Exists */}
+      <section className="py-32 bg-white flex justify-center">
+        <div className="container max-w-6xl px-6 text-center">
+          <h2 className="text-4xl md:text-6xl font-black text-[#0A233A] tracking-tighter mb-20">Why StoryAI exists</h2>
           <div className="grid md:grid-cols-3 gap-10">
-            <ReasonCard 
-              title="You have the script, but not the visual board"
-              text="StoryAI helps you translate written scenes into clear, structured visual direction that is easier to build on."
-            />
-            <ReasonCard 
-              title="You want to pitch better without needing to draw"
-              text="Present story ideas more confidently with frames, prompts, and concept visuals that communicate your vision."
-            />
-            <ReasonCard 
-              title="You need speed without losing creative control"
-              text="Build faster while still shaping mood, style, continuity, and storytelling detail in every scene."
-            />
+            <ReasonCard title="You have the script, but not the visual board" text="StoryAI helps you translate written scenes into clear, structured visual direction that is easier to build on." />
+            <ReasonCard title="You want to pitch better without needing to draw" text="Present story ideas more confidently with frames, prompts, and concept visuals that communicate your vision." />
+            <ReasonCard title="You need speed without losing creative control" text="Build faster while still shaping mood, style, continuity, and storytelling detail in every scene." />
           </div>
         </div>
       </section>
 
       {/* Workflow Section */}
-      <section id="process" className="py-32 bg-[#0A233A] text-white relative overflow-hidden text-center">
-        <div className="container mx-auto px-6 relative z-10">
-          <div className="max-w-4xl mx-auto mb-24 text-center">
+      <section id="process" className="py-32 bg-[#0A233A] text-white text-center flex justify-center">
+        <div className="container max-w-7xl px-6">
+          <div className="max-w-4xl mx-auto mb-24">
             <h2 className="text-sm font-black text-[#F28C00] uppercase tracking-[0.5em] mb-6">Seamless Workflow</h2>
             <p className="text-4xl md:text-6xl font-black tracking-tighter">From raw script to visual board in one flow.</p>
           </div>
-
-          <div className="grid md:grid-cols-4 gap-12 text-center">
-            <StepCard num="01" title="Bring in your story" text="Start with a script, concept note, scene draft, or screenplay idea and move into a studio flow." />
+          <div className="grid md:grid-cols-4 gap-12">
+            <StepCard num="01" title="Bring in your story" text="Start with a script, concept note, or scene draft and move into a working studio flow." />
             <StepCard num="02" title="Break scenes into frames" text="Structure your story into manageable moments that are easier to visualize and test." />
-            <StepCard num="03" title="Generate and refine visuals" text="Use AI-assisted prompts and editing controls to shape the tone, emotion, and look." />
-            <StepCard num="04" title="Review and present" text="Export a board that helps collaborators, supervisors, or clients immediately understand." />
+            <StepCard num="03" title="Generate and refine visuals" text="Use AI-assisted prompts to shape the tone, emotion, and look of each frame." />
+            <StepCard num="04" title="Review and present" text="Export a board that helps collaborators immediately understand your vision." />
           </div>
         </div>
       </section>
 
       {/* Who It Is For */}
-      <section id="who-it-is-for" className="py-32 bg-white">
-        <div className="container mx-auto px-6 text-center">
-          <div className="max-w-4xl mx-auto mb-24 text-center text-center">
-            <h2 className="text-sm font-black text-[#F28C00] uppercase tracking-[0.4em] mb-6">Who it is for</h2>
-            <p className="text-4xl md:text-5xl font-black text-[#0A233A] tracking-tighter">Made for the new generation of storytellers.</p>
-          </div>
-
+      <section id="who-it-is-for" className="py-32 bg-white flex justify-center border-b border-gray-100">
+        <div className="container max-w-6xl px-6 text-center">
+          <h2 className="text-sm font-black text-[#F28C00] uppercase tracking-[0.4em] mb-6">Who it is for</h2>
+          <p className="text-4xl md:text-5xl font-black text-[#0A233A] tracking-tighter mb-24">Made for the new generation of storytellers.</p>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <AudienceCard title="Student creators" text="Build stronger class projects, capstones, and presentations without needing a full art team." />
+            <AudienceCard title="Student creators" text="Build stronger class projects and capstones without needing a full art team." />
             <AudienceCard title="Independent filmmakers" text="Develop lookbooks, pitch visuals, and early shot direction for production planning." />
-            <AudienceCard title="Writers and storytellers" text="See scenes take shape visually and explore tone, pacing, and emotion before the story reaches the screen." />
-            <AudienceCard title="Concept developers" text="Experiment with world-building, character direction, and visual identity using a cleaner creative workflow." />
+            <AudienceCard title="Writers and storytellers" text="See scenes take shape visually and explore tone before reaching the screen." />
+            <AudienceCard title="Concept developers" text="Experiment with world-building and character direction using a clean workflow." />
           </div>
         </div>
       </section>
 
-      {/* Pricing */}
-      <section id="pricing" className="py-32 bg-[#F4F5F7]">
-        <div className="container mx-auto px-6 text-center">
-          <div className="max-w-2xl mx-auto mb-20 text-center">
+      {/* Pricing Section */}
+      <section id="pricing" className="py-32 bg-[#F4F5F7] flex justify-center">
+        <div className="container max-w-7xl px-6 text-center">
+          <div className="max-w-2xl mx-auto mb-20">
             <h2 className="text-4xl md:text-5xl font-black text-[#0A233A] tracking-tighter mb-6">Simple, transparent pricing</h2>
             <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Start free, scale as you grow.</p>
           </div>
-
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            <PricingCard 
-              tier="Free" 
-              price="$0" 
-              sub="Perfect for getting started"
-              features={['3 projects', '50 storyboard frames', 'Basic AI prompts', 'PDF export']} 
-              cta="Get Started Free"
-              onAction={() => onNavigate('signup')} 
-            />
-            <PricingCard 
-              tier="Creator" 
-              price="$19" 
-              sub="For serious storytellers"
-              featured 
-              features={['Unlimited projects', '500 storyboard frames', 'Advanced AI prompts', 'All export formats', 'Style presets', 'Email support']} 
-              cta="Upgrade to Creator" 
-              onAction={() => onNavigate('signup')} 
-            />
-            <PricingCard 
-              tier="Studio" 
-              price="$49" 
-              sub="For production teams"
-              features={['Everything in Creator', 'Unlimited frames', 'Team collaboration', 'Custom branding', 'API access', 'Priority support']} 
-              cta="Contact Sales" 
-              onAction={() => onNavigate('signup')} 
-            />
+            <PricingCard tier="Free" price="$0" sub="Perfect for getting started" features={['3 projects', '50 storyboard frames', 'Basic AI prompts', 'PDF export']} cta="Get Started Free" onAction={() => onNavigate('signup')} />
+            <PricingCard tier="Creator" price="$19" sub="For serious storytellers" featured features={['Unlimited projects', '500 storyboard frames', 'Advanced AI prompts', 'All formats', 'Style presets', 'Email support']} cta="Upgrade to Creator" onAction={() => onNavigate('signup')} />
+            <PricingCard tier="Studio" price="$49" sub="For production teams" features={['Everything in Creator', 'Unlimited frames', 'Team collaboration', 'Custom branding', 'API access']} cta="Contact Sales" onAction={() => onNavigate('signup')} />
           </div>
         </div>
       </section>
 
       {/* Mission Section */}
-      <section className="py-32 bg-[#0A233A] text-white text-center relative overflow-hidden text-center">
-        <div className="container mx-auto px-6 relative z-10 flex flex-col items-center">
-          <Logo />
-          <h2 className="text-[#F28C00] text-3xl font-black mt-10 mb-6 uppercase tracking-tighter italic">Shining Light, Transforming Lives</h2>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-12 font-light leading-relaxed">
-            Begin your creative workflow with confidence. Join thousands of creators who are bringing their stories to life with AI-powered storyboarding.
-          </p>
-          <button onClick={() => onNavigate('signup')} className="px-12 py-5 bg-[#F28C00] text-[#0A233A] font-black text-xl rounded-2xl hover:scale-105 hover:bg-white transition-all shadow-2xl">
-            Join thousands of creators
-          </button>
-        </div>
+      <section className="py-32 bg-[#0A233A] text-white text-center flex flex-col items-center">
+        <Logo />
+        <h2 className="text-[#F28C00] text-3xl font-black mt-10 mb-6 uppercase tracking-tighter italic">Shining Light, Transforming Lives</h2>
+        <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-12 font-light">Join thousands of creators who are bringing their stories to life with AI-powered storyboarding.</p>
+        <button onClick={() => onNavigate('signup')} className="px-12 py-5 bg-[#F28C00] text-[#0A233A] font-black text-xl rounded-2xl hover:scale-105 hover:bg-white transition-all shadow-2xl">Begin Your Creative Workflow</button>
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-50 py-20 border-t border-gray-100">
-        <div className="container mx-auto px-6 text-center text-center">
+      <footer className="bg-gray-50 py-20 border-t border-gray-100 flex justify-center">
+        <div className="container max-w-7xl px-6 text-center">
           <p className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-4">© 2026 StoryAI by NuruLife Productions — from script to storyboard, beautifully.</p>
           <p className="text-[10px] font-bold text-gray-300 uppercase tracking-widest">Built around the NuruLife promise: Shining Light, Transforming Lives.</p>
         </div>
@@ -324,6 +270,7 @@ function AuthPage({ mode, onLogin, onNavigate }) {
 
   return (
     <div className="min-h-screen bg-[#F4F5F7] flex items-center justify-center p-4 font-sans relative overflow-hidden text-center">
+      {/* Background Orbs */}
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#F28C00]/10 rounded-full blur-[150px]"></div>
       <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-[#7B1823]/10 rounded-full blur-[150px]"></div>
 
@@ -331,7 +278,7 @@ function AuthPage({ mode, onLogin, onNavigate }) {
         <div className="bg-[#0A233A] p-12 text-center flex flex-col items-center">
           <div onClick={() => onNavigate('landing')} className="cursor-pointer mb-6"><Logo /></div>
           <h2 className="text-white font-black text-xl tracking-tight">{isLogin ? "Welcome back to StoryAI" : "Join the StoryAI Studio"}</h2>
-          <p className="text-gray-400 text-[10px] mt-2 font-black uppercase tracking-widest">{isLogin ? "Continue building your visual stories" : "Start your creative workflow with confidence"}</p>
+          <p className="text-gray-400 text-[10px] mt-2 font-black uppercase tracking-widest italic">{isLogin ? "Continue building your visual stories" : "Start your creative workflow with confidence"}</p>
         </div>
 
         <div className="p-10 md:p-12 text-left">
@@ -339,7 +286,7 @@ function AuthPage({ mode, onLogin, onNavigate }) {
             {!isLogin && (
                <div className="space-y-1">
                 <label className="block text-[10px] font-black text-[#0A233A] uppercase tracking-widest ml-1">Full Name</label>
-                <input type="text" className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-[#F28C00] outline-none font-bold text-sm" placeholder="Brian Ingwee" required />
+                <input type="text" className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-[#F28C00] outline-none font-bold text-sm" placeholder="e.g. Brian Ingwee" required />
                </div>
             )}
             <div className="space-y-1">
@@ -353,22 +300,22 @@ function AuthPage({ mode, onLogin, onNavigate }) {
               <label className="block text-[10px] font-black text-[#0A233A] uppercase tracking-widest ml-1">Password</label>
               <div className="relative group">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#F28C00]" size={18} />
-                <input type="password" Gen className="w-full pl-12 pr-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-[#F28C00] outline-none font-bold text-sm" placeholder="••••••••" required />
+                <input type="password" className="w-full pl-12 pr-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-[#F28C00] outline-none font-bold text-sm" placeholder="••••••••" required />
               </div>
             </div>
             <button type="submit" className="w-full py-5 bg-[#7B1823] text-white font-black rounded-2xl shadow-xl hover:bg-[#0A233A] transition-all uppercase tracking-[0.2em] text-[10px]">
-              {isLogin ? "Sign In" : "Sign Up"}
+              {isLogin ? "Sign In" : "Create Account"}
             </button>
           </form>
 
           <div className="mt-8 flex items-center gap-4">
             <div className="flex-1 h-[1px] bg-gray-100"></div>
-            <span className="text-[9px] font-black uppercase tracking-widest text-gray-400 text-center">Social Login</span>
+            <span className="text-[9px] font-black uppercase tracking-widest text-gray-400 text-center">Social Authentication</span>
             <div className="flex-1 h-[1px] bg-gray-100"></div>
           </div>
 
-          <div className="mt-8 grid grid-cols-1 gap-3">
-            <button onClick={onLogin} className="flex items-center justify-center gap-4 py-4 border-2 border-gray-100 rounded-2xl hover:bg-gray-50 transition-all font-black text-[10px] text-[#0A233A] uppercase">
+          <div className="mt-8">
+            <button onClick={onLogin} className="w-full py-4 border-2 border-gray-100 rounded-2xl hover:bg-gray-50 transition-all font-black text-[10px] text-[#0A233A] uppercase flex items-center justify-center gap-4">
                <GoogleIcon /> Continue with Google
             </button>
           </div>
@@ -376,7 +323,7 @@ function AuthPage({ mode, onLogin, onNavigate }) {
           <p className="mt-10 text-center text-[10px] font-black uppercase tracking-widest text-gray-400">
             {isLogin ? "Don't have an account?" : "Already a member?"}{" "}
             <button onClick={() => setIsLogin(!isLogin)} className="text-[#F28C00] hover:underline ml-1">
-              {isLogin ? "Create account" : "Login here"}
+              {isLogin ? "Join Now" : "Login here"}
             </button>
           </p>
         </div>
@@ -385,12 +332,34 @@ function AuthPage({ mode, onLogin, onNavigate }) {
   );
 }
 
-// --- DASHBOARD (WORKSPACE) ---
+// --- STUDIO STUDIO (DASHBOARD) ---
 function Dashboard({ onLogout }) {
   const [activeTab, setActiveTab] = useState('projects');
-  const [script, setScript] = useState("EXT. NAIROBI STUDIO - DAY\n\nKAMAU (20s) stares at a glowing screen. His eyes reflect a digital horizon.");
-  const [scenes, setScenes] = useState([]);
+  const [isNewProjectModal, setIsNewProjectModal] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [projects, setProjects] = useState([
+    { id: 1, title: "Beneath the Silence", frames: 24, status: "Active", script: "EXT. NAIROBI - DAWN\n\nA lone figure stands against the orange glow of the rising sun. KAMAU (20s) adjust his lens." },
+    { id: 2, title: "The Nairobi Run", frames: 42, status: "Review", script: "" },
+  ]);
+  const [currentProject, setCurrentProject] = useState(projects[0]);
+  const [scenes, setScenes] = useState([]);
+
+  const handleCreateProject = (e) => {
+    e.preventDefault();
+    const data = new FormData(e.target);
+    const newProj = {
+      id: Date.now(),
+      title: data.get('title'),
+      description: data.get('description'),
+      script: data.get('script'),
+      frames: 0,
+      status: "Draft"
+    };
+    setProjects([newProj, ...projects]);
+    setCurrentProject(newProj);
+    setIsNewProjectModal(false);
+    setActiveTab('editor');
+  };
 
   const handleProcessScript = () => {
     setIsProcessing(true);
@@ -398,17 +367,17 @@ function Dashboard({ onLogout }) {
       setScenes([
         { 
           id: 1, 
-          heading: "EXT. STUDIO - OPENING", 
-          action: "Kamau sits before a vast array of digital storyboard panels.", 
-          prompt: "Cinematic wide shot, Nairobi cityscape through glass, futuristic digital studio, warm sun hitting screens, 8k.",
-          shotSize: "Wide Shot", cameraAngle: "Eye Level", lens: "35mm", image: null 
+          heading: "EXT. NAIROBI - OPENING", 
+          action: "A lone figure stands against the orange glow of the rising sun. KAMAU (20s) adjusts his lens.", 
+          prompt: "Wide shot, silhouette of a man named Kamau, Nairobi city skyline at dawn, glowing orange horizon, cinematic lighting, 8k.",
+          shotSize: "WS (Wide Shot)", cameraAngle: "Eye Level", lens: "35mm", status: "AI Rendered", image: "https://images.unsplash.com/photo-1547430635-7115865d21b0" 
         },
         { 
           id: 2, 
-          heading: "INT. WORKSPACE - FOCUS", 
-          action: "A close up on Kamau as a panel renders into life.", 
-          prompt: "Cinematic close up, intense focus in eyes, screen reflection, moody lighting, high contrast.",
-          shotSize: "Close Up", cameraAngle: "Low Angle", lens: "85mm", image: null 
+          heading: "CU. KAMAU - DETERMINATION", 
+          action: "Close up on Kamau's eyes as the city awakens. Reflection of lights in his pupils.", 
+          prompt: "Close up shot, focused expression, reflection of dawn city lights in eyes, shallow depth of field, high contrast.",
+          shotSize: "CU (Close Up)", cameraAngle: "Low Angle", lens: "85mm", status: "Draft", image: null 
         }
       ]);
       setIsProcessing(false);
@@ -418,12 +387,12 @@ function Dashboard({ onLogout }) {
 
   return (
     <div className="dashboard-scope flex h-screen w-full bg-[#F4F5F7] overflow-hidden font-sans">
-      {/* Sidebar */}
+      {/* Sidebar - Isolated Visual Scope */}
       <aside className="w-72 flex-shrink-0 bg-[#0A233A] flex flex-col shadow-2xl z-30">
         <div className="p-10 border-b border-white/5 flex flex-col items-center">
           <Logo />
           <div className="mt-10 w-full bg-white/5 rounded-2xl p-4 flex items-center gap-3 border border-white/5 shadow-inner">
-            <div className="w-10 h-10 rounded-xl bg-[#F28C00] flex items-center justify-center font-black text-[#0A233A] text-xs">BI</div>
+            <div className="w-10 h-10 rounded-xl bg-[#F28C00] flex items-center justify-center font-black text-[#0A233A] text-xs shadow-lg">BI</div>
             <div className="overflow-hidden">
               <p className="text-white text-[10px] font-black uppercase truncate tracking-widest text-left">Brian Ingwee</p>
               <p className="text-[#F28C00] text-[8px] font-black uppercase tracking-wider mt-1 text-left">Creator Pro</p>
@@ -432,30 +401,31 @@ function Dashboard({ onLogout }) {
         </div>
 
         <nav className="flex-1 p-6 space-y-3">
-          <SidebarItem icon={<LayoutDashboard size={20} />} label="Projects" active={activeTab === 'projects'} onClick={() => setActiveTab('projects')} />
+          <SidebarItem icon={<LayoutDashboard size={20} />} label="Studio Dashboard" active={activeTab === 'projects'} onClick={() => setActiveTab('projects')} />
           <SidebarItem icon={<FileText size={20} />} label="Visual Editor" active={activeTab === 'editor'} onClick={() => setActiveTab('editor')} />
-          <SidebarItem icon={<Users size={20} />} label="Characters" />
+          <SidebarItem icon={<Users size={20} />} label="Character Library" />
           <SidebarItem icon={<Layers size={20} />} label="Asset Library" />
         </nav>
 
         <div className="p-8 border-t border-white/5 space-y-4 bg-[#081b2e]">
           <SidebarItem icon={<Settings size={18} />} label="Settings" />
           <button onClick={onLogout} className="w-full flex items-center justify-center gap-3 py-4 bg-red-500/10 text-red-400 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-red-500/20 transition-all">
-            <LogOut size={16} /> Logout
+            <LogOut size={16} /> Exit Studio
           </button>
         </div>
       </aside>
 
-      {/* Workspace */}
+      {/* Main Studio View */}
       <main className="flex-1 flex flex-col min-w-0">
         <header className="h-20 bg-white border-b border-gray-200 flex items-center justify-between px-10 z-20 shadow-sm">
           <div className="flex items-center gap-4">
-             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Project:</span>
-             <span className="text-sm font-black text-[#0A233A] uppercase tracking-widest border-b-2 border-[#F28C00]">Beneath the Silence</span>
+             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Active Project:</span>
+             <span className="text-sm font-black text-[#0A233A] uppercase tracking-widest border-b-2 border-[#F28C00] pb-0.5">{currentProject.title}</span>
           </div>
           <div className="flex items-center gap-4">
-            <button className="flex items-center gap-2 px-6 py-2.5 bg-[#7B1823] text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl hover:shadow-[0_10px_30px_rgba(123,24,35,0.3)] transition-all">
-              <Download size={16} /> Export Board
+            <button className="flex items-center gap-2 px-6 py-3 bg-gray-50 border border-gray-200 rounded-xl text-[10px] font-black uppercase tracking-widest text-[#0A233A] hover:bg-gray-100 transition-colors"><Share2 size={16} /> Share Board</button>
+            <button className="flex items-center gap-2 px-6 py-3 bg-[#7B1823] text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl hover:shadow-[0_10px_30px_rgba(123,24,35,0.3)] transition-all">
+              <Download size={16} /> Export PDF
             </button>
           </div>
         </header>
@@ -464,58 +434,75 @@ function Dashboard({ onLogout }) {
           {activeTab === 'projects' ? (
              <div className="h-full p-12 overflow-y-auto">
                <div className="max-w-6xl mx-auto">
-                  <h1 className="text-3xl font-black text-[#0A233A] tracking-tighter mb-10 uppercase text-left">Studio Workspace</h1>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <ProjectCard title="Beneath the Silence" frames={scenes.length} status="Active" onOpen={() => setActiveTab('editor')} />
-                    <ProjectCard title="The Nairobi Run" frames={42} status="Completed" />
-                    <ProjectCard title="Digital Shadows" frames={12} status="Draft" />
+                  <div className="flex justify-between items-center mb-12">
+                    <h1 className="text-3xl font-black text-[#0A233A] tracking-tighter uppercase text-left">Studio Workspace</h1>
+                    <button onClick={() => setIsNewProjectModal(true)} className="px-8 py-4 bg-[#0A233A] text-white rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center gap-3 shadow-xl hover:scale-105 transition-all">
+                      <Plus size={18} /> New Studio Project
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {projects.map(p => (
+                      <ProjectCard key={p.id} project={p} onOpen={() => { setCurrentProject(p); setActiveTab('editor'); }} />
+                    ))}
                   </div>
                </div>
              </div>
           ) : (
              <div className="h-full flex">
+                {/* Script Panel - Split View */}
                 <div className="w-[400px] border-r border-gray-200 bg-white flex flex-col">
                   <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
                     <h3 className="text-[10px] font-black text-[#0A233A] uppercase tracking-widest flex items-center gap-2"><FileText size={16} className="text-[#F28C00]" /> Script</h3>
-                    <button onClick={handleProcessScript} className="p-2 bg-[#0A233A] text-white rounded-xl hover:scale-110 transition-all">
+                    <button onClick={handleProcessScript} className="p-2.5 bg-[#0A233A] text-white rounded-xl hover:scale-110 shadow-lg transition-all">
                       {isProcessing ? <RefreshCw size={16} className="animate-spin" /> : <Wand2 size={16} />}
                     </button>
                   </div>
-                  <textarea className="flex-1 p-8 outline-none font-mono text-sm leading-relaxed text-gray-700 resize-none" value={script} onChange={(e) => setScript(e.target.value)} />
+                  <textarea className="flex-1 p-8 outline-none font-mono text-sm leading-relaxed text-gray-700 resize-none bg-white" placeholder="Paste screenplay text here..." value={currentProject.script} onChange={(e) => setCurrentProject({...currentProject, script: e.target.value})} />
                 </div>
+
+                {/* Board Panel - StudioBinder Visual List */}
                 <div className="flex-1 bg-[#F8F9FA] p-12 overflow-y-auto">
                   <div className="max-w-4xl mx-auto space-y-12 pb-24">
                      {scenes.length === 0 ? (
-                        <div className="h-[400px] flex flex-col items-center justify-center border-4 border-dashed border-gray-200 rounded-[3rem] text-center p-12">
+                        <div className="h-[400px] flex flex-col items-center justify-center border-4 border-dashed border-gray-200 rounded-[3rem] text-center p-12 bg-white/40">
                           <ImageIcon size={64} className="text-gray-200 mb-6" />
-                          <h2 className="text-xl font-black text-[#0A233A] uppercase tracking-widest">Visual list empty</h2>
-                          <p className="text-gray-400 mt-2 font-bold text-xs uppercase tracking-widest">Process your script to see frames</p>
+                          <h2 className="text-xl font-black text-[#0A233A] uppercase tracking-widest">No shots detected</h2>
+                          <p className="text-gray-400 mt-2 font-bold text-[10px] uppercase tracking-[0.2em]">Process script to auto-generate storyboard board</p>
                         </div>
                      ) : (
                        scenes.map((scene, idx) => (
                          <div key={scene.id} className="bg-white rounded-[3rem] shadow-xl overflow-hidden border border-gray-100 flex flex-col animate-in slide-in-from-bottom-5 duration-700">
+                            {/* METADATA STRIP */}
                             <div className="px-10 py-5 border-b border-gray-50 flex items-center justify-between bg-gray-50/30">
                                <div className="flex gap-10">
                                   <ShotMeta label="Frame" val={idx+1} />
                                   <ShotMeta label="Shot Size" val={scene.shotSize} highlight />
-                                  <ShotMeta label="Angle" val={scene.cameraAngle} />
+                                  <ShotMeta label="Camera Angle" val={scene.cameraAngle} />
+                                  <ShotMeta label="Lens" val={scene.lens} />
                                </div>
-                               <MoreVertical size={20} className="text-gray-300" />
+                               <MoreVertical size={20} className="text-gray-300 cursor-pointer" />
                             </div>
                             <div className="flex flex-col lg:flex-row min-h-[350px]">
-                               <div className="lg:w-1/2 bg-gray-100 flex items-center justify-center relative group">
-                                  <Sparkles size={48} className="text-gray-200" />
+                               <div className="lg:w-1/2 bg-gray-100 flex items-center justify-center relative group overflow-hidden">
+                                  {scene.image ? (
+                                    <img src={scene.image} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" alt="panel" />
+                                  ) : (
+                                    <Sparkles size={48} className="text-gray-200" />
+                                  )}
                                   <div className="absolute inset-0 bg-[#0A233A]/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all">
-                                    <button className="px-10 py-4 bg-[#7B1823] text-white rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center gap-2">
-                                      <Sparkles size={16} /> Render Scene
+                                    <button className="px-10 py-4 bg-[#7B1823] text-white rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center gap-2 shadow-2xl">
+                                      <Sparkles size={16} /> Render Frame
                                     </button>
                                   </div>
                                </div>
-                               <div className="flex-1 p-12 text-left">
-                                  <h4 className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-4">Scene Description</h4>
-                                  <p className="text-base text-gray-500 font-bold italic border-l-4 border-[#F28C00] pl-6 mb-8">{scene.action}</p>
-                                  <h4 className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-4">AI Visual Logic</h4>
-                                  <textarea className="w-full h-24 bg-gray-50 border border-gray-100 rounded-2xl p-6 outline-none focus:ring-2 focus:ring-[#F28C00] font-bold text-sm text-[#0A233A] resize-none" defaultValue={scene.prompt} />
+                               <div className="flex-1 p-12 text-left bg-white">
+                                  <h4 className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-4">Script Action</h4>
+                                  <p className="text-base text-[#0A233A] font-bold italic border-l-4 border-[#F28C00] pl-6 mb-8 leading-relaxed">{scene.action}</p>
+                                  <h4 className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-4">AI Prompt Logic</h4>
+                                  <textarea className="w-full h-24 bg-gray-50 border border-gray-100 rounded-2xl p-6 outline-none focus:ring-2 focus:ring-[#F28C00]/20 font-bold text-sm text-[#0A233A] resize-none" defaultValue={scene.prompt} />
+                                  <div className="mt-8 flex gap-4">
+                                     <button className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-orange-50 text-[#F28C00] text-[9px] font-black uppercase tracking-widest border border-orange-100 shadow-sm"><Lock size={12} /> Identity Locked</button>
+                                  </div>
                                </div>
                             </div>
                          </div>
@@ -527,6 +514,31 @@ function Dashboard({ onLogout }) {
           )}
         </div>
       </main>
+
+      {/* NEW PROJECT MODAL */}
+      {isNewProjectModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 backdrop-blur-md">
+           <div className="absolute inset-0 bg-[#0A233A]/80" onClick={() => setIsNewProjectModal(false)}></div>
+           <div className="bg-white rounded-[3rem] shadow-2xl w-full max-w-2xl p-12 relative z-10 border-4 border-white animate-in zoom-in-95 duration-300">
+              <button onClick={() => setIsNewProjectModal(false)} className="absolute top-8 right-8 p-3 text-gray-400 hover:bg-gray-100 rounded-full transition-all"><X size={28} /></button>
+              <h2 className="text-3xl font-black text-[#0A233A] tracking-tighter uppercase mb-8 text-left">Start Studio Project</h2>
+              <form className="space-y-6" onSubmit={handleCreateProject}>
+                 <div className="space-y-2 text-left">
+                    <label className="text-[10px] font-black text-[#0A233A] uppercase tracking-widest ml-1">Project Title</label>
+                    <input name="title" className="w-full px-6 py-4 bg-gray-50 border border-gray-200 rounded-2xl font-bold outline-none focus:ring-2 focus:ring-[#F28C00] text-sm" placeholder="e.g., Beneath the Silence" required />
+                 </div>
+                 <div className="space-y-2 text-left">
+                    <label className="text-[10px] font-black text-[#0A233A] uppercase tracking-widest ml-1">Script Text</label>
+                    <textarea name="script" rows="6" className="w-full px-6 py-4 bg-gray-50 border border-gray-200 rounded-2xl font-bold outline-none focus:ring-2 focus:ring-[#F28C00] resize-none text-sm leading-relaxed" placeholder="Paste your screenplay scenes here..." required />
+                 </div>
+                 <div className="pt-6 grid grid-cols-2 gap-4">
+                    <button type="button" onClick={() => setIsNewProjectModal(false)} className="py-5 font-black text-[10px] uppercase tracking-widest text-gray-400 hover:bg-gray-100 rounded-2xl transition-colors">Cancel</button>
+                    <button type="submit" className="py-5 font-black text-[10px] uppercase tracking-widest bg-[#0A233A] text-white hover:bg-[#7B1823] rounded-2xl shadow-xl transition-all">Launch Workspace</button>
+                 </div>
+              </form>
+           </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -541,16 +553,16 @@ function SidebarItem({ icon, label, active = false, onClick }) {
   );
 }
 
-function ProjectCard({ title, frames, status, onOpen }) {
+function ProjectCard({ project, onOpen }) {
   return (
-    <div className="bg-white rounded-[2.5rem] p-8 border border-gray-100 shadow-lg hover:shadow-2xl transition-all group text-left">
+    <div className="bg-white rounded-[2.5rem] p-8 border border-gray-100 shadow-lg hover:shadow-2xl transition-all group text-left relative overflow-hidden">
       <div className="flex justify-between items-start mb-10 text-[#0A233A]">
-        <Video size={28} />
-        <span className="px-4 py-1.5 rounded-full bg-green-50 text-green-600 text-[8px] font-black uppercase tracking-widest">{status}</span>
+        <div className="w-16 h-16 rounded-2xl bg-gray-50 flex items-center justify-center text-[#0A233A] group-hover:bg-[#0A233A] group-hover:text-white transition-all shadow-inner"><Video size={28} /></div>
+        <span className="px-4 py-1.5 rounded-full bg-green-50 text-green-600 text-[8px] font-black uppercase tracking-widest border border-green-100">{project.status}</span>
       </div>
-      <h3 className="text-lg font-black text-[#0A233A] mb-1 uppercase tracking-tight">{title}</h3>
-      <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-8">{frames} Frames Generated</p>
-      <button onClick={onOpen} className="w-full py-4 bg-gray-50 rounded-2xl text-[9px] font-black text-[#0A233A] uppercase tracking-widest hover:bg-[#F28C00] transition-all">Open Studio</button>
+      <h3 className="text-lg font-black text-[#0A233A] mb-1 uppercase tracking-tight">{project.title}</h3>
+      <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-8">{project.frames} Frames Generated</p>
+      <button onClick={onOpen} className="w-full py-4 bg-gray-50 rounded-2xl text-[9px] font-black text-[#0A233A] uppercase tracking-widest hover:bg-[#F28C00] transition-all shadow-sm">Open Workspace</button>
     </div>
   );
 }
@@ -559,12 +571,12 @@ function MockFrame({ img, frame, label, sub }) {
   return (
     <div className="flex flex-col gap-4 text-center">
       <div className="aspect-[4/3] rounded-[2rem] overflow-hidden shadow-lg relative group border-2 border-transparent hover:border-[#F28C00] transition-all mx-auto w-full">
-        <img src={img} alt={label} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-        <div className="absolute top-4 left-4 px-3 py-1 bg-[#0A233A] text-white text-[8px] font-black uppercase rounded-md">Frame {frame}</div>
+        <img src={img} alt={label} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
+        <div className="absolute top-4 left-4 px-3.5 py-1.5 bg-[#0A233A] text-white text-[9px] font-black uppercase rounded-lg shadow-xl">Frame {frame}</div>
       </div>
       <div className="px-2">
-        <p className="text-[10px] font-black text-[#0A233A] uppercase tracking-widest">{label}</p>
-        <p className="text-[9px] font-bold text-gray-400 uppercase mt-1">{sub}</p>
+        <p className="text-[11px] font-black text-[#0A233A] uppercase tracking-widest">{label}</p>
+        <p className="text-[9px] font-bold text-gray-400 uppercase mt-1 tracking-widest">{sub}</p>
       </div>
     </div>
   );
@@ -573,7 +585,7 @@ function MockFrame({ img, frame, label, sub }) {
 function StatCard({ icon, title, text }) {
   return (
     <div className="p-10 rounded-[2.5rem] bg-gray-50 border border-gray-100 transition-all hover:bg-white hover:shadow-2xl hover:-translate-y-2 group text-center flex flex-col items-center justify-center">
-      <div className="w-14 h-14 rounded-2xl bg-[#0A233A] text-[#F28C00] flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">{icon}</div>
+      <div className="w-14 h-14 rounded-2xl bg-[#0A233A] text-[#F28C00] flex items-center justify-center mb-8 mx-auto group-hover:scale-110 transition-transform">{icon}</div>
       <h3 className="text-xl font-black text-[#0A233A] mb-4 leading-tight">{title}</h3>
       <p className="text-gray-500 font-medium text-sm leading-relaxed max-w-[200px]">{text}</p>
     </div>
@@ -583,10 +595,8 @@ function StatCard({ icon, title, text }) {
 function ReasonCard({ title, text }) {
   return (
     <div className="p-10 rounded-[2.5rem] bg-white border-2 border-gray-100 hover:border-[#7B1823]/20 transition-all flex flex-col gap-6 group text-center items-center">
-      <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center text-[#7B1823] group-hover:bg-[#7B1823] group-hover:text-white transition-all">
-        <ArrowRight size={18} />
-      </div>
-      <h4 className="text-xl font-black text-[#0A233A] leading-tight max-w-[220px]">{title}</h4>
+      <div className="w-12 h-12 rounded-xl bg-red-50 flex items-center justify-center text-[#7B1823] group-hover:bg-[#7B1823] group-hover:text-white transition-all mx-auto"><ArrowRight size={18} /></div>
+      <h4 className="text-xl font-black text-[#0A233A] leading-tight max-w-[240px] uppercase tracking-tighter">{title}</h4>
       <p className="text-gray-500 text-sm font-medium leading-relaxed">{text}</p>
     </div>
   );
@@ -595,7 +605,7 @@ function ReasonCard({ title, text }) {
 function StepCard({ num, title, text }) {
   return (
     <div className="group text-center flex flex-col items-center">
-      <div className="text-5xl font-black text-white/10 mb-6 group-hover:text-[#F28C00]/20 transition-colors">{num}</div>
+      <div className="text-5xl font-black text-white/10 mb-6 group-hover:text-[#F28C00]/20 transition-colors tracking-tighter">{num}</div>
       <h4 className="text-lg font-black text-white mb-3 uppercase tracking-tighter">{title}</h4>
       <p className="text-sm text-gray-400 font-medium leading-relaxed max-w-[200px]">{text}</p>
     </div>
@@ -604,7 +614,7 @@ function StepCard({ num, title, text }) {
 
 function AudienceCard({ title, text }) {
   return (
-    <div className="p-10 rounded-[2.5rem] bg-gray-50 border border-gray-100 hover:bg-white hover:shadow-2xl transition-all text-center flex flex-col items-center">
+    <div className="p-10 rounded-[2.5rem] bg-gray-50 border border-gray-100 hover:bg-white hover:shadow-2xl transition-all text-center flex flex-col items-center h-full">
       <h4 className="text-lg font-black text-[#0A233A] mb-4 uppercase tracking-tighter">{title}</h4>
       <p className="text-sm text-gray-500 font-medium leading-relaxed">{text}</p>
     </div>
@@ -614,9 +624,9 @@ function AudienceCard({ title, text }) {
 function PricingCard({ tier, price, sub, features, cta, featured = false, onAction }) {
   return (
     <div className={`p-10 rounded-[3rem] border-2 flex flex-col transition-all duration-500 ${featured ? 'bg-[#0A233A] border-[#0A233A] text-white shadow-2xl scale-105 relative z-10' : 'bg-white border-gray-100 text-[#0A233A] hover:-translate-y-2'}`}>
-      {featured && <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-6 py-2 bg-[#F28C00] text-[#0A233A] rounded-full text-[9px] font-black uppercase tracking-widest shadow-xl">Most Popular</div>}
-      <h4 className="text-2xl font-black mb-1">{tier}</h4>
-      <p className={`text-[10px] font-black uppercase tracking-widest mb-6 ${featured ? 'text-[#F28C00]' : 'text-gray-400'}`}>{sub}</p>
+      {featured && <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-6 py-2 bg-[#F28C00] text-[#0A233A] rounded-full text-[9px] font-black uppercase tracking-widest shadow-2xl">Most Popular</div>}
+      <h4 className="text-2xl font-black mb-1 italic tracking-tighter">{tier}</h4>
+      <p className={`text-[10px] font-black uppercase tracking-widest mb-8 ${featured ? 'text-[#F28C00]' : 'text-gray-400'}`}>{sub}</p>
       <div className="flex items-baseline justify-center gap-1 mb-10">
         <span className="text-5xl font-black tracking-tighter">{price}</span>
         <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">/mo</span>
@@ -628,7 +638,7 @@ function PricingCard({ tier, price, sub, features, cta, featured = false, onActi
           </li>
         ))}
       </ul>
-      <button onClick={onAction} className={`w-full py-5 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all ${featured ? 'bg-[#F28C00] text-[#0A233A] hover:bg-white' : 'bg-[#0A233A] text-white hover:bg-[#7B1823]'}`}>
+      <button onClick={onAction} className={`w-full py-5 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all ${featured ? 'bg-[#F28C00] text-[#0A233A] hover:bg-white shadow-xl' : 'bg-[#0A233A] text-white hover:bg-[#7B1823]'}`}>
         {cta}
       </button>
     </div>
@@ -639,14 +649,15 @@ function ShotMeta({ label, val, highlight = false }) {
   return (
     <div className="flex flex-col text-left">
        <span className="text-[8px] font-black text-gray-300 uppercase tracking-[0.2em]">{label}</span>
-       <span className={`text-[10px] font-black uppercase tracking-widest mt-1 ${highlight ? 'text-[#7B1823]' : 'text-[#0A233A]'}`}>{val}</span>
+       <span className={`text-[11px] font-black uppercase tracking-widest mt-1.5 ${highlight ? 'text-[#7B1823]' : 'text-[#0A233A]'}`}>{val}</span>
     </div>
   );
 }
 
-// --- ROOT APP ---
+// --- ROOT APP COMPONENT (ROUTING) ---
 export default function App() {
   const [currentView, setCurrentView] = useState('landing');
+  
   return (
     <div className="w-full h-full min-h-screen flex flex-col items-center">
       {currentView === 'landing' && <LandingPage onNavigate={setCurrentView} />}
