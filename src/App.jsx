@@ -17,7 +17,6 @@ import {
   ArrowRight,
   Mail,
   LogOut,
-  Chrome,
   Cpu,
   Layers,
   Globe,
@@ -346,7 +345,7 @@ function LoginPage({ onLogin, onNavigate }) {
 
           <div className="mt-6">
             <button className="w-full py-4 border border-gray-100 rounded-2xl flex items-center justify-center gap-3 hover:bg-gray-50 transition-all text-sm font-black text-[#0A233A]">
-              <Chrome size={20} className="text-blue-500" /> Continue with Google
+              <Globe size={20} className="text-blue-500" /> Continue with Google
             </button>
           </div>
 
