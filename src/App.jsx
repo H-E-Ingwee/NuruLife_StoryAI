@@ -17,7 +17,7 @@ import {
   ArrowRight,
   Mail,
   LogOut,
-  Chrome
+  Globe
 } from 'lucide-react';
 
 // --- LANDING PAGE COMPONENT ---
@@ -138,7 +138,7 @@ function LoginPage({ onLogin, onNavigate }) {
 
           <div className="mt-6 space-y-3">
             <button className="w-full py-2.5 border border-gray-300 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-50 transition-all text-sm font-semibold text-gray-700">
-              <Chrome size={18} className="text-blue-500" /> Google
+              <Globe size={18} className="text-blue-500" /> Google
             </button>
           </div>
 
