@@ -1,8 +1,29 @@
 # StoryAI by NuruLife Productions 🎬✨
 
+[![React](https://img.shields.io/badge/React-18.2.0-blue.svg)](https://reactjs.org/)
+[![Vite](https://img.shields.io/badge/Vite-6.4.1-646CFF.svg)](https://vitejs.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.0-38B2AC.svg)](https://tailwindcss.com/)
+[![License](https://img.shields.io/badge/License-Academic-red.svg)](#license)
+
+**An AI-Powered Tool for Storyboards and Concept Art** - A Web-Based Co-pilot for Independent Creators
+
 StoryAI is an AI-powered storyboarding web application designed for independent creators, filmmakers, and students. It bridges the gap between creative vision and visual reality by automatically translating written screenplays into professional storyboard frames.
 
 Designed with a focus on empowering African creators and independent storytellers, StoryAI eliminates the high cost and slow process of traditional pre-production art.
+
+## 📋 Table of Contents
+
+- [🚀 Key Features](#-key-features)
+- [🛠️ Tech Stack](#️-tech-stack)
+- [💻 Installation & Setup Guide](#-installation--setup-guide)
+- [📂 Project Structure](#-project-structure)
+- [🚀 Current Implementation Status](#-current-implementation-status)
+- [📖 Usage Guide](#-usage-guide)
+- [🎓 Academic Context](#-academic-context)
+- [🤝 Contributing](#-contributing)
+- [📄 License](#-license)
+- [📞 Contact](#-contact)
+- [🙏 Acknowledgments](#-acknowledgments)
 
 ## 🚀 Key Features
 
@@ -34,76 +55,27 @@ Designed with a focus on empowering African creators and independent storyteller
 
 Follow these steps to run the StoryAI frontend locally:
 
-### Step 1: Initialize the Project
+### Prerequisites
+- Node.js (v16 or higher)
+- npm or yarn
+- Git
 
-Open VS Code, open a new Terminal, and navigate to the folder where you want to save your project. Run this command to create the React app:
+### Step 1: Clone the Repository
 
 ```bash
-npm create vite@latest story-ai -- --template react
+git clone https://github.com/H-E-Ingwee/NuruLife_StoryAI.git
+cd NuruLife_StoryAI
 ```
 
 ### Step 2: Install Dependencies
 
-Navigate into your new project folder and install the default React packages, along with Tailwind CSS and our icon library:
+Install all required packages:
 
 ```bash
-cd story-ai
 npm install
-npm install -D @tailwindcss/vite
-npm install lucide-react
 ```
 
-### Step 3: Configure Vite and Tailwind v4
-
-Update your `vite.config.js` to use the new Tailwind v4 Vite plugin:
-
-```javascript
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
-
-export default defineConfig({
-  plugins: [
-    react(),
-    tailwindcss(),
-  ],
-})
-```
-
-### Step 4: Add Global Styles & Branding
-
-Go to the `src` folder and open `index.css`. Replace its contents to import Tailwind and set the NuruLife brand theme:
-
-```css
-@import "tailwindcss";
-
-@theme {
-  --color-nuru-navy: #0A233A;
-  --color-nuru-orange: #F28C00;
-  --color-nuru-maroon: #7B1823;
-  --color-nuru-light: #F4F5F7;
-}
-
-/* Custom scrollbar for a polished Studio feel */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 4px;
-}
-body {
-  background-color: var(--color-nuru-light);
-  margin: 0;
-  padding: 0;
-}
-```
-
-### Step 5: Start the Development Server
+### Step 3: Start the Development Server
 
 Run the application locally:
 
@@ -111,23 +83,128 @@ Run the application locally:
 npm run dev
 ```
 
-Click the `http://localhost:5173/` link in your terminal to view the application in your browser.
+The application will be available at `http://localhost:5174/` (or the next available port).
+
+### Step 4: Access the Dashboard
+
+- Navigate to `http://localhost:5174/dashboard` to access the main StoryAI workspace
+- The landing page is available at the root URL for project overview
 
 ## 📂 Project Structure
 
 ```
-story-ai/
-├── public/              # Static assets
+NuruLife_StoryAI/
+├── public/                    # Static assets
 ├── src/
-│   ├── App.jsx          # Main application containing Router, Landing, Auth, and Dashboard
-│   ├── index.css        # Tailwind v4 imports and global styles
-│   └── main.jsx         # React DOM rendering entry point
-├── package.json         # Project dependencies
-└── vite.config.js       # Vite + Tailwind configuration
+│   ├── components/            # React components
+│   │   ├── Dashboard.jsx      # Main dashboard layout
+│   │   ├── Sidebar.jsx        # Navigation sidebar
+│   │   ├── TopBar.jsx         # Global controls bar
+│   │   ├── ScriptPanel.jsx    # Script input panel
+│   │   ├── StoryboardGrid.jsx # Main storyboard canvas
+│   │   ├── InspectorPanel.jsx # Panel editing controls
+│   │   └── StoryboardCanvas.jsx # Legacy component
+│   ├── App.jsx                # Main application with routing
+│   ├── index.css              # Tailwind v4 styles & branding
+│   └── main.jsx               # React entry point
+├── package.json               # Project dependencies
+├── vite.config.js             # Vite configuration
+├── tailwind.config.js         # Tailwind CSS configuration
+├── eslint.config.js           # ESLint configuration
+└── README.md                  # Project documentation
 ```
+
+## 🚀 Current Implementation Status
+
+### ✅ Completed Features
+- **Dashboard Layout**: Professional split-screen workspace
+- **Script Processing**: NLP-based scene parsing (frontend simulation)
+- **Storyboard Grid**: Interactive panel management
+- **Inspector Panel**: Camera controls, character consistency settings
+- **Responsive UI**: Mobile-friendly design with Tailwind CSS
+- **Component Architecture**: Modular, maintainable React components
+
+### 🔄 In Development
+- **Backend Integration**: Python/Flask API for NLP processing
+- **AI Image Generation**: Stable Diffusion integration
+- **Database**: User accounts and project persistence
+- **Export Functionality**: PDF and image export features
+- **Real-time Collaboration**: Multi-user editing capabilities
+
+### 🎯 Next Steps
+- Backend API development
+- AI model integration
+- User authentication
+- Advanced consistency algorithms
+- Performance optimization
+
+## 📖 Usage Guide
+
+### Getting Started
+1. **Access the Dashboard**: Navigate to `/dashboard` in your browser
+2. **Input Your Script**: Paste your screenplay in the left script panel
+3. **Generate Scenes**: Click "Generate Scenes" to automatically parse and create storyboard panels
+4. **Edit Panels**: Click on any panel to open the inspector and refine camera settings, prompts, and character consistency
+5. **Export**: Use the export button in the top bar to save your storyboard
+
+### Key Workflows
+- **Script to Storyboard**: Raw script → AI scene parsing → visual panels
+- **Panel Refinement**: Edit prompts → adjust camera settings → regenerate images
+- **Character Consistency**: Upload reference photos → lock character features → maintain identity across scenes
+
+## 🤝 Contributing
+
+We welcome contributions to StoryAI! This project is part of an academic thesis, but community input is valuable.
+
+### How to Contribute
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+### Development Guidelines
+- Follow React best practices and component patterns
+- Maintain consistent code style with ESLint
+- Test components thoroughly before submitting
+- Update documentation for new features
+
+## 📄 License
+
+This project is developed as part of an academic thesis at Murang'a University of Technology. Please contact the author for licensing inquiries.
+
+## 📞 Contact
+
+**Brian Ingwee**
+- **Institution**: Murang'a University of Technology
+- **Program**: B.Sc. Computer Science
+- **Email**: [Your contact information]
+- **GitHub**: [@H-E-Ingwee](https://github.com/H-E-Ingwee)
+
+## 🙏 Acknowledgments
+
+- **Supervisor**: Tirus - For invaluable guidance and mentorship
+- **Murang'a University of Technology** - For providing the academic framework
+- **NuruLife Productions** - For the vision and branding
+- **Open Source Community** - For the amazing tools and libraries that make this possible
+
+---
+
+**Built with ❤️ for African creators, by African developers.**
 
 ## 🎓 Academic Context
 
 This project is being developed as a B.Sc. Computer Science thesis at Murang'a University of Technology by Brian Ingwee. The ultimate goal of this research is to evaluate the efficacy of NLP-to-Image pipelines in reducing pre-production costs and preserving narrative consistency for independent African filmmakers.
+
+### Research Objectives
+1. **Analyze existing systems**: Review current AI art tools and pre-production software
+2. **Design the system**: Create an intuitive web-based application with NLP integration
+3. **Develop the prototype**: Build functional StoryAI with React frontend
+4. **Test and validate**: Conduct mixed-methods study with creative students
+
+### Methodology
+- **Quantitative**: Task-based performance tests and System Usability Scale (SUS)
+- **Qualitative**: Semi-structured interviews and user feedback
+- **Target Users**: Creative students and independent filmmakers
 
 Built around the NuruLife promise: **Shining Light, Transforming Lives.**
