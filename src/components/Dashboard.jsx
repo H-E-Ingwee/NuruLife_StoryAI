@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import TopBar from './TopBar';
 import ScriptPanel from './ScriptPanel';
 import StoryboardGrid from './StoryboardGrid';
 import InspectorPanel from './InspectorPanel';
+import SettingsPanel from './SettingsPanel';
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [script, setScript] = useState('');
   const [panels, setPanels] = useState([]);
@@ -15,6 +18,11 @@ export default function Dashboard() {
     name: 'My Storyboard Project',
     id: 1
   });
+
+  const handleLogout = () => {
+    // In a real app, this would clear auth tokens, etc.
+    navigate('/');
+  };
 
   const handleGenerateScenes = async () => {
     if (!script.trim()) return;
@@ -110,43 +118,49 @@ export default function Dashboard() {
   return (
     <div className="h-screen flex bg-[#F4F5F7]">
       {/* Sidebar */}
-      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} onLogout={handleLogout} />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Top Bar */}
-        <TopBar
-          projectName={currentProject.name}
-          onExport={handleExport}
-          onShare={handleShare}
-        />
+        {activeTab === 'settings' ? (
+          <SettingsPanel onBack={() => setActiveTab('dashboard')} />
+        ) : (
+          <>
+            {/* Top Bar */}
+            <TopBar
+              projectName={currentProject.name}
+              onExport={handleExport}
+              onShare={handleShare}
+            />
 
-        {/* Workspace */}
-        <div className="flex-1 flex min-h-0">
-          {/* Script Panel */}
-          <ScriptPanel
-            script={script}
-            onScriptChange={setScript}
-            onGenerateScenes={handleGenerateScenes}
-            isGenerating={isGenerating}
-          />
+            {/* Workspace */}
+            <div className="flex-1 flex min-h-0">
+              {/* Script Panel */}
+              <ScriptPanel
+                script={script}
+                onScriptChange={setScript}
+                onGenerateScenes={handleGenerateScenes}
+                isGenerating={isGenerating}
+              />
 
-          {/* Main Storyboard Grid */}
-          <StoryboardGrid
-            panels={panels}
-            onAddPanel={handleAddPanel}
-            onGenerateScenes={handleGenerateScenes}
-            onEditPanel={handleEditPanel}
-            onRegeneratePanel={handleRegeneratePanel}
-          />
+              {/* Main Storyboard Grid */}
+              <StoryboardGrid
+                panels={panels}
+                onAddPanel={handleAddPanel}
+                onGenerateScenes={handleGenerateScenes}
+                onEditPanel={handleEditPanel}
+                onRegeneratePanel={handleRegeneratePanel}
+              />
 
-          {/* Inspector Panel */}
-          <InspectorPanel
-            selectedPanel={selectedPanel}
-            onUpdatePanel={handleUpdatePanel}
-            onClose={() => setSelectedPanel(null)}
-          />
-        </div>
+              {/* Inspector Panel */}
+              <InspectorPanel
+                selectedPanel={selectedPanel}
+                onUpdatePanel={handleUpdatePanel}
+                onClose={() => setSelectedPanel(null)}
+              />
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
