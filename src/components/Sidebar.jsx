@@ -5,6 +5,10 @@ import {
   Image as ImageIcon, 
   Users, 
   Settings, 
+  Plus,
+  Layers,
+  Video,
+  Download,
   UserCircle 
 } from 'lucide-react';
 
@@ -15,31 +19,40 @@ export default function Sidebar({ activeTab, setActiveTab }) {
       <div className="p-6 flex items-center justify-center border-b border-gray-700/50">
         <div className="flex flex-col items-center">
           <div className="text-2xl font-black tracking-tighter flex items-center">
-            <span className="text-[#F28C00]">NURU</span>
-            <span className="text-white">LIFE</span>
+            <span className="text-[#F28C00]">STORY</span>
+            <span className="text-white">AI</span>
           </div>
           <div className="text-[10px] tracking-[0.2em] font-bold mt-1 text-[#7B1823]">
-            PRODUCTIONS
+            BY NURULIFE PRODUCTIONS
           </div>
         </div>
       </div>
 
       {/* Navigation */}
       <nav className="flex-1 py-6 px-3 space-y-2">
-        <NavItem icon={<LayoutDashboard size={20} />} label="Dashboard" />
+        <NavItem icon={<Plus size={20} />} label="+ New Project" />
         <NavItem 
-          icon={<FileText size={20} />} 
-          label="Workspace" 
-          active={activeTab === 'workspace'} 
-          onClick={() => setActiveTab('workspace')} 
+          icon={<LayoutDashboard size={20} />} 
+          label="Dashboard" 
+          active={activeTab === 'dashboard'} 
+          onClick={() => setActiveTab('dashboard')} 
         />
         <NavItem 
-          icon={<ImageIcon size={20} />} 
+          icon={<FileText size={20} />} 
+          label="Projects" 
+          active={activeTab === 'projects'} 
+          onClick={() => setActiveTab('projects')} 
+        />
+        <NavItem 
+          icon={<Video size={20} />} 
           label="Storyboards" 
           active={activeTab === 'storyboards'} 
           onClick={() => setActiveTab('storyboards')} 
         />
         <NavItem icon={<Users size={20} />} label="Characters" />
+        <NavItem icon={<Layers size={20} />} label="Assets Library" />
+        <NavItem icon={<Video size={20} />} label="Shot List" />
+        <NavItem icon={<Download size={20} />} label="Exports" />
       </nav>
 
       {/* User Settings */}
