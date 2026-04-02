@@ -260,6 +260,41 @@ function AuthPage({ mode }) {
   );
 }
 
+// --- SUB-COMPONENTS ---
+function StatCard({ icon, title, text }) {
+  return (
+    <div className="p-10 rounded-[2.5rem] bg-gray-50 border border-gray-100 transition-all hover:bg-white hover:shadow-2xl hover:-translate-y-2 group text-center flex flex-col items-center justify-center">
+      <div className="w-14 h-14 rounded-2xl bg-[#0A233A] text-[#F28C00] flex items-center justify-center mb-8 mx-auto group-hover:scale-110 transition-transform">{icon}</div>
+      <h3 className="text-xl font-black text-[#0A233A] mb-4 leading-tight">{title}</h3>
+      <p className="text-gray-500 font-medium text-sm leading-relaxed max-w-[200px]">{text}</p>
+    </div>
+  );
+}
+
+function PricingCard({ tier, price, sub, features, cta, featured = false, onAction }) {
+  return (
+    <div className={`p-10 rounded-[3rem] border-2 flex flex-col transition-all duration-500 ${featured ? 'bg-[#0A233A] border-[#0A233A] text-white shadow-2xl scale-105 relative z-10' : 'bg-white border-gray-100 text-[#0A233A] hover:-translate-y-2'}`}>
+      {featured && <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-6 py-2 bg-[#F28C00] text-[#0A233A] rounded-full text-[9px] font-black uppercase tracking-widest shadow-xl">Most Popular</div>}
+      <h4 className="text-2xl font-black mb-1 italic tracking-tighter">{tier}</h4>
+      <p className={`text-[10px] font-black uppercase tracking-widest mb-8 ${featured ? 'text-[#F28C00]' : 'text-gray-400'}`}>{sub}</p>
+      <div className="flex items-baseline justify-center gap-1 mb-10">
+        <span className="text-5xl font-black tracking-tighter">{price}</span>
+        <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">/mo</span>
+      </div>
+      <ul className="flex-1 space-y-4 mb-10 text-left mx-auto">
+        {features.map(f => (
+          <li key={f} className="flex items-center gap-3 text-[10px] font-black uppercase tracking-tight">
+            <Check size={16} className={featured ? 'text-[#F28C00]' : 'text-[#7B1823]'} /> {f}
+          </li>
+        ))}
+      </ul>
+      <button onClick={onAction} className={`w-full py-5 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all ${featured ? 'bg-[#F28C00] text-[#0A233A] hover:bg-white shadow-xl' : 'bg-[#0A233A] text-white hover:bg-[#7B1823]'}`}>
+        {cta}
+      </button>
+    </div>
+  );
+}
+
 // --- ROOT APP COMPONENT (ROUTING) ---
 export default function App() {
   return (
