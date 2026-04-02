@@ -254,7 +254,7 @@ export default function Dashboard() {
         )}
 
         {activeTab === 'assets' && (
-          <AssetsLibraryPanel onUploadAsset={handleUploadAsset} />
+          <AssetsLibraryPanel />
         )}
 
         {activeTab === 'shot-list' && (

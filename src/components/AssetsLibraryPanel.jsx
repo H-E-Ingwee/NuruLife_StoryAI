@@ -28,7 +28,7 @@ import {
   Square
 } from 'lucide-react';
 
-export default function AssetsLibraryPanel({ onUploadAsset }) {
+export default function AssetsLibraryPanel() {
   const [viewMode, setViewMode] = useState('grid');
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('all');
@@ -36,9 +36,19 @@ export default function AssetsLibraryPanel({ onUploadAsset }) {
   const [selectedAssets, setSelectedAssets] = useState([]);
   const [sortBy, setSortBy] = useState('name');
   const [sortOrder, setSortOrder] = useState('asc');
-  const [showBulkActions, setShowBulkActions] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
   const fileInputRef = useRef(null);
+
+  // Helper function to get icon for asset type
+  const getTypeIcon = (type) => {
+    switch (type) {
+      case 'image': return <ImageIcon size={24} className="text-blue-500" />;
+      case 'video': return <Video size={24} className="text-red-500" />;
+      case 'audio': return <Music size={24} className="text-green-500" />;
+      case 'document': return <FileText size={24} className="text-purple-500" />;
+      default: return <FileText size={24} className="text-gray-500" />;
+    }
+  };
 
   // Mock assets data with more variety
   const assets = [
