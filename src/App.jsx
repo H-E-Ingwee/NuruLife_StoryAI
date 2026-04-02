@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, useNavigate, Link } from 'react-router-dom';
 import { 
   LayoutDashboard,
   FileText, 
   Image as ImageIcon, 
   Users,
   Settings,
-  UserCircle,
   Sparkles, 
   Download, 
   Lock, 
@@ -32,12 +32,7 @@ import {
   Maximize2,
   Eye,
   Share2,
-  Video,
-  Monitor,
-  Filter,
-  Grid,
-  List,
-  Search
+  Video
 } from 'lucide-react';
 
 // --- CUSTOM GOOGLE ICON ---
@@ -52,8 +47,9 @@ const GoogleIcon = () => (
 
 // --- LOGO COMPONENT ---
 function Logo({ light = true }) {
+  const navigate = useNavigate();
   return (
-    <div className="flex flex-col items-center md:items-start leading-none group cursor-pointer transition-all hover:scale-105">
+    <div onClick={() => navigate('/')} className="flex flex-col items-center md:items-start leading-none group cursor-pointer transition-all hover:scale-105">
       <div className="text-2xl font-black tracking-tighter flex items-center">
         <span className={light ? "text-white" : "text-[#0A233A]"}>STORY</span>
         <span className="text-[#F28C00]">AI</span>
@@ -66,9 +62,10 @@ function Logo({ light = true }) {
 }
 
 // --- LANDING PAGE ---
-function LandingPage({ onNavigate }) {
+function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -78,7 +75,6 @@ function LandingPage({ onNavigate }) {
 
   return (
     <div className="landing-scope w-full min-h-screen bg-white flex flex-col font-sans selection:bg-[#F28C00] selection:text-white scroll-smooth overflow-x-hidden">
-      {/* Centered Navbar */}
       <nav className={`fixed top-0 w-full z-50 transition-all duration-500 ${scrolled ? 'bg-[#0A233A]/95 backdrop-blur-lg py-3 shadow-2xl' : 'bg-transparent py-6'}`}>
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
           <Logo />
@@ -91,9 +87,9 @@ function LandingPage({ onNavigate }) {
               <a href="#who-it-is-for" className="hover:text-[#F28C00] transition-colors">For Creators</a>
             </div>
             <div className="flex items-center gap-4 border-l border-white/10 pl-10">
-              <button onClick={() => onNavigate('login')} className="text-white font-bold text-sm hover:text-[#F28C00] transition-colors">Login</button>
+              <button onClick={() => navigate('/login')} className="text-white font-bold text-sm hover:text-[#F28C00] transition-colors">Login</button>
               <button 
-                onClick={() => onNavigate('signup')}
+                onClick={() => navigate('/signup')}
                 className="px-6 py-2.5 text-sm font-black text-white bg-[#7B1823] rounded-xl hover:bg-opacity-90 hover:shadow-[0_0_30px_rgba(123,24,35,0.5)] transition-all"
               >
                 Sign Up
@@ -107,7 +103,7 @@ function LandingPage({ onNavigate }) {
         </div>
       </nav>
 
-      {/* Hero Section - Centered Content */}
+      {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden text-center bg-[#0A233A]">
         <div className="absolute inset-0 z-0">
           <img src="https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&w=2000&auto=format&fit=crop" alt="Cinema" className="w-full h-full object-cover opacity-40" />
@@ -128,7 +124,7 @@ function LandingPage({ onNavigate }) {
           </p>
           <div className="flex flex-col sm:flex-row gap-5 justify-center">
             <button 
-              onClick={() => onNavigate('signup')}
+              onClick={() => navigate('/signup')}
               className="px-12 py-5 text-lg font-black text-white bg-[#7B1823] rounded-2xl hover:scale-105 hover:shadow-[0_20px_60px_rgba(123,24,35,0.5)] transition-all flex items-center justify-center gap-3 group"
             >
               Start Creating Free <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
@@ -159,77 +155,6 @@ function LandingPage({ onNavigate }) {
         </div>
       </section>
 
-      {/* Live Workspace Preview - Beneath the Silence */}
-      <section className="py-32 bg-gray-50 border-y border-gray-100 overflow-hidden flex justify-center">
-        <div className="container max-w-7xl px-6 text-center">
-          <h2 className="text-3xl md:text-5xl font-black text-[#0A233A] tracking-tight mb-4">Creative Workspace Preview</h2>
-          <p className="text-gray-400 font-bold uppercase tracking-widest text-xs italic mb-16">Project: Beneath the Silence</p>
-          
-          <div className="bg-white rounded-[3rem] shadow-2xl border border-gray-200 p-6 md:p-10 mx-auto">
-             <div className="flex flex-wrap gap-4 mb-12 justify-center">
-                <span className="px-5 py-2.5 bg-orange-50 text-[#F28C00] text-[10px] font-black uppercase rounded-xl border border-orange-100">Prompt Builder</span>
-                <span className="px-5 py-2.5 bg-red-50 text-[#7B1823] text-[10px] font-black uppercase rounded-xl border border-red-100">AI Ready</span>
-                <span className="px-5 py-2.5 bg-blue-50 text-blue-600 text-[10px] font-black uppercase rounded-xl border border-blue-100">Scene Notes</span>
-                <span className="px-5 py-2.5 bg-green-50 text-green-600 text-[10px] font-black uppercase rounded-xl border border-green-100">Character Lock</span>
-             </div>
-
-             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <MockFrame img="https://images.unsplash.com/photo-1536440136628-849c177e76a1" frame="01" label="Opening Mood" sub="Wide Shot • Warm Dawn" />
-                <MockFrame img="https://images.unsplash.com/photo-1518676590629-3dcbd9c5a5c9" frame="02" label="Emotional Beat" sub="Character Lock • Style Preset" />
-                <MockFrame img="https://images.unsplash.com/photo-1547430635-7115865d21b0" frame="03" label="Prompt Draft" sub="AI Prompt • Regenerate" />
-                <MockFrame img="https://images.unsplash.com/photo-1555364134-8c01b4c91a0c" frame="04" label="Export Board" sub="PDF Ready • Contact Sheet" />
-             </div>
-
-             <div className="mt-16 p-10 bg-[#0A233A] rounded-[2.5rem] text-center max-w-4xl mx-auto">
-                <p className="text-white font-bold text-xl mb-3 uppercase tracking-tighter">Intuitive Interface for Storytellers</p>
-                <p className="text-gray-400 text-sm leading-relaxed font-medium">Tools that help you visualize and refine your creative vision with the precision of a professional film studio.</p>
-             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Why StoryAI Exists */}
-      <section className="py-32 bg-white flex justify-center">
-        <div className="container max-w-6xl px-6 text-center">
-          <h2 className="text-4xl md:text-6xl font-black text-[#0A233A] tracking-tighter mb-20">Why StoryAI exists</h2>
-          <div className="grid md:grid-cols-3 gap-10">
-            <ReasonCard title="You have the script, but not the visual board" text="StoryAI helps you translate written scenes into clear, structured visual direction that is easier to build on." />
-            <ReasonCard title="You want to pitch better without needing to draw" text="Present story ideas more confidently with frames, prompts, and concept visuals that communicate your vision." />
-            <ReasonCard title="You need speed without losing creative control" text="Build faster while still shaping mood, style, continuity, and storytelling detail in every scene." />
-          </div>
-        </div>
-      </section>
-
-      {/* Workflow Section */}
-      <section id="process" className="py-32 bg-[#0A233A] text-white text-center flex justify-center">
-        <div className="container max-w-7xl px-6">
-          <div className="max-w-4xl mx-auto mb-24">
-            <h2 className="text-sm font-black text-[#F28C00] uppercase tracking-[0.5em] mb-6">Seamless Workflow</h2>
-            <p className="text-4xl md:text-6xl font-black tracking-tighter">From raw script to visual board in one flow.</p>
-          </div>
-          <div className="grid md:grid-cols-4 gap-12">
-            <StepCard num="01" title="Bring in your story" text="Start with a script, concept note, or scene draft and move into a working studio flow." />
-            <StepCard num="02" title="Break scenes into frames" text="Structure your story into manageable moments that are easier to visualize and test." />
-            <StepCard num="03" title="Generate and refine visuals" text="Use AI-assisted prompts to shape the tone, emotion, and look of each frame." />
-            <StepCard num="04" title="Review and present" text="Export a board that helps collaborators immediately understand your vision." />
-          </div>
-        </div>
-      </section>
-
-      {/* Who It Is For */}
-      <section id="who-it-is-for" className="py-32 bg-white flex justify-center border-b border-gray-100">
-        <div className="container max-w-6xl px-6 text-center">
-          <h2 className="text-sm font-black text-[#F28C00] uppercase tracking-[0.4em] mb-6">Who it is for</h2>
-          <p className="text-4xl md:text-5xl font-black text-[#0A233A] tracking-tighter mb-24">Made for the new generation of storytellers.</p>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <AudienceCard title="Student creators" text="Build stronger class projects and capstones without needing a full art team." />
-            <AudienceCard title="Independent filmmakers" text="Develop lookbooks, pitch visuals, and early shot direction for production planning." />
-            <AudienceCard title="Writers and storytellers" text="See scenes take shape visually and explore tone before reaching the screen." />
-            <AudienceCard title="Concept developers" text="Experiment with world-building and character direction using a clean workflow." />
-          </div>
-        </div>
-      </section>
-
       {/* Pricing Section */}
       <section id="pricing" className="py-32 bg-[#F4F5F7] flex justify-center">
         <div className="container max-w-7xl px-6 text-center">
@@ -238,9 +163,9 @@ function LandingPage({ onNavigate }) {
             <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Start free, scale as you grow.</p>
           </div>
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            <PricingCard tier="Free" price="$0" sub="Perfect for getting started" features={['3 projects', '50 storyboard frames', 'Basic AI prompts', 'PDF export']} cta="Get Started Free" onAction={() => onNavigate('signup')} />
-            <PricingCard tier="Creator" price="$19" sub="For serious storytellers" featured features={['Unlimited projects', '500 storyboard frames', 'Advanced AI prompts', 'All formats', 'Style presets', 'Email support']} cta="Upgrade to Creator" onAction={() => onNavigate('signup')} />
-            <PricingCard tier="Studio" price="$49" sub="For production teams" features={['Everything in Creator', 'Unlimited frames', 'Team collaboration', 'Custom branding', 'API access']} cta="Contact Sales" onAction={() => onNavigate('signup')} />
+            <PricingCard tier="Free" price="$0" sub="Perfect for getting started" features={['3 projects', '50 storyboard frames', 'Basic AI prompts', 'PDF export']} cta="Get Started Free" onAction={() => navigate('/signup')} />
+            <PricingCard tier="Creator" price="$19" sub="For serious storytellers" featured features={['Unlimited projects', '500 storyboard frames', 'Advanced AI prompts', 'All formats', 'Style presets', 'Email support']} cta="Upgrade to Creator" onAction={() => navigate('/signup')} />
+            <PricingCard tier="Studio" price="$49" sub="For production teams" features={['Everything in Creator', 'Unlimited frames', 'Team collaboration', 'Custom branding', 'API access']} cta="Contact Sales" onAction={() => navigate('/signup')} />
           </div>
         </div>
       </section>
@@ -250,10 +175,9 @@ function LandingPage({ onNavigate }) {
         <Logo />
         <h2 className="text-[#F28C00] text-3xl font-black mt-10 mb-6 uppercase tracking-tighter italic">Shining Light, Transforming Lives</h2>
         <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-12 font-light">Join thousands of creators who are bringing their stories to life with AI-powered storyboarding.</p>
-        <button onClick={() => onNavigate('signup')} className="px-12 py-5 bg-[#F28C00] text-[#0A233A] font-black text-xl rounded-2xl hover:scale-105 hover:bg-white transition-all shadow-2xl">Begin Your Creative Workflow</button>
+        <button onClick={() => navigate('/signup')} className="px-12 py-5 bg-[#F28C00] text-[#0A233A] font-black text-xl rounded-2xl hover:scale-105 hover:bg-white transition-all shadow-2xl">Begin Your Creative Workflow</button>
       </section>
 
-      {/* Footer */}
       <footer className="bg-gray-50 py-20 border-t border-gray-100 flex justify-center">
         <div className="container max-w-7xl px-6 text-center">
           <p className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-4">© 2026 StoryAI by NuruLife Productions — from script to storyboard, beautifully.</p>
@@ -264,25 +188,28 @@ function LandingPage({ onNavigate }) {
   );
 }
 
-// --- AUTH PAGE (LOGIN / SIGNUP) ---
-function AuthPage({ mode, onLogin, onNavigate }) {
-  const [isLogin, setIsLogin] = useState(mode === 'login');
+// --- AUTH PAGE ---
+function AuthPage({ mode }) {
+  const navigate = useNavigate();
+  const isLogin = mode === 'login';
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    navigate('/dashboard');
+  };
 
   return (
-    <div className="min-h-screen bg-[#F4F5F7] flex items-center justify-center p-4 font-sans relative overflow-hidden text-center">
-      {/* Background Orbs */}
+    <div className="min-h-screen w-full bg-[#F4F5F7] flex items-center justify-center p-4 font-sans relative overflow-hidden text-center">
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#F28C00]/10 rounded-full blur-[150px]"></div>
       <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-[#7B1823]/10 rounded-full blur-[150px]"></div>
 
       <div className="w-full max-w-md bg-white rounded-[3rem] shadow-2xl overflow-hidden relative z-10 animate-in fade-in zoom-in-95 duration-500 border-4 border-white">
         <div className="bg-[#0A233A] p-12 text-center flex flex-col items-center">
-          <div onClick={() => onNavigate('landing')} className="cursor-pointer mb-6"><Logo /></div>
+          <div className="mb-6"><Logo /></div>
           <h2 className="text-white font-black text-xl tracking-tight">{isLogin ? "Welcome back to StoryAI" : "Join the StoryAI Studio"}</h2>
-          <p className="text-gray-400 text-[10px] mt-2 font-black uppercase tracking-widest italic">{isLogin ? "Continue building your visual stories" : "Start your creative workflow with confidence"}</p>
         </div>
-
         <div className="p-10 md:p-12 text-left">
-          <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); onLogin(); }}>
+          <form className="space-y-5" onSubmit={handleSubmit}>
             {!isLogin && (
                <div className="space-y-1">
                 <label className="block text-[10px] font-black text-[#0A233A] uppercase tracking-widest ml-1">Full Name</label>
@@ -315,16 +242,16 @@ function AuthPage({ mode, onLogin, onNavigate }) {
           </div>
 
           <div className="mt-8">
-            <button onClick={onLogin} className="w-full py-4 border-2 border-gray-100 rounded-2xl hover:bg-gray-50 transition-all font-black text-[10px] text-[#0A233A] uppercase flex items-center justify-center gap-4">
+            <button onClick={() => navigate('/dashboard')} className="w-full py-4 border-2 border-gray-100 rounded-2xl hover:bg-gray-50 transition-all font-black text-[10px] text-[#0A233A] uppercase flex items-center justify-center gap-4">
                <GoogleIcon /> Continue with Google
             </button>
           </div>
 
           <p className="mt-10 text-center text-[10px] font-black uppercase tracking-widest text-gray-400">
             {isLogin ? "Don't have an account?" : "Already a member?"}{" "}
-            <button onClick={() => setIsLogin(!isLogin)} className="text-[#F28C00] hover:underline ml-1">
+            <Link to={isLogin ? "/signup" : "/login"} className="text-[#F28C00] hover:underline ml-1">
               {isLogin ? "Join Now" : "Login here"}
-            </button>
+            </Link>
           </p>
         </div>
       </div>
@@ -332,8 +259,9 @@ function AuthPage({ mode, onLogin, onNavigate }) {
   );
 }
 
-// --- STUDIO STUDIO (DASHBOARD) ---
-function Dashboard({ onLogout }) {
+// --- DASHBOARD (WORKSPACE) ---
+function Dashboard() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('projects');
   const [isNewProjectModal, setIsNewProjectModal] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -350,7 +278,6 @@ function Dashboard({ onLogout }) {
     const newProj = {
       id: Date.now(),
       title: data.get('title'),
-      description: data.get('description'),
       script: data.get('script'),
       frames: 0,
       status: "Draft"
@@ -370,14 +297,14 @@ function Dashboard({ onLogout }) {
           heading: "EXT. NAIROBI - OPENING", 
           action: "A lone figure stands against the orange glow of the rising sun. KAMAU (20s) adjusts his lens.", 
           prompt: "Wide shot, silhouette of a man named Kamau, Nairobi city skyline at dawn, glowing orange horizon, cinematic lighting, 8k.",
-          shotSize: "WS (Wide Shot)", cameraAngle: "Eye Level", lens: "35mm", status: "AI Rendered", image: "https://images.unsplash.com/photo-1547430635-7115865d21b0" 
+          shotSize: "WS", cameraAngle: "Eye Level", lens: "35mm", status: "AI Rendered", image: "https://images.unsplash.com/photo-1547430635-7115865d21b0" 
         },
         { 
           id: 2, 
           heading: "CU. KAMAU - DETERMINATION", 
           action: "Close up on Kamau's eyes as the city awakens. Reflection of lights in his pupils.", 
           prompt: "Close up shot, focused expression, reflection of dawn city lights in eyes, shallow depth of field, high contrast.",
-          shotSize: "CU (Close Up)", cameraAngle: "Low Angle", lens: "85mm", status: "Draft", image: null 
+          shotSize: "CU", cameraAngle: "Low Angle", lens: "85mm", status: "Draft", image: null 
         }
       ]);
       setIsProcessing(false);
@@ -387,7 +314,7 @@ function Dashboard({ onLogout }) {
 
   return (
     <div className="dashboard-scope flex h-screen w-full bg-[#F4F5F7] overflow-hidden font-sans">
-      {/* Sidebar - Isolated Visual Scope */}
+      {/* Sidebar */}
       <aside className="w-72 flex-shrink-0 bg-[#0A233A] flex flex-col shadow-2xl z-30">
         <div className="p-10 border-b border-white/5 flex flex-col items-center">
           <Logo />
@@ -409,7 +336,7 @@ function Dashboard({ onLogout }) {
 
         <div className="p-8 border-t border-white/5 space-y-4 bg-[#081b2e]">
           <SidebarItem icon={<Settings size={18} />} label="Settings" />
-          <button onClick={onLogout} className="w-full flex items-center justify-center gap-3 py-4 bg-red-500/10 text-red-400 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-red-500/20 transition-all">
+          <button onClick={() => navigate('/')} className="w-full flex items-center justify-center gap-3 py-4 bg-red-500/10 text-red-400 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-red-500/20 transition-all">
             <LogOut size={16} /> Exit Studio
           </button>
         </div>
@@ -449,7 +376,6 @@ function Dashboard({ onLogout }) {
              </div>
           ) : (
              <div className="h-full flex">
-                {/* Script Panel - Split View */}
                 <div className="w-[400px] border-r border-gray-200 bg-white flex flex-col">
                   <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
                     <h3 className="text-[10px] font-black text-[#0A233A] uppercase tracking-widest flex items-center gap-2"><FileText size={16} className="text-[#F28C00]" /> Script</h3>
@@ -460,7 +386,6 @@ function Dashboard({ onLogout }) {
                   <textarea className="flex-1 p-8 outline-none font-mono text-sm leading-relaxed text-gray-700 resize-none bg-white" placeholder="Paste screenplay text here..." value={currentProject.script} onChange={(e) => setCurrentProject({...currentProject, script: e.target.value})} />
                 </div>
 
-                {/* Board Panel - StudioBinder Visual List */}
                 <div className="flex-1 bg-[#F8F9FA] p-12 overflow-y-auto">
                   <div className="max-w-4xl mx-auto space-y-12 pb-24">
                      {scenes.length === 0 ? (
@@ -472,7 +397,6 @@ function Dashboard({ onLogout }) {
                      ) : (
                        scenes.map((scene, idx) => (
                          <div key={scene.id} className="bg-white rounded-[3rem] shadow-xl overflow-hidden border border-gray-100 flex flex-col animate-in slide-in-from-bottom-5 duration-700">
-                            {/* METADATA STRIP */}
                             <div className="px-10 py-5 border-b border-gray-50 flex items-center justify-between bg-gray-50/30">
                                <div className="flex gap-10">
                                   <ShotMeta label="Frame" val={idx+1} />
@@ -489,20 +413,12 @@ function Dashboard({ onLogout }) {
                                   ) : (
                                     <Sparkles size={48} className="text-gray-200" />
                                   )}
-                                  <div className="absolute inset-0 bg-[#0A233A]/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all">
-                                    <button className="px-10 py-4 bg-[#7B1823] text-white rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center gap-2 shadow-2xl">
-                                      <Sparkles size={16} /> Render Frame
-                                    </button>
-                                  </div>
                                </div>
                                <div className="flex-1 p-12 text-left bg-white">
                                   <h4 className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-4">Script Action</h4>
                                   <p className="text-base text-[#0A233A] font-bold italic border-l-4 border-[#F28C00] pl-6 mb-8 leading-relaxed">{scene.action}</p>
                                   <h4 className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-4">AI Prompt Logic</h4>
                                   <textarea className="w-full h-24 bg-gray-50 border border-gray-100 rounded-2xl p-6 outline-none focus:ring-2 focus:ring-[#F28C00]/20 font-bold text-sm text-[#0A233A] resize-none" defaultValue={scene.prompt} />
-                                  <div className="mt-8 flex gap-4">
-                                     <button className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-orange-50 text-[#F28C00] text-[9px] font-black uppercase tracking-widest border border-orange-100 shadow-sm"><Lock size={12} /> Identity Locked</button>
-                                  </div>
                                </div>
                             </div>
                          </div>
@@ -518,7 +434,7 @@ function Dashboard({ onLogout }) {
       {/* NEW PROJECT MODAL */}
       {isNewProjectModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 backdrop-blur-md">
-           <div className="absolute inset-0 bg-[#0A233A]/80" onClick={() => setIsNewProjectModal(false)}></div>
+           <div className="absolute inset-0 bg-[#0A233A]/80 animate-in fade-in duration-300" onClick={() => setIsNewProjectModal(false)}></div>
            <div className="bg-white rounded-[3rem] shadow-2xl w-full max-w-2xl p-12 relative z-10 border-4 border-white animate-in zoom-in-95 duration-300">
               <button onClick={() => setIsNewProjectModal(false)} className="absolute top-8 right-8 p-3 text-gray-400 hover:bg-gray-100 rounded-full transition-all"><X size={28} /></button>
               <h2 className="text-3xl font-black text-[#0A233A] tracking-tighter uppercase mb-8 text-left">Start Studio Project</h2>
@@ -567,21 +483,6 @@ function ProjectCard({ project, onOpen }) {
   );
 }
 
-function MockFrame({ img, frame, label, sub }) {
-  return (
-    <div className="flex flex-col gap-4 text-center">
-      <div className="aspect-[4/3] rounded-[2rem] overflow-hidden shadow-lg relative group border-2 border-transparent hover:border-[#F28C00] transition-all mx-auto w-full">
-        <img src={img} alt={label} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
-        <div className="absolute top-4 left-4 px-3.5 py-1.5 bg-[#0A233A] text-white text-[9px] font-black uppercase rounded-lg shadow-xl">Frame {frame}</div>
-      </div>
-      <div className="px-2">
-        <p className="text-[11px] font-black text-[#0A233A] uppercase tracking-widest">{label}</p>
-        <p className="text-[9px] font-bold text-gray-400 uppercase mt-1 tracking-widest">{sub}</p>
-      </div>
-    </div>
-  );
-}
-
 function StatCard({ icon, title, text }) {
   return (
     <div className="p-10 rounded-[2.5rem] bg-gray-50 border border-gray-100 transition-all hover:bg-white hover:shadow-2xl hover:-translate-y-2 group text-center flex flex-col items-center justify-center">
@@ -595,7 +496,7 @@ function StatCard({ icon, title, text }) {
 function ReasonCard({ title, text }) {
   return (
     <div className="p-10 rounded-[2.5rem] bg-white border-2 border-gray-100 hover:border-[#7B1823]/20 transition-all flex flex-col gap-6 group text-center items-center">
-      <div className="w-12 h-12 rounded-xl bg-red-50 flex items-center justify-center text-[#7B1823] group-hover:bg-[#7B1823] group-hover:text-white transition-all mx-auto"><ArrowRight size={18} /></div>
+      <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center text-[#7B1823] group-hover:bg-[#7B1823] group-hover:text-white transition-all mx-auto"><ArrowRight size={18} /></div>
       <h4 className="text-xl font-black text-[#0A233A] leading-tight max-w-[240px] uppercase tracking-tighter">{title}</h4>
       <p className="text-gray-500 text-sm font-medium leading-relaxed">{text}</p>
     </div>
@@ -612,19 +513,10 @@ function StepCard({ num, title, text }) {
   );
 }
 
-function AudienceCard({ title, text }) {
-  return (
-    <div className="p-10 rounded-[2.5rem] bg-gray-50 border border-gray-100 hover:bg-white hover:shadow-2xl transition-all text-center flex flex-col items-center h-full">
-      <h4 className="text-lg font-black text-[#0A233A] mb-4 uppercase tracking-tighter">{title}</h4>
-      <p className="text-sm text-gray-500 font-medium leading-relaxed">{text}</p>
-    </div>
-  );
-}
-
 function PricingCard({ tier, price, sub, features, cta, featured = false, onAction }) {
   return (
     <div className={`p-10 rounded-[3rem] border-2 flex flex-col transition-all duration-500 ${featured ? 'bg-[#0A233A] border-[#0A233A] text-white shadow-2xl scale-105 relative z-10' : 'bg-white border-gray-100 text-[#0A233A] hover:-translate-y-2'}`}>
-      {featured && <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-6 py-2 bg-[#F28C00] text-[#0A233A] rounded-full text-[9px] font-black uppercase tracking-widest shadow-2xl">Most Popular</div>}
+      {featured && <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-6 py-2 bg-[#F28C00] text-[#0A233A] rounded-full text-[9px] font-black uppercase tracking-widest shadow-xl">Most Popular</div>}
       <h4 className="text-2xl font-black mb-1 italic tracking-tighter">{tier}</h4>
       <p className={`text-[10px] font-black uppercase tracking-widest mb-8 ${featured ? 'text-[#F28C00]' : 'text-gray-400'}`}>{sub}</p>
       <div className="flex items-baseline justify-center gap-1 mb-10">
@@ -645,6 +537,30 @@ function PricingCard({ tier, price, sub, features, cta, featured = false, onActi
   );
 }
 
+function AudienceCard({ title, text }) {
+  return (
+    <div className="p-10 rounded-[2.5rem] bg-gray-50 border border-gray-100 hover:bg-white hover:shadow-2xl transition-all text-center flex flex-col items-center h-full">
+      <h4 className="text-lg font-black text-[#0A233A] mb-4 uppercase tracking-tighter">{title}</h4>
+      <p className="text-sm text-gray-500 font-medium leading-relaxed">{text}</p>
+    </div>
+  );
+}
+
+function MockFrame({ img, frame, label, sub }) {
+  return (
+    <div className="flex flex-col gap-4 text-center">
+      <div className="aspect-[4/3] rounded-[2rem] overflow-hidden shadow-lg relative group border-2 border-transparent hover:border-[#F28C00] transition-all mx-auto w-full">
+        <img src={img} alt={label} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
+        <div className="absolute top-4 left-4 px-3.5 py-1.5 bg-[#0A233A] text-white text-[9px] font-black uppercase rounded-lg shadow-xl">Frame {frame}</div>
+      </div>
+      <div className="px-2">
+        <p className="text-[11px] font-black text-[#0A233A] uppercase tracking-widest">{label}</p>
+        <p className="text-[9px] font-bold text-gray-400 uppercase mt-1 tracking-widest">{sub}</p>
+      </div>
+    </div>
+  );
+}
+
 function ShotMeta({ label, val, highlight = false }) {
   return (
     <div className="flex flex-col text-left">
@@ -656,14 +572,16 @@ function ShotMeta({ label, val, highlight = false }) {
 
 // --- ROOT APP COMPONENT (ROUTING) ---
 export default function App() {
-  const [currentView, setCurrentView] = useState('landing');
-  
   return (
-    <div className="w-full h-full min-h-screen flex flex-col items-center">
-      {currentView === 'landing' && <LandingPage onNavigate={setCurrentView} />}
-      {currentView === 'login' && <AuthPage mode="login" onLogin={() => setCurrentView('dashboard')} onNavigate={setCurrentView} />}
-      {currentView === 'signup' && <AuthPage mode="signup" onLogin={() => setCurrentView('dashboard')} onNavigate={setCurrentView} />}
-      {currentView === 'dashboard' && <Dashboard onLogout={() => setCurrentView('landing')} />}
-    </div>
+    <BrowserRouter>
+      <div className="w-full h-full min-h-screen flex flex-col items-center bg-[#F4F5F7]">
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<AuthPage mode="login" />} />
+          <Route path="/signup" element={<AuthPage mode="signup" />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+        </Routes>
+      </div>
+    </BrowserRouter>
   );
 }
