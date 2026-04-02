@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  FileText,
+  Users,
+  Image as ImageIcon,
+  Plus,
+  Video,
+  Layers,
+  Download
+} from 'lucide-react';
 import Sidebar from './Sidebar';
-import TopBar from './TopBar';
-import ScriptPanel from './ScriptPanel';
-import StoryboardGrid from './StoryboardGrid';
-import InspectorPanel from './InspectorPanel';
 import SettingsPanel from './SettingsPanel';
 import ProjectsPanel from './ProjectsPanel';
 import StoryboardsPanel from './StoryboardsPanel';
@@ -16,91 +21,10 @@ import ExportsPanel from './ExportsPanel';
 export default function Dashboard() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [script, setScript] = useState('');
-  const [panels, setPanels] = useState([]);
-  const [selectedPanel, setSelectedPanel] = useState(null);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [currentProject] = useState({
-    name: 'My Storyboard Project',
-    id: 1
-  });
 
   const handleLogout = () => {
     // In a real app, this would clear auth tokens, etc.
     navigate('/');
-  };
-
-  const handleNewProject = () => {
-    // Open new project modal or navigate to project creation
-    console.log('Creating new project...');
-  };
-
-  const handleSelectProject = (project) => {
-    // Load selected project
-    console.log('Loading project:', project);
-    setActiveTab('dashboard');
-  };
-
-  const handleViewStoryboard = (storyboard) => {
-    // View storyboard details
-    console.log('Viewing storyboard:', storyboard);
-  };
-
-  const handleEditStoryboard = (storyboard) => {
-    // Edit storyboard
-    console.log('Editing storyboard:', storyboard);
-  };
-
-  const handleNewCharacter = () => {
-    // Open new character modal
-    console.log('Creating new character...');
-  };
-
-  const handleEditCharacter = (character) => {
-    // Edit character
-    console.log('Editing character:', character);
-  };
-
-  const handleNewShot = () => {
-    // Open new shot modal
-    console.log('Creating new shot...');
-  };
-
-  const handleEditShot = (shot) => {
-    // Edit shot
-    console.log('Editing shot:', shot);
-  };
-
-  const handleNewExport = () => {
-    // Open export configuration modal
-    console.log('Creating new export...');
-  };
-
-  const handleGenerateScenes = async () => {
-    if (!script.trim()) return;
-
-    setIsGenerating(true);
-
-    // Parse script to extract characters, scenes, and shots
-    const parsedData = parseScript(script);
-    
-    // Update panels with parsed data
-    setTimeout(() => {
-      const newPanels = parsedData.shots.map((shot, index) => ({
-        id: Date.now() + index,
-        scene: shot.scene,
-        action: shot.action,
-        prompt: shot.prompt,
-        shotSize: shot.shotSize,
-        cameraAngle: shot.cameraAngle,
-        lens: shot.lens,
-        image: null,
-        notes: shot.notes
-      }));
-
-      setPanels(newPanels);
-      setIsGenerating(false);
-    }, 2000);
   };
 
   // Script parsing function
@@ -264,41 +188,102 @@ export default function Dashboard() {
         )}
 
         {activeTab === 'dashboard' && (
-          <>
-            {/* Top Bar */}
-            <TopBar
-              projectName={currentProject.name}
-              onExport={handleExport}
-              onShare={handleShare}
-            />
+          <div className="flex-1 p-8 bg-[#F4F5F7]">
+            <div className="max-w-6xl mx-auto">
+              <div className="mb-8">
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome to StoryAI</h1>
+                <p className="text-gray-600">Your AI-powered storyboarding companion for independent creators</p>
+              </div>
 
-            {/* Workspace */}
-            <div className="flex-1 flex min-h-0">
-              {/* Script Panel */}
-              <ScriptPanel
-                script={script}
-                onScriptChange={setScript}
-                onGenerateScenes={handleGenerateScenes}
-                isGenerating={isGenerating}
-              />
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 bg-[#0A233A] rounded-lg flex items-center justify-center">
+                      <FileText size={20} className="text-white" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900">Script Processing</h3>
+                  </div>
+                  <p className="text-gray-600 mb-4">Upload your screenplay and let AI extract characters, scenes, and shots automatically.</p>
+                  <button
+                    onClick={() => setActiveTab('storyboards')}
+                    className="px-4 py-2 bg-[#F28C00] text-white rounded-lg hover:bg-opacity-90 transition-colors"
+                  >
+                    Start Storyboarding
+                  </button>
+                </div>
 
-              {/* Main Storyboard Grid */}
-              <StoryboardGrid
-                panels={panels}
-                onAddPanel={handleAddPanel}
-                onGenerateScenes={handleGenerateScenes}
-                onEditPanel={handleEditPanel}
-                onRegeneratePanel={handleRegeneratePanel}
-              />
+                <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 bg-[#0A233A] rounded-lg flex items-center justify-center">
+                      <Users size={20} className="text-white" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900">Character Database</h3>
+                  </div>
+                  <p className="text-gray-600 mb-4">Manage your characters with detailed profiles, traits, and visual references.</p>
+                  <button
+                    onClick={() => setActiveTab('characters')}
+                    className="px-4 py-2 bg-[#F28C00] text-white rounded-lg hover:bg-opacity-90 transition-colors"
+                  >
+                    View Characters
+                  </button>
+                </div>
 
-              {/* Inspector Panel */}
-              <InspectorPanel
-                selectedPanel={selectedPanel}
-                onUpdatePanel={handleUpdatePanel}
-                onClose={() => setSelectedPanel(null)}
-              />
+                <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 bg-[#0A233A] rounded-lg flex items-center justify-center">
+                      <ImageIcon size={20} className="text-white" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900">Assets Library</h3>
+                  </div>
+                  <p className="text-gray-600 mb-4">Organize and manage all your media assets with advanced search and filtering.</p>
+                  <button
+                    onClick={() => setActiveTab('assets')}
+                    className="px-4 py-2 bg-[#F28C00] text-white rounded-lg hover:bg-opacity-90 transition-colors"
+                  >
+                    Browse Assets
+                  </button>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <button
+                    onClick={() => setActiveTab('projects')}
+                    className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left"
+                  >
+                    <Plus size={24} className="text-[#F28C00] mb-2" />
+                    <div className="font-medium text-gray-900">New Project</div>
+                    <div className="text-sm text-gray-600">Start fresh</div>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('storyboards')}
+                    className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left"
+                  >
+                    <Video size={24} className="text-[#F28C00] mb-2" />
+                    <div className="font-medium text-gray-900">Storyboards</div>
+                    <div className="text-sm text-gray-600">Create scenes</div>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('shot-list')}
+                    className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left"
+                  >
+                    <Layers size={24} className="text-[#F28C00] mb-2" />
+                    <div className="font-medium text-gray-900">Shot List</div>
+                    <div className="text-sm text-gray-600">Plan shots</div>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('exports')}
+                    className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left"
+                  >
+                    <Download size={24} className="text-[#F28C00] mb-2" />
+                    <div className="font-medium text-gray-900">Export</div>
+                    <div className="text-sm text-gray-600">Share work</div>
+                  </button>
+                </div>
+              </div>
             </div>
-          </>
+          </div>
         )}
       </div>
     </div>

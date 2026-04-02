@@ -13,7 +13,9 @@ import {
   Save,
   Key,
   Mail,
-  Smartphone
+  Smartphone,
+  Users,
+  FileText
 } from 'lucide-react';
 
 export default function SettingsPanel({ onBack }) {
