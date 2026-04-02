@@ -6,6 +6,12 @@ import ScriptPanel from './ScriptPanel';
 import StoryboardGrid from './StoryboardGrid';
 import InspectorPanel from './InspectorPanel';
 import SettingsPanel from './SettingsPanel';
+import ProjectsPanel from './ProjectsPanel';
+import StoryboardsPanel from './StoryboardsPanel';
+import CharactersPanel from './CharactersPanel';
+import AssetsLibraryPanel from './AssetsLibraryPanel';
+import ShotListPanel from './ShotListPanel';
+import ExportsPanel from './ExportsPanel';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -22,6 +28,57 @@ export default function Dashboard() {
   const handleLogout = () => {
     // In a real app, this would clear auth tokens, etc.
     navigate('/');
+  };
+
+  const handleNewProject = () => {
+    // Open new project modal or navigate to project creation
+    console.log('Creating new project...');
+  };
+
+  const handleSelectProject = (project) => {
+    // Load selected project
+    console.log('Loading project:', project);
+    setActiveTab('dashboard');
+  };
+
+  const handleViewStoryboard = (storyboard) => {
+    // View storyboard details
+    console.log('Viewing storyboard:', storyboard);
+  };
+
+  const handleEditStoryboard = (storyboard) => {
+    // Edit storyboard
+    console.log('Editing storyboard:', storyboard);
+  };
+
+  const handleNewCharacter = () => {
+    // Open new character modal
+    console.log('Creating new character...');
+  };
+
+  const handleEditCharacter = (character) => {
+    // Edit character
+    console.log('Editing character:', character);
+  };
+
+  const handleUploadAsset = () => {
+    // Open file upload dialog
+    console.log('Uploading asset...');
+  };
+
+  const handleNewShot = () => {
+    // Open new shot modal
+    console.log('Creating new shot...');
+  };
+
+  const handleEditShot = (shot) => {
+    // Edit shot
+    console.log('Editing shot:', shot);
+  };
+
+  const handleNewExport = () => {
+    // Open export configuration modal
+    console.log('Creating new export...');
   };
 
   const handleGenerateScenes = async () => {
@@ -122,9 +179,47 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0">
-        {activeTab === 'settings' ? (
+        {activeTab === 'settings' && (
           <SettingsPanel onBack={() => setActiveTab('dashboard')} />
-        ) : (
+        )}
+
+        {activeTab === 'projects' && (
+          <ProjectsPanel
+            onNewProject={handleNewProject}
+            onSelectProject={handleSelectProject}
+          />
+        )}
+
+        {activeTab === 'storyboards' && (
+          <StoryboardsPanel
+            onViewStoryboard={handleViewStoryboard}
+            onEditStoryboard={handleEditStoryboard}
+          />
+        )}
+
+        {activeTab === 'characters' && (
+          <CharactersPanel
+            onNewCharacter={handleNewCharacter}
+            onEditCharacter={handleEditCharacter}
+          />
+        )}
+
+        {activeTab === 'assets' && (
+          <AssetsLibraryPanel onUploadAsset={handleUploadAsset} />
+        )}
+
+        {activeTab === 'shot-list' && (
+          <ShotListPanel
+            onNewShot={handleNewShot}
+            onEditShot={handleEditShot}
+          />
+        )}
+
+        {activeTab === 'exports' && (
+          <ExportsPanel onNewExport={handleNewExport} />
+        )}
+
+        {activeTab === 'dashboard' && (
           <>
             {/* Top Bar */}
             <TopBar

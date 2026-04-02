@@ -50,10 +50,10 @@ export default function Sidebar({ activeTab, setActiveTab, onLogout }) {
           active={activeTab === 'storyboards'} 
           onClick={() => setActiveTab('storyboards')} 
         />
-        <NavItem icon={<Users size={20} />} label="Characters" />
-        <NavItem icon={<Layers size={20} />} label="Assets Library" />
-        <NavItem icon={<Video size={20} />} label="Shot List" />
-        <NavItem icon={<Download size={20} />} label="Exports" />
+        <NavItem icon={<Users size={20} />} label="Characters" active={activeTab === 'characters'} onClick={() => setActiveTab('characters')} />
+        <NavItem icon={<Layers size={20} />} label="Assets Library" active={activeTab === 'assets'} onClick={() => setActiveTab('assets')} />
+        <NavItem icon={<Video size={20} />} label="Shot List" active={activeTab === 'shot-list'} onClick={() => setActiveTab('shot-list')} />
+        <NavItem icon={<Download size={20} />} label="Exports" active={activeTab === 'exports'} onClick={() => setActiveTab('exports')} />
         <NavItem 
           icon={<Settings size={20} />} 
           label="Settings" 
