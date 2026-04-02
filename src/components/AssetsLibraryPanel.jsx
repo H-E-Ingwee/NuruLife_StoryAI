@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   Plus,
   Search,
@@ -14,7 +14,18 @@ import {
   Trash2,
   Folder,
   Grid,
-  List
+  List,
+  Edit,
+  Share,
+  Star,
+  Archive,
+  Tag,
+  Calendar,
+  User,
+  HardDrive,
+  CloudUpload,
+  CheckSquare,
+  Square
 } from 'lucide-react';
 
 export default function AssetsLibraryPanel({ onUploadAsset }) {
@@ -22,6 +33,12 @@ export default function AssetsLibraryPanel({ onUploadAsset }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('all');
   const [selectedFolder, setSelectedFolder] = useState('all');
+  const [selectedAssets, setSelectedAssets] = useState([]);
+  const [sortBy, setSortBy] = useState('name');
+  const [sortOrder, setSortOrder] = useState('asc');
+  const [showBulkActions, setShowBulkActions] = useState(false);
+  const [isDragOver, setIsDragOver] = useState(false);
+  const fileInputRef = useRef(null);
 
   // Mock assets data
   const assets = [
