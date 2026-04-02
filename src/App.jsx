@@ -152,6 +152,7 @@ function LandingPage() {
             <StatCard icon={<Zap size={24} />} title="Save Time & Money" text="Eliminate the high cost and slow process of traditional pre-production art." />
             <StatCard icon={<Presentation size={24} />} title="Communicate Clearly" text="Show investors, collaborators, and audiences exactly what your story looks like." />
             <StatCard icon={<ShieldCheck size={24} />} title="Maintain Consistency" text="Keep characters and settings visually consistent across your entire storyboard." />
+            <StatCard icon={<LogOut size={24} />} title="Easy Account Management" text="Secure logout functionality and comprehensive settings panel for full control of your account." />
           </div>
         </div>
       </section>
@@ -177,6 +178,33 @@ function LandingPage() {
         <h2 className="text-[#F28C00] text-3xl font-black mt-10 mb-6 uppercase tracking-tighter italic">Shining Light, Transforming Lives</h2>
         <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-12 font-light">Join thousands of creators who are bringing their stories to life with AI-powered storyboarding.</p>
         <button onClick={() => navigate('/signup')} className="px-12 py-5 bg-[#F28C00] text-[#0A233A] font-black text-xl rounded-2xl hover:scale-105 hover:bg-white transition-all shadow-2xl">Begin Your Creative Workflow</button>
+      </section>
+
+      {/* Quick Help Section */}
+      <section className="py-16 bg-[#0A233A] text-white text-center">
+        <div className="container max-w-4xl px-6">
+          <h3 className="text-lg font-black text-[#F28C00] uppercase tracking-widest mb-4">Quick Start Guide</h3>
+          <div className="grid md:grid-cols-3 gap-8 text-sm">
+            <div>
+              <div className="w-12 h-12 bg-[#F28C00] rounded-full flex items-center justify-center mx-auto mb-3">
+                <span className="font-black text-[#0A233A]">1</span>
+              </div>
+              <p className="font-medium">Sign up and start creating your first storyboard instantly</p>
+            </div>
+            <div>
+              <div className="w-12 h-12 bg-[#F28C00] rounded-full flex items-center justify-center mx-auto mb-3">
+                <span className="font-black text-[#0A233A]">2</span>
+              </div>
+              <p className="font-medium">Access comprehensive settings in the sidebar to customize your experience</p>
+            </div>
+            <div>
+              <div className="w-12 h-12 bg-[#F28C00] rounded-full flex items-center justify-center mx-auto mb-3">
+                <LogOut size={20} className="text-[#0A233A]" />
+              </div>
+              <p className="font-medium">Logout anytime from the user section at the bottom of the sidebar</p>
+            </div>
+          </div>
+        </div>
       </section>
 
       <footer className="bg-gray-50 py-20 border-t border-gray-100 flex justify-center">
