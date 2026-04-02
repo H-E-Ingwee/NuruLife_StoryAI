@@ -152,24 +152,15 @@ export default function Dashboard() {
         )}
 
         {activeTab === 'projects' && (
-          <ProjectsPanel
-            onNewProject={handleNewProject}
-            onSelectProject={handleSelectProject}
-          />
+          <ProjectsPanel />
         )}
 
         {activeTab === 'storyboards' && (
-          <StoryboardsPanel
-            onViewStoryboard={handleViewStoryboard}
-            onEditStoryboard={handleEditStoryboard}
-          />
+          <StoryboardsPanel />
         )}
 
         {activeTab === 'characters' && (
-          <CharactersPanel
-            onNewCharacter={handleNewCharacter}
-            onEditCharacter={handleEditCharacter}
-          />
+          <CharactersPanel />
         )}
 
         {activeTab === 'assets' && (
@@ -177,14 +168,11 @@ export default function Dashboard() {
         )}
 
         {activeTab === 'shot-list' && (
-          <ShotListPanel
-            onNewShot={handleNewShot}
-            onEditShot={handleEditShot}
-          />
+          <ShotListPanel />
         )}
 
         {activeTab === 'exports' && (
-          <ExportsPanel onNewExport={handleNewExport} />
+          <ExportsPanel />
         )}
 
         {activeTab === 'dashboard' && (
