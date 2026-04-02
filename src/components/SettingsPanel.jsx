@@ -41,6 +41,16 @@ export default function SettingsPanel({ onBack }) {
       imageQuality: 'high',
       autoSave: true
     },
+    collaboration: {
+      realTime: true,
+      comments: 'all'
+    },
+    projects: {
+      current: 'beneath-silence',
+      autoSave: true,
+      exportFormat: 'pdf',
+      backup: 'daily'
+    },
     privacy: {
       profileVisibility: 'private',
       dataSharing: false,
@@ -63,6 +73,8 @@ export default function SettingsPanel({ onBack }) {
     { id: 'notifications', label: 'Notifications', icon: <Bell size={18} /> },
     { id: 'appearance', label: 'Appearance', icon: <Palette size={18} /> },
     { id: 'ai', label: 'AI Settings', icon: <Cpu size={18} /> },
+    { id: 'collaboration', label: 'Collaboration', icon: <Users size={18} /> },
+    { id: 'projects', label: 'Project Settings', icon: <FileText size={18} /> },
     { id: 'privacy', label: 'Privacy', icon: <Shield size={18} /> }
   ];
 
@@ -291,53 +303,132 @@ export default function SettingsPanel({ onBack }) {
             </div>
           )}
 
-          {activeSection === 'ai' && (
+          {activeSection === 'collaboration' && (
             <div className="max-w-2xl">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">AI Settings</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Collaboration Settings</h2>
 
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Default AI Model</label>
-                  <select
-                    value={settings.ai.defaultModel}
-                    onChange={(e) => updateSetting('ai', 'defaultModel', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F28C00] focus:border-transparent"
-                  >
-                    <option value="claude-3-haiku">Claude 3 Haiku (Fast)</option>
-                    <option value="claude-3-sonnet">Claude 3 Sonnet (Balanced)</option>
-                    <option value="claude-3-opus">Claude 3 Opus (High Quality)</option>
-                    <option value="gpt-4">GPT-4</option>
-                  </select>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Team Members</label>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <User size={20} className="text-gray-400" />
+                        <div>
+                          <p className="font-medium text-gray-900">Sarah Kim</p>
+                          <p className="text-sm text-gray-500">Character Designer</p>
+                        </div>
+                      </div>
+                      <span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded">Active</span>
+                    </div>
+                    <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <User size={20} className="text-gray-400" />
+                        <div>
+                          <p className="font-medium text-gray-900">Marcus Johnson</p>
+                          <p className="text-sm text-gray-500">Sound Designer</p>
+                        </div>
+                      </div>
+                      <span className="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded">Pending</span>
+                    </div>
+                  </div>
+                  <button className="mt-3 px-4 py-2 bg-[#0A233A] text-white rounded-lg hover:bg-opacity-90">
+                    Invite Team Member
+                  </button>
+                </div>
+
+                <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                  <div>
+                    <p className="font-medium text-gray-900">Real-time Collaboration</p>
+                    <p className="text-sm text-gray-500">Allow team members to edit simultaneously</p>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={settings.collaboration?.realTime || false}
+                      onChange={(e) => updateSetting('collaboration', 'realTime', e.target.checked)}
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#F28C00]/25 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#F28C00]"></div>
+                  </label>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Image Quality</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Comment Permissions</label>
                   <select
-                    value={settings.ai.imageQuality}
-                    onChange={(e) => updateSetting('ai', 'imageQuality', e.target.value)}
+                    value={settings.collaboration?.comments || 'all'}
+                    onChange={(e) => updateSetting('collaboration', 'comments', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F28C00] focus:border-transparent"
                   >
-                    <option value="low">Low (Fast generation)</option>
-                    <option value="medium">Medium (Balanced)</option>
-                    <option value="high">High (Best quality)</option>
-                    <option value="ultra">Ultra (Maximum quality)</option>
+                    <option value="all">All team members can comment</option>
+                    <option value="editors">Only editors can comment</option>
+                    <option value="admins">Only admins can comment</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeSection === 'projects' && (
+            <div className="max-w-2xl">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Project Settings</h2>
+
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Current Project</label>
+                  <select
+                    value={settings.projects?.current || 'beneath-silence'}
+                    onChange={(e) => updateSetting('projects', 'current', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F28C00] focus:border-transparent"
+                  >
+                    <option value="beneath-silence">Beneath the Silence</option>
+                    <option value="african-folktale">African Folktale Adaptation</option>
+                    <option value="urban-drama">Urban Drama Series</option>
                   </select>
                 </div>
 
                 <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                   <div>
-                    <p className="font-medium text-gray-900">Auto-save Projects</p>
-                    <p className="text-sm text-gray-500">Automatically save your work as you create</p>
+                    <p className="font-medium text-gray-900">Auto-save Versions</p>
+                    <p className="text-sm text-gray-500">Automatically save version history</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
                       type="checkbox"
-                      checked={settings.ai.autoSave}
-                      onChange={(e) => updateSetting('ai', 'autoSave', e.target.checked)}
+                      checked={settings.projects?.autoSave || true}
+                      onChange={(e) => updateSetting('projects', 'autoSave', e.target.checked)}
                       className="sr-only peer"
                     />
                     <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#F28C00]/25 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#F28C00]"></div>
                   </label>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Export Format</label>
+                  <select
+                    value={settings.projects?.exportFormat || 'pdf'}
+                    onChange={(e) => updateSetting('projects', 'exportFormat', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F28C00] focus:border-transparent"
+                  >
+                    <option value="pdf">PDF Document</option>
+                    <option value="docx">Word Document</option>
+                    <option value="txt">Plain Text</option>
+                    <option value="json">JSON Data</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Backup Frequency</label>
+                  <select
+                    value={settings.projects?.backup || 'daily'}
+                    onChange={(e) => updateSetting('projects', 'backup', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F28C00] focus:border-transparent"
+                  >
+                    <option value="hourly">Every Hour</option>
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="manual">Manual Only</option>
+                  </select>
                 </div>
               </div>
             </div>

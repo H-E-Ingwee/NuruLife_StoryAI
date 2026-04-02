@@ -13,7 +13,9 @@ import {
   Share2,
   Calendar,
   User,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Clock,
+  ArrowRight
 } from 'lucide-react';
 
 export default function StoryboardsPanel({ onViewStoryboard, onEditStoryboard }) {
@@ -144,54 +146,71 @@ export default function StoryboardsPanel({ onViewStoryboard, onEditStoryboard })
     </div>
   );
 
-  const ListView = () => (
-    <div className="space-y-3">
-      {filteredStoryboards.map(storyboard => (
-        <div
-          key={storyboard.id}
-          className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow"
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4 flex-1">
-              <div className="w-16 h-12 bg-gray-200 rounded overflow-hidden">
-                <img
-                  src={storyboard.thumbnail}
-                  alt={storyboard.title}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-gray-900">{storyboard.title}</h3>
-                <p className="text-sm text-gray-600">{storyboard.project}</p>
-                <div className="flex items-center gap-4 text-xs text-gray-500 mt-1">
-                  <span>{storyboard.panels} panels</span>
-                  <span>{storyboard.lastModified}</span>
-                  <span className={`px-2 py-0.5 rounded-full ${getStatusColor(storyboard.status)}`}>
-                    {storyboard.status}
-                  </span>
+  const TimelineView = () => (
+    <div className="space-y-8">
+      {filteredStoryboards
+        .sort((a, b) => new Date(b.lastModified) - new Date(a.lastModified))
+        .map((storyboard, index) => (
+          <div key={storyboard.id} className="flex gap-6">
+            {/* Timeline line */}
+            <div className="flex flex-col items-center">
+              <div className="w-4 h-4 bg-[#F28C00] rounded-full"></div>
+              {index < filteredStoryboards.length - 1 && (
+                <div className="w-0.5 h-16 bg-gray-300 mt-2"></div>
+              )}
+            </div>
+
+            {/* Content */}
+            <div className="flex-1 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <div className="flex items-start gap-4">
+                <div className="w-24 h-16 bg-gray-200 rounded overflow-hidden flex-shrink-0">
+                  <img
+                    src={storyboard.thumbnail}
+                    alt={storyboard.title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-2">
+                    <h3 className="font-semibold text-gray-900">{storyboard.title}</h3>
+                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(storyboard.status)}`}>
+                      {storyboard.status}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-600 mb-2">{storyboard.project}</p>
+                  <div className="flex items-center gap-4 text-xs text-gray-500 mb-3">
+                    <div className="flex items-center gap-1">
+                      <ImageIcon size={12} />
+                      <span>{storyboard.panels} panels</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Calendar size={12} />
+                      <span>{storyboard.lastModified}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <User size={12} />
+                      <span>{storyboard.creator}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => onViewStoryboard(storyboard)}
+                      className="px-3 py-1.5 text-sm bg-[#0A233A] text-white rounded hover:bg-opacity-90"
+                    >
+                      View
+                    </button>
+                    <button
+                      onClick={() => onEditStoryboard(storyboard)}
+                      className="px-3 py-1.5 text-sm border border-gray-300 text-gray-700 rounded hover:bg-gray-50"
+                    >
+                      Edit
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => onViewStoryboard(storyboard)}
-                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded"
-              >
-                <Eye size={16} />
-              </button>
-              <button
-                onClick={() => onEditStoryboard(storyboard)}
-                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded"
-              >
-                <Edit size={16} />
-              </button>
-              <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded">
-                <MoreVertical size={16} />
-              </button>
-            </div>
           </div>
-        </div>
-      ))}
+        ))}
     </div>
   );
 
@@ -213,6 +232,12 @@ export default function StoryboardsPanel({ onViewStoryboard, onEditStoryboard })
               className={`p-2 ${viewMode === 'list' ? 'bg-gray-100' : 'hover:bg-gray-50'}`}
             >
               <List size={16} />
+            </button>
+            <button
+              onClick={() => setViewMode('timeline')}
+              className={`p-2 ${viewMode === 'timeline' ? 'bg-gray-100' : 'hover:bg-gray-50'}`}
+            >
+              <Clock size={16} />
             </button>
           </div>
         </div>
@@ -252,7 +277,7 @@ export default function StoryboardsPanel({ onViewStoryboard, onEditStoryboard })
       {/* Storyboards Content */}
       <div className="flex-1 p-6 overflow-y-auto">
         {filteredStoryboards.length > 0 ? (
-          viewMode === 'grid' ? <GridView /> : <ListView />
+          viewMode === 'grid' ? <GridView /> : viewMode === 'list' ? <ListView /> : <TimelineView />
         ) : (
           <div className="text-center py-12">
             <ImageIcon size={48} className="text-gray-300 mx-auto mb-4" />

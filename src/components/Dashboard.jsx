@@ -86,47 +86,96 @@ export default function Dashboard() {
 
     setIsGenerating(true);
 
-    // Simulate AI processing
+    // Parse script to extract characters, scenes, and shots
+    const parsedData = parseScript(script);
+    
+    // Update panels with parsed data
     setTimeout(() => {
-      const newPanels = [
-        {
-          id: 1,
-          scene: 'INT. COFFEE SHOP - DAY',
-          action: 'JANE sits at a corner table, nursing a cup of coffee. She looks anxious.',
-          prompt: 'Interior coffee shop during day, young woman sitting at table looking anxious, warm lighting, realistic style',
-          shotSize: 'MS',
-          cameraAngle: 'Eye Level',
-          lens: '50mm',
-          image: null,
-          notes: 'Establish character mood'
-        },
-        {
-          id: 2,
-          scene: 'INT. COFFEE SHOP - DAY',
-          action: 'JOHN enters, spots her, and approaches with a warm smile.',
-          prompt: 'Interior coffee shop, man entering and approaching woman at table, warm welcoming expression',
-          shotSize: 'WS',
-          cameraAngle: 'Low Angle',
-          lens: '35mm',
-          image: null,
-          notes: 'Show character entrance'
-        },
-        {
-          id: 3,
-          scene: 'CU. JANE - DAY',
-          action: 'Close up on Jane\'s face as she recognizes John.',
-          prompt: 'Close up of woman\'s face showing recognition and relief, emotional expression',
-          shotSize: 'CU',
-          cameraAngle: 'Eye Level',
-          lens: '85mm',
-          image: null,
-          notes: 'Emotional reaction shot'
-        }
-      ];
+      const newPanels = parsedData.shots.map((shot, index) => ({
+        id: Date.now() + index,
+        scene: shot.scene,
+        action: shot.action,
+        prompt: shot.prompt,
+        shotSize: shot.shotSize,
+        cameraAngle: shot.cameraAngle,
+        lens: shot.lens,
+        image: null,
+        notes: shot.notes
+      }));
 
       setPanels(newPanels);
       setIsGenerating(false);
     }, 2000);
+  };
+
+  // Script parsing function
+  const parseScript = (scriptText) => {
+    const characters = [];
+    const scenes = [];
+    const shots = [];
+
+    // Extract characters (basic regex for character names in uppercase)
+    const characterMatches = scriptText.match(/^[A-Z][A-Z\s]+(?=\s*$)/gm);
+    if (characterMatches) {
+      characterMatches.forEach(match => {
+        const name = match.trim();
+        if (name.length > 1 && !characters.find(c => c.name === name)) {
+          characters.push({
+            id: Date.now() + Math.random(),
+            name: name,
+            role: 'Supporting', // Default, can be updated
+            traits: [],
+            description: '',
+            project: 'Beneath the Silence'
+          });
+        }
+      });
+    }
+
+    // Extract scenes (look for SCENE headings)
+    const sceneRegex = /SCENE\s+\d+[\s\S]*?(?=SCENE\s+\d+|$)/gi;
+    const sceneMatches = scriptText.match(sceneRegex);
+    if (sceneMatches) {
+      sceneMatches.forEach((sceneText, index) => {
+        const sceneNumber = index + 1;
+        const location = sceneText.match(/SETTING:\s*([^\n]+)/i)?.[1] || 'Unknown Location';
+        
+        scenes.push({
+          id: Date.now() + Math.random(),
+          number: sceneNumber,
+          location: location.trim(),
+          description: sceneText.substring(0, 200) + '...',
+          project: 'Beneath the Silence'
+        });
+
+        // Extract shots from scene
+        const actionLines = sceneText.split('\n').filter(line => 
+          line.trim() && 
+          !line.includes('SETTING:') && 
+          !line.includes('LIGHTS:') && 
+          !line.includes('SOUND:') &&
+          !line.match(/^[A-Z\s]+:$/) // Not character names
+        );
+
+        actionLines.forEach((action, actionIndex) => {
+          if (action.trim()) {
+            shots.push({
+              id: Date.now() + Math.random(),
+              scene: `Scene ${sceneNumber}`,
+              action: action.trim(),
+              prompt: `Scene from theater play: ${action.trim().substring(0, 100)}...`,
+              shotSize: 'MS',
+              cameraAngle: 'Eye Level',
+              lens: '50mm',
+              notes: `From Scene ${sceneNumber} - ${location.trim()}`,
+              project: 'Beneath the Silence'
+            });
+          }
+        });
+      });
+    }
+
+    return { characters, scenes, shots };
   };
 
   const handleAddPanel = () => {

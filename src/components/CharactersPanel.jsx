@@ -74,6 +74,62 @@ export default function CharactersPanel({ onNewCharacter, onEditCharacter }) {
       traits: ['Loyal', 'Humorous', 'Supportive', 'Adventurous'],
       appearances: 10,
       avatar: 'https://picsum.photos/100/100?random=24'
+    },
+    // Characters from "Beneath the Silence"
+    {
+      id: 6,
+      name: 'Malaika',
+      role: 'Protagonist',
+      type: 'hero',
+      project: 'Beneath the Silence',
+      description: 'Talented but insecure church girl at Murang\'a University, struggles with faith and identity after secret abortion',
+      traits: ['Talented', 'Insecure', 'Faithful', 'Vulnerable', 'Resilient'],
+      appearances: 15,
+      avatar: 'https://picsum.photos/100/100?random=25'
+    },
+    {
+      id: 7,
+      name: 'Jay',
+      role: 'Antagonist',
+      type: 'villain',
+      project: 'Beneath the Silence',
+      description: 'Charismatic student leader who manipulates Malaika, inherits cycle of abuse from his father',
+      traits: ['Charismatic', 'Manipulative', 'Traumatized', 'Controlling', 'Broken'],
+      appearances: 12,
+      avatar: 'https://picsum.photos/100/100?random=26'
+    },
+    {
+      id: 8,
+      name: 'Nuru',
+      role: 'Supporting Friend',
+      type: 'supporting',
+      project: 'Beneath the Silence',
+      description: 'Malaika\'s unwavering friend who helps her heal, provides guidance and support',
+      traits: ['Compassionate', 'Wise', 'Supportive', 'Faithful', 'Strong'],
+      appearances: 10,
+      avatar: 'https://picsum.photos/100/100?random=27'
+    },
+    {
+      id: 9,
+      name: 'Sharon',
+      role: 'Roommate',
+      type: 'supporting',
+      project: 'Beneath the Silence',
+      description: 'Skeptical roommate who warns Malaika about Jay\'s reputation',
+      traits: ['Skeptical', 'Protective', 'Blunt', 'Caring'],
+      appearances: 8,
+      avatar: 'https://picsum.photos/100/100?random=28'
+    },
+    {
+      id: 10,
+      name: 'Maggy',
+      role: 'Roommate',
+      type: 'supporting',
+      project: 'Beneath the Silence',
+      description: 'Romantic roommate who sees the positive in relationships',
+      traits: ['Romantic', 'Optimistic', 'Supportive', 'Empathetic'],
+      appearances: 7,
+      avatar: 'https://picsum.photos/100/100?random=29'
     }
   ];
 
