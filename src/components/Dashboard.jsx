@@ -20,7 +20,7 @@ export default function Dashboard() {
   const [panels, setPanels] = useState([]);
   const [selectedPanel, setSelectedPanel] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [currentProject, setCurrentProject] = useState({
+  const [currentProject] = useState({
     name: 'My Storyboard Project',
     id: 1
   });
@@ -59,11 +59,6 @@ export default function Dashboard() {
   const handleEditCharacter = (character) => {
     // Edit character
     console.log('Editing character:', character);
-  };
-
-  const handleUploadAsset = () => {
-    // Open file upload dialog
-    console.log('Uploading asset...');
   };
 
   const handleNewShot = () => {
@@ -157,7 +152,7 @@ export default function Dashboard() {
           !line.match(/^[A-Z\s]+:$/) // Not character names
         );
 
-        actionLines.forEach((action, actionIndex) => {
+        actionLines.forEach((action) => {
           if (action.trim()) {
             shots.push({
               id: Date.now() + Math.random(),
