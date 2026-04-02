@@ -1,29 +1,414 @@
-# StoryAI by NuruLife Productions 🎬✨
-
-[![React](https://img.shields.io/badge/React-18.2.0-blue.svg)](https://reactjs.org/)
-[![Vite](https://img.shields.io/badge/Vite-6.4.1-646CFF.svg)](https://vitejs.dev/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.0-38B2AC.svg)](https://tailwindcss.com/)
-[![License](https://img.shields.io/badge/License-Academic-red.svg)](#license)
-
-**An AI-Powered Tool for Storyboards and Concept Art** - A Comprehensive Web-Based Co-pilot for Independent Creators
-
-StoryAI is an AI-powered storyboarding web application designed for independent creators, filmmakers, and students. It bridges the gap between creative vision and visual reality by automatically translating written screenplays into professional storyboard frames.
-
-Designed with a focus on empowering African creators and independent storytellers, StoryAI eliminates the high cost and slow process of traditional pre-production art.
+# StoryAI Frontend Documentation
 
 ## 📋 Table of Contents
 
-- [🚀 Key Features](#-key-features)
-- [🛠️ Tech Stack](#️-tech-stack)
-- [💻 Installation & Setup Guide](#-installation--setup-guide)
-- [📂 Project Structure](#-project-structure)
-- [🚀 Current Implementation Status](#-current-implementation-status)
-- [📖 Usage Guide](#-usage-guide)
-- [🎓 Academic Context](#-academic-context)
-- [🤝 Contributing](#-contributing)
-- [📄 License](#-license)
-- [📞 Contact](#-contact)
-- [🙏 Acknowledgments](#-acknowledgments)
+- [🏗️ Application Architecture](#️-application-architecture)
+- [🛣️ User Journey Flow](#️-user-journey-flow)
+- [🏠 Landing Page](#-landing-page)
+- [🔐 Authentication Pages](#-authentication-pages)
+- [📊 Dashboard Overview](#-dashboard-overview)
+- [🧭 Navigation System](#-navigation-system)
+- [📁 Panel Components](#-panel-components)
+- [🎨 UI/UX Design System](#-uiux-design-system)
+- [🔧 Technical Implementation](#-technical-implementation)
+- [📱 Responsive Design](#-responsive-design)
+
+## 🏗️ Application Architecture
+
+### Core Technologies
+- **React 19.1.0**: Modern React with functional components and hooks
+- **Vite 6.4.1**: Fast build tool and development server
+- **React Router 7.13.2**: Client-side routing for SPA navigation
+- **Tailwind CSS 4.0**: Utility-first CSS framework with custom NuruLife branding
+- **Lucide React**: Modern icon library for consistent UI elements
+
+### Project Structure
+```
+src/
+├── App.jsx                 # Main application with routing
+├── main.jsx               # React application entry point
+├── index.css              # Global styles and Tailwind configuration
+├── components/
+│   ├── Dashboard.jsx      # Main dashboard container and routing
+│   ├── Sidebar.jsx        # Navigation sidebar component
+│   ├── SettingsPanel.jsx  # User settings and preferences
+│   ├── AssetsLibraryPanel.jsx # Media asset management
+│   ├── CharactersPanel.jsx    # Character database
+│   ├── ProjectsPanel.jsx      # Project management
+│   ├── StoryboardsPanel.jsx   # Storyboard timeline view
+│   ├── ShotListPanel.jsx      # Shot planning and management
+│   └── ExportsPanel.jsx       # Export functionality
+```
+
+### State Management
+- **Local Component State**: useState hooks for individual component state
+- **Props-based Communication**: Parent-child component communication
+- **URL-based Navigation**: React Router for page-level state management
+
+## 🛣️ User Journey Flow
+
+### 1. Landing Page Discovery
+```
+User visits website → Hero section → Feature overview → Pricing → Sign up/Login
+```
+
+### 2. Authentication Flow
+```
+Sign up/Login → Email verification → Dashboard access
+```
+
+### 3. Dashboard Exploration
+```
+Dashboard overview → Panel navigation → Feature discovery → Project creation
+```
+
+### 4. Content Creation Workflow
+```
+Script upload → Character extraction → Scene breakdown → Asset management → Export
+```
+
+## 🏠 Landing Page
+
+### Hero Section
+- **Background**: Full-screen cinematic image with gradient overlay
+- **Headline**: "Transform scripts into professional storyboards"
+- **CTA Buttons**: "Start Creating Free" and "View Project Demo"
+- **Tagline**: AI-powered storyboarding badge
+
+### Navigation Bar
+- **Logo**: Clickable StoryAI logo with NuruLife branding
+- **Menu Items**: Features, How It Works, Pricing, For Creators
+- **Auth Buttons**: Login and Sign Up
+- **Mobile Menu**: Hamburger menu for mobile devices
+
+### Features Section
+- **Empowering African Creators**: Mission statement and core benefits
+- **Stat Cards**:
+  - Save Time & Money
+  - Communicate Clearly
+  - Maintain Consistency
+  - Easy Account Management
+
+### Pricing Section
+- **Three Tiers**: Free, Creator ($19/mo), Studio ($49/mo)
+- **Features**: Project limits, AI prompts, export formats
+- **Popular Badge**: Creator plan highlighted
+
+### Mission Section
+- **Brand Colors**: NuruLife navy and orange
+- **Call-to-Action**: "Begin Your Creative Workflow"
+
+### Footer
+- **Copyright**: 2026 StoryAI by NuruLife Productions
+- **Tagline**: "Built around the NuruLife promise"
+
+## 🔐 Authentication Pages
+
+### Login Page (`/login`)
+- **Layout**: Centered card design with background gradients
+- **Fields**: Email and Password
+- **Buttons**: Sign In, Google OAuth, Forgot Password
+- **Links**: Sign up link
+
+### Sign Up Page (`/signup`)
+- **Additional Fields**: Full Name
+- **Validation**: Email format, password strength
+- **Terms**: Account creation agreement
+
+### Shared Features
+- **Logo Display**: StoryAI branding
+- **Background**: Subtle gradient animations
+- **Responsive**: Mobile-optimized layout
+- **Navigation**: Links between login/signup
+
+## 📊 Dashboard Overview
+
+### Layout Structure
+```
+┌─────────────────────────────────────────────────┐
+│ Header Bar (Future: Project info, export, share) │
+├─────────────────┬───────────────────────────────┤
+│                 │                               │
+│   Sidebar       │     Main Content Area          │
+│   Navigation    │     (Dynamic Panel Content)    │
+│                 │                               │
+│   ┌─────────┐   │                               │
+│   │ + New   │   │                               │
+│   │ Project │   │                               │
+│   ├─────────┤   │                               │
+│   │ Dashboard│  │                               │
+│   │ Projects │  │                               │
+│   │ Storyboards│ │                               │
+│   │ Characters│  │                               │
+│   │ Assets   │  │                               │
+│   │ Shot List│  │                               │
+│   │ Exports  │  │                               │
+│   │ Settings │  │                               │
+│   └─────────┘   │                               │
+│                 │                               │
+│   User Info     │                               │
+│   & Logout      │                               │
+└─────────────────┴───────────────────────────────┘
+```
+
+### Dashboard Home View
+When `activeTab === 'dashboard'`, displays:
+- **Welcome Header**: "Welcome to StoryAI"
+- **Feature Cards**: Script Processing, Character Database, Assets Library
+- **Quick Actions Grid**: New Project, Storyboards, Shot List, Export
+
+## 🧭 Navigation System
+
+### Sidebar Component
+- **Width**: 256px (w-64) fixed width
+- **Background**: NuruLife navy (#0A233A)
+- **Logo Section**: Centered branding with tagline
+- **Navigation Items**: 8 main panels + New Project button
+- **User Section**: Profile info and logout button
+
+### Navigation Items
+1. **+ New Project**: Placeholder for project creation
+2. **Dashboard**: Overview and quick actions
+3. **Projects**: Project management
+4. **Storyboards**: Timeline view of storyboards
+5. **Characters**: Character database
+6. **Assets Library**: Media asset management
+7. **Shot List**: Shot planning
+8. **Exports**: Export functionality
+9. **Settings**: User preferences
+
+### Active State Indicators
+- **Background**: Semi-transparent white overlay
+- **Text Color**: White for active, gray for inactive
+- **Icon Color**: NuruLife orange (#F28C00) for active
+
+## 📁 Panel Components
+
+### SettingsPanel
+
+#### Structure
+```
+┌─────────────────────────────────────────────────┐
+│ Header: Back Button + Title + Save Changes      │
+├─────────────────┬───────────────────────────────┤
+│                 │                               │
+│   Settings      │     Content Area               │
+│   Menu          │                               │
+│   ┌─────────┐   │                               │
+│   │ Profile  │  │                               │
+│   │ Notif.   │  │                               │
+│   │ Appear.  │  │                               │
+│   │ AI       │  │                               │
+│   │ Collab.  │  │                               │
+│   │ Projects │  │                               │
+│   │ Privacy  │  │                               │
+│   └─────────┘   │                               │
+└─────────────────┴───────────────────────────────┘
+```
+
+#### Settings Sections
+
+**Profile Settings**
+- Avatar upload area
+- Full Name input
+- Email input
+- Bio textarea
+
+**Notification Preferences**
+- Email notifications toggle
+- Push notifications toggle
+- Project updates toggle
+- Marketing emails toggle
+
+**Appearance Settings**
+- Theme selector (Light/Dark)
+- Language dropdown
+- Timezone selector
+
+**AI Settings**
+- Default model selector
+- Image quality settings
+- Auto-save toggle
+
+**Collaboration Settings**
+- Real-time editing toggle
+- Comments visibility selector
+
+**Project Settings**
+- Current project selector
+- Auto-save toggle
+- Export format preferences
+- Backup frequency
+
+**Privacy Settings**
+- Profile visibility controls
+- Data sharing preferences
+- Analytics tracking toggle
+
+### AssetsLibraryPanel
+
+#### Header Controls
+- **Bulk Actions**: Select All, Download, Tag, Delete (when items selected)
+- **Upload Button**: File input trigger
+- **View Toggle**: Grid/List view switcher
+
+#### Filters and Search
+- **Search Bar**: Search by name, project, or tags
+- **Folder Filter**: Dropdown for folder selection
+- **Type Filter**: All Types, Images, Videos, Audio, Documents
+- **Sort Options**: Name, Size, Date, Type with ascending/descending
+
+#### Asset Grid/List Views
+
+**Grid View Cards**
+- Thumbnail image or type icon
+- Selection checkbox
+- Favorite star
+- Asset name
+- File size and type
+- Project association
+
+**List View Rows**
+- Checkbox and type icon
+- Asset name and details
+- Size, upload date, author
+- Action menu (Edit, Download, Delete)
+
+#### Drag & Drop
+- **Drop Zone**: Visual feedback during drag operations
+- **File Types**: Images, videos, audio, documents
+- **Upload Feedback**: Progress indicators and success messages
+
+### CharactersPanel
+
+#### Character Cards
+- **Avatar**: Profile image or default icon
+- **Name & Role**: Character name with role badge
+- **Project**: Associated project
+- **Traits**: Tag-based trait display
+- **Appearances**: Scene count
+- **Actions**: Edit, View, Delete
+
+#### Character Types
+- **Hero**: Protagonist characters
+- **Supporting**: Secondary characters
+- **Villain**: Antagonist characters
+- **Historical**: Real historical figures
+
+#### Filter Options
+- **Search**: By name or traits
+- **Role Filter**: All, Hero, Supporting, Villain, Historical
+- **Project Filter**: All projects or specific project
+
+## 🎨 UI/UX Design System
+
+### Color Palette
+- **Primary Navy**: #0A233A (NuruLife brand)
+- **Accent Orange**: #F28C00 (highlights, CTAs)
+- **Secondary Red**: #7B1823 (buttons, alerts)
+- **Neutral Grays**: #F4F5F7 (backgrounds), #E5E7EB (borders)
+
+### Typography
+- **Headlines**: Black weight, tight tracking
+- **Body Text**: Medium weight, readable line heights
+- **Labels**: Bold uppercase for form labels
+- **Buttons**: Black weight, uppercase tracking
+
+### Component Patterns
+- **Cards**: Rounded corners, subtle shadows, hover effects
+- **Buttons**: Consistent padding, hover states, loading states
+- **Inputs**: Border focus states, placeholder styling
+- **Icons**: 16-24px sizes, consistent color theming
+
+### Spacing System
+- **Small**: 8px (0.5rem)
+- **Medium**: 16px (1rem)
+- **Large**: 24px (1.5rem)
+- **Extra Large**: 32px (2rem)
+
+## 🔧 Technical Implementation
+
+### Component Architecture
+- **Functional Components**: Modern React with hooks
+- **Props Interface**: Well-defined component APIs
+- **State Management**: Local state with useState
+- **Event Handling**: Synthetic events and callbacks
+
+### Routing Implementation
+```jsx
+<BrowserRouter>
+  <Routes>
+    <Route path="/" element={<LandingPage />} />
+    <Route path="/login" element={<AuthPage mode="login" />} />
+    <Route path="/signup" element={<AuthPage mode="signup" />} />
+    <Route path="/dashboard" element={<Dashboard />} />
+  </Routes>
+</BrowserRouter>
+```
+
+### Dashboard State Management
+```jsx
+const [activeTab, setActiveTab] = useState('dashboard');
+// Panel switching via activeTab state
+{activeTab === 'settings' && <SettingsPanel />}
+{activeTab === 'assets' && <AssetsLibraryPanel />}
+```
+
+### Data Flow
+- **Mock Data**: Static data for demonstration
+- **Props Down**: Parent passes data to children
+- **Callbacks Up**: Children communicate changes via callbacks
+- **State Lifting**: Shared state managed at dashboard level
+
+## 📱 Responsive Design
+
+### Breakpoints
+- **Mobile**: < 768px (sm)
+- **Tablet**: 768px - 1024px (md)
+- **Desktop**: > 1024px (lg)
+
+### Mobile Adaptations
+- **Sidebar**: Collapsible or overlay navigation
+- **Grid Layouts**: Single column on mobile
+- **Touch Targets**: Minimum 44px touch areas
+- **Typography**: Scaled appropriately for small screens
+
+### Tablet Optimizations
+- **Two-Column Layouts**: Balanced content distribution
+- **Touch-Friendly**: Larger buttons and spacing
+- **Navigation**: Accessible sidebar with touch gestures
+
+### Desktop Experience
+- **Multi-Column Layouts**: Full dashboard utilization
+- **Hover States**: Enhanced interactivity
+- **Keyboard Navigation**: Full accessibility support
+
+## 🚀 Development Workflow
+
+### Local Development
+```bash
+npm install          # Install dependencies
+npm run dev         # Start development server
+npm run build       # Production build
+npm run lint        # Code quality checks
+npm run preview     # Preview production build
+```
+
+### Build Process
+- **Vite**: Fast HMR and optimized bundles
+- **ESLint**: Code quality and consistency
+- **Tailwind**: Utility-first CSS compilation
+- **Asset Optimization**: Image and font optimization
+
+### Deployment Ready
+- **Static Assets**: Optimized and cached
+- **Code Splitting**: Route-based chunking
+- **PWA Ready**: Service worker support
+- **SEO Optimized**: Meta tags and structured data
+
+---
+
+**StoryAI** represents a comprehensive storyboarding solution designed specifically for independent African creators, combining modern web technologies with intuitive design to bridge the gap between creative vision and professional presentation.
 
 ## 🚀 Key Features
 
