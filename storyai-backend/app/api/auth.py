@@ -1,6 +1,6 @@
 ﻿from flask import Blueprint, request, jsonify
 from marshmallow import Schema, fields, ValidationError
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, decode_token
 from app.auth.auth_service import AuthService
 from app.models import User
 
@@ -14,6 +14,9 @@ class RegisterSchema(Schema):
 class LoginSchema(Schema):
     email = fields.Email(required=True)
     password = fields.Str(required=True)
+
+class RefreshSchema(Schema):
+    refresh_token = fields.Str(required=True)
 
 @auth_bp.route('/register', methods=['POST'])
 def register():
@@ -51,3 +54,35 @@ def me():
     if not user:
         return jsonify({'success': False, 'error': {'code': 'USER_NOT_FOUND', 'message': 'User not found'}}), 404
     return jsonify({'success': True, 'data': user.to_dict()}), 200
+
+
+@auth_bp.route('/refresh', methods=['POST'])
+def refresh():
+    """
+    Refresh access token.
+
+    Note: the frontend sends `refresh_token` in the JSON body (not in Authorization header),
+    so we validate it manually using `decode_token` instead of `@jwt_required(refresh=True)`.
+    """
+    try:
+        data = RefreshSchema().load(request.json or {})
+    except ValidationError as e:
+        return jsonify({'success': False, 'error': {'code': 'VALIDATION_ERROR', 'details': e.messages}}), 400
+
+    refresh_token = data['refresh_token']
+    try:
+        decoded = decode_token(refresh_token)
+        token_type = decoded.get('type')
+        user_id = decoded.get('sub') or decoded.get('identity')
+    except Exception:
+        return jsonify({'success': False, 'error': {'code': 'INVALID_TOKEN', 'message': 'Invalid or expired token'}}), 401
+
+    if token_type != 'refresh' or not user_id:
+        return jsonify({'success': False, 'error': {'code': 'INVALID_TOKEN', 'message': 'Invalid or expired token'}}), 401
+
+    user = User.query.get(user_id)
+    if not user or not getattr(user, 'is_active', True):
+        return jsonify({'success': False, 'error': {'code': 'INVALID_TOKEN', 'message': 'Invalid or expired token'}}), 401
+
+    tokens = AuthService.create_tokens(user)
+    return jsonify({'success': True, 'data': tokens}), 200
