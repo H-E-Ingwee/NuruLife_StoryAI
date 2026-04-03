@@ -69,7 +69,7 @@ export default function AssetsLibraryPanel() {
         const mapped = (res.data || []).map((a) => {
           const fileExt = a.filename?.includes('.') ? a.filename.split('.').pop().toUpperCase() : (a.mime_type || '').split('/').pop()?.toUpperCase();
           const sizeBytes = a.file_size || 0;
-          const sizeMb = sizeBytes > 0 ? `${(sizeBytes / (1024 * 1024)).toFixed(1)} MB` : '—';
+          const sizeMb = sizeBytes > 0 ? `${(sizeBytes / (1024 * 1024)).toFixed(1)} MB` : '0 MB';
           const uploaded = a.uploaded_at || '';
 
           return {

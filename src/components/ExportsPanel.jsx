@@ -187,10 +187,16 @@ export default function ExportsPanel({ onNewExport = () => {} }) {
                   <div className="flex items-center gap-2">
                     {exportItem.status === 'completed' && exportItem.downloadUrl && (
                       <>
-                        <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded">
+                        <button
+                          className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded"
+                          onClick={() => downloadExportFile(exportItem.id)}
+                        >
                           <Eye size={16} />
                         </button>
-                        <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded">
+                        <button
+                          className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded"
+                          onClick={() => downloadExportFile(exportItem.id)}
+                        >
                           <Download size={16} />
                         </button>
                         <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded">
@@ -208,7 +214,7 @@ export default function ExportsPanel({ onNewExport = () => {} }) {
           ))}
         </div>
 
-        {filteredExports.length === 0 && (
+        {!loading && filteredExports.length === 0 && (
           <div className="text-center py-12">
             <Download size={48} className="text-gray-300 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">No exports found</h3>
@@ -238,12 +244,9 @@ export default function ExportsPanel({ onNewExport = () => {} }) {
           </div>
           <div className="bg-white rounded-lg p-4 border border-gray-200">
             <div className="text-2xl font-bold text-gray-900">
-              {(exports.reduce((sum, e) => {
-                const size = parseFloat(e.size.replace(/[^0-9.]/g, ''));
-                return sum + size;
-              }, 0) / 1024).toFixed(1)} GB
+              {exports.length}
             </div>
-            <div className="text-sm text-gray-600">Total Size</div>
+            <div className="text-sm text-gray-600">Total Exports</div>
           </div>
         </div>
       </div>
