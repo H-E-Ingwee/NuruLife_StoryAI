@@ -4,6 +4,7 @@ import { Sparkles, AlertCircle } from 'lucide-react';
 import { getProjects, parseProjectScript, generateShotImage, getShotImageStatus, updateShot } from '../services/api';
 import ScriptPanel from './ScriptPanel';
 import StoryboardGrid from './StoryboardGrid';
+import StoryboardCanvas from './StoryboardCanvas';
 import InspectorPanel from './InspectorPanel';
 
 function shotToPanel(shot) {
@@ -42,6 +43,9 @@ export default function StoryboardEditor() {
 
   const [panels, setPanels] = useState([]);
   const [selectedPanel, setSelectedPanel] = useState(null);
+
+  const [editorView, setEditorView] = useState('grid'); // 'grid' | 'canvas'
+  const [generatingId, setGeneratingId] = useState(null);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -89,9 +93,17 @@ export default function StoryboardEditor() {
     }
   };
 
-  const generateForPanel = async (panelId) => {
+  const generateForPanel = async (panelId, promptOverride = null) => {
     const panel = panels.find((p) => p.id === panelId);
     if (!panel) return;
+
+    const promptToUse = (promptOverride || panel.prompt || '').toString();
+
+    setGeneratingId(panelId);
+    setPanels((prev) =>
+      prev.map((p) => (p.id === panelId ? { ...p, image_status: 'processing', image: null } : p))
+    );
+    setSelectedPanel((prev) => (prev?.id === panelId ? { ...prev, image_status: 'processing', image: null } : prev));
 
     // Generation options (MVP)
     const consistency = {
@@ -102,7 +114,7 @@ export default function StoryboardEditor() {
 
     const res = await generateShotImage(panelId, {
       service: 'stable_diffusion',
-      prompt: panel.prompt,
+      prompt: promptToUse,
       width: 1024,
       height: 1024,
       consistency,
@@ -131,6 +143,7 @@ export default function StoryboardEditor() {
           ? { ...prev, image: image_url || prev.image, image_status: 'completed' }
           : prev
       );
+      setGeneratingId((prev) => (prev === panelId ? null : prev));
       return;
     }
 
@@ -159,12 +172,15 @@ export default function StoryboardEditor() {
             ? { ...prev, image: poll.data.image_url || prev.image, image_status: pollStatus }
             : prev
         );
+        setGeneratingId((prev) => (prev === panelId ? null : prev));
         return;
       }
 
       // Wait a bit before next poll
       await new Promise((r) => setTimeout(r, 1500));
     }
+
+    setGeneratingId((prev) => (prev === panelId ? null : prev));
   };
 
   const handleGenerateAllScenes = async () => {
@@ -249,6 +265,15 @@ export default function StoryboardEditor() {
               ))}
             </select>
 
+            <select
+              className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              value={editorView}
+              onChange={(e) => setEditorView(e.target.value)}
+            >
+              <option value="grid">Grid</option>
+              <option value="canvas">Canvas</option>
+            </select>
+
             <button
               onClick={handleGenerateAllScenes}
               disabled={panels.length === 0}
@@ -259,13 +284,37 @@ export default function StoryboardEditor() {
           </div>
         </div>
 
-        <StoryboardGrid
-          panels={panels}
-          onAddPanel={() => {}}
-          onGenerateScenes={handleGenerateAllScenes}
-          onEditPanel={(panel) => setSelectedPanel(panel)}
-          onRegeneratePanel={(panelId) => generateForPanel(panelId)}
-        />
+        {editorView === 'grid' ? (
+          <StoryboardGrid
+            panels={panels}
+            onAddPanel={() => {}}
+            onGenerateScenes={handleGenerateAllScenes}
+            onEditPanel={(panel) => setSelectedPanel(panel)}
+            onRegeneratePanel={(panelId) => generateForPanel(panelId)}
+          />
+        ) : (
+          <StoryboardCanvas
+            scenes={panels.map((p, idx) => ({
+              id: p.id,
+              image: p.image,
+              prompt: p.prompt,
+              heading: p.scene || `Scene ${idx + 1}`,
+              action: p.action,
+              lockedCharacter: p.lockStyle ? 'Locked' : 'Unlocked',
+            }))}
+            generatingId={generatingId}
+            handleGenerateImage={(sceneId, promptOverride) => generateForPanel(sceneId, promptOverride)}
+            updatePrompt={(sceneId, newPrompt) => {
+              const current = panels.find((pp) => pp.id === sceneId);
+              if (!current) return;
+              handleUpdatePanel({ ...current, prompt: newPrompt });
+            }}
+            onSelectPanel={(sceneId) => {
+              const current = panels.find((pp) => pp.id === sceneId);
+              if (current) setSelectedPanel(current);
+            }}
+          />
+        )}
 
         {error && (
           <div className="absolute top-16 right-6 z-50 bg-white border border-red-200 text-red-700 px-4 py-3 rounded-lg shadow-sm flex items-center gap-2">
