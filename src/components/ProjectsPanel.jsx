@@ -31,10 +31,14 @@ export default function ProjectsPanel({ onNewProject, onSelectProject }) {
   const [creatingProject, setCreatingProject] = useState(false);
   const [openMenuId, setOpenMenuId] = useState(null);
 
-  // Fetch projects on component mount
+  // Close menu when clicking outside
   useEffect(() => {
-    fetchProjects();
-  }, []);
+    const handleClickOutside = () => setOpenMenuId(null);
+    if (openMenuId) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [openMenuId]);
 
   const fetchProjects = async () => {
     try {
@@ -339,4 +343,53 @@ export default function ProjectsPanel({ onNewProject, onSelectProject }) {
                 <textarea
                   value={newProjectData.description}
                   onChange={(e) => setNewProjectData(prev => ({ ...prev, description: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 foc
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F28C00] focus:border-transparent"
+                  placeholder="Enter project description"
+                  rows={3}
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Script Text (Optional)</label>
+                <textarea
+                  value={newProjectData.scriptText}
+                  onChange={(e) => setNewProjectData(prev => ({ ...prev, scriptText: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F28C00] focus:border-transparent"
+                  placeholder="Paste your script here..."
+                  rows={5}
+                />
+              </div>
+            </div>
+            
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => setShowNewProjectModal(false)}
+                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                disabled={creatingProject}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleCreateProject}
+                disabled={!newProjectData.title.trim() || creatingProject}
+                className="flex-1 px-4 py-2 bg-[#0A233A] text-white rounded-lg hover:bg-opacity-90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {creatingProject ? (
+                  <>
+                    <Loader2 size={16} className="animate-spin" />
+                    Creating...
+                  </>
+                ) : (
+                  <>
+                    <Plus size={16} />
+                    Create Project
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
