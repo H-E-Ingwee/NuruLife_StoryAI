@@ -16,6 +16,8 @@ class User(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     projects = db.relationship('Project', backref='user', lazy=True, cascade='all, delete-orphan')
+    assets = db.relationship('Asset', backref='user', lazy=True, cascade='all, delete-orphan')
+    exports = db.relationship('Export', backref='user', lazy=True, cascade='all, delete-orphan')
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)

@@ -15,6 +15,10 @@ class Project(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+    characters = db.relationship('Character', backref='project', lazy=True, cascade='all, delete-orphan')
+    storyboards = db.relationship('Storyboard', backref='project', lazy=True, cascade='all, delete-orphan')
+    assets = db.relationship('Asset', backref='project', lazy=True)
+
     def to_dict(self):
         return {
             'id': self.id,
@@ -24,6 +28,8 @@ class Project(db.Model):
             'script_text': self.script_text,
             'status': self.status,
             'settings': self.settings,
+            'character_count': len(self.characters) if self.characters is not None else 0,
+            'storyboard_count': len(self.storyboards) if self.storyboards is not None else 0,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None
         }
