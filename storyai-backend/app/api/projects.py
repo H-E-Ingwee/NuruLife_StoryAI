@@ -126,6 +126,11 @@ def parse_project_script(project_id):
     shots_data = parsed.get('shots') or []
     characters = parsed.get('characters') or []
 
+    # Ensure global style/seed settings exist for consistency across panels.
+    project.settings = project.settings or {}
+    project.settings.setdefault('global_style_prompt', 'cinematic storyboard style with consistent character design')
+    project.settings.setdefault('global_seed', 12345)
+
     storyboard = Storyboard(
         project_id=project_id,
         title=f"{project.title} - Storyboard",
@@ -136,6 +141,9 @@ def parse_project_script(project_id):
     db.session.flush()  # Get storyboard.id before inserting shots
 
     for sh in shots_data:
+        consistency_data = sh.get('consistency_data') or {}
+        consistency_data.setdefault('style_prompt', project.settings.get('global_style_prompt'))
+        consistency_data.setdefault('style_seed', project.settings.get('global_seed'))
         shot = Shot(
             storyboard_id=storyboard.id,
             scene_number=sh.get('scene_number'),
@@ -147,7 +155,7 @@ def parse_project_script(project_id):
             camera_angle=sh.get('cameraAngle'),
             lens=sh.get('lens'),
             notes=sh.get('notes'),
-            consistency_data=sh.get('consistency_data') or {},
+            consistency_data=consistency_data,
             camera_settings={},
             image_status='pending',
         )
@@ -155,7 +163,6 @@ def parse_project_script(project_id):
 
     # Mark project as "active" after parsing (simple lifecycle for MVP).
     project.status = 'active'
-    project.settings = project.settings or {}
     project.settings['last_parse'] = {
         'characters_found': characters,
         'shots_created': len(shots_data),

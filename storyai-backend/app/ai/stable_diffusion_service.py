@@ -38,6 +38,7 @@ class StableDiffusionService(AIImageService):
         guidance_scale = options.get('guidance_scale', 7.5)
         scheduler = options.get('scheduler', 'K_EULER')
         negative_prompt = options.get('negative_prompt', '') or ''
+        seed = options.get('seed')
 
         # Start async generation
         prediction = self.client.predictions.create(
@@ -50,6 +51,7 @@ class StableDiffusionService(AIImageService):
                 "num_inference_steps": steps,
                 "guidance_scale": guidance_scale,
                 "scheduler": scheduler,
+                **({ "seed": seed } if seed is not None else {}),
             },
         )
 

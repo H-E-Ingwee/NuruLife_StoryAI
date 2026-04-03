@@ -13,7 +13,7 @@ import { logoutUser } from '../services/api';
 import Sidebar from './Sidebar';
 import SettingsPanel from './SettingsPanel';
 import ProjectsPanel from './ProjectsPanel';
-import StoryboardsPanel from './StoryboardsPanel';
+import StoryboardEditor from './StoryboardEditor';
 import CharactersPanel from './CharactersPanel';
 import AssetsLibraryPanel from './AssetsLibraryPanel';
 import ShotListPanel from './ShotListPanel';
@@ -164,7 +164,7 @@ export default function Dashboard() {
         )}
 
         {activeTab === 'storyboards' && (
-          <StoryboardsPanel />
+          <StoryboardEditor />
         )}
 
         {activeTab === 'characters' && (

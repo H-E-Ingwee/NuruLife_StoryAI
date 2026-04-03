@@ -5,16 +5,16 @@ export default function StoryboardGrid({ panels, onAddPanel, onGenerateScenes, o
   const [generatingIds, setGeneratingIds] = useState(new Set());
 
   const handleRegenerate = async (panelId) => {
-    setGeneratingIds(prev => new Set(prev).add(panelId));
-    // Simulate API call
-    setTimeout(() => {
-      setGeneratingIds(prev => {
+    setGeneratingIds((prev) => new Set(prev).add(panelId));
+    try {
+      await onRegeneratePanel(panelId);
+    } finally {
+      setGeneratingIds((prev) => {
         const newSet = new Set(prev);
         newSet.delete(panelId);
         return newSet;
       });
-      onRegeneratePanel(panelId);
-    }, 2000);
+    }
   };
 
   return (

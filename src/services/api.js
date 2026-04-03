@@ -493,6 +493,15 @@ export const getShotImageStatus = async (shotId) => {
   }
 };
 
+export const updateShot = async (shotId, updates) => {
+  try {
+    const response = await apiRequest(`/shots/${shotId}`, { method: 'PUT', body: updates });
+    return response;
+  } catch (error) {
+    return { success: false, error };
+  }
+};
+
 // ============================================================================
 // ERROR HANDLING UTILITY
 // ============================================================================
@@ -559,6 +568,7 @@ export default {
   downloadExportFile,
   generateShotImage,
   getShotImageStatus,
+  updateShot,
 
   // Utilities
   formatErrorMessage,
