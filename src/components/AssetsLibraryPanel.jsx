@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   Plus,
   Search,
@@ -28,6 +28,8 @@ import {
   Square
 } from 'lucide-react';
 
+import { getAssets } from '../services/api';
+
 export default function AssetsLibraryPanel() {
   const [viewMode, setViewMode] = useState('grid');
   const [searchTerm, setSearchTerm] = useState('');
@@ -50,130 +52,51 @@ export default function AssetsLibraryPanel() {
     }
   };
 
-  // Mock assets data with more variety
-  const assets = [
-    {
-      id: 1,
-      name: 'Market Scene Background',
-      type: 'image',
-      format: 'JPG',
-      size: '2.4 MB',
-      dimensions: '1920x1080',
-      folder: 'Backgrounds',
-      project: 'African Folktale Adaptation',
-      uploaded: '2026-04-01',
-      thumbnail: 'https://picsum.photos/200/150?random=30',
-      tags: ['market', 'african', 'urban'],
-      favorite: false,
-      author: 'Brian Ingwee'
-    },
-    {
-      id: 2,
-      name: 'Character Reference - Anansi',
-      type: 'image',
-      format: 'PNG',
-      size: '1.8 MB',
-      dimensions: '800x600',
-      folder: 'Characters',
-      project: 'African Folktale Adaptation',
-      uploaded: '2026-03-28',
-      thumbnail: 'https://picsum.photos/200/150?random=31',
-      tags: ['character', 'anansi', 'spider'],
-      favorite: true,
-      author: 'Sarah Kim'
-    },
-    {
-      id: 3,
-      name: 'Urban Ambience Soundtrack',
-      type: 'audio',
-      format: 'MP3',
-      size: '15.2 MB',
-      duration: '3:24',
-      folder: 'Audio',
-      project: 'Urban Drama Series',
-      uploaded: '2026-03-30',
-      thumbnail: '/audio-waveform.svg',
-      tags: ['soundtrack', 'urban', 'ambience'],
-      favorite: false,
-      author: 'Marcus Johnson'
-    },
-    {
-      id: 4,
-      name: 'Script Draft v2',
-      type: 'document',
-      format: 'PDF',
-      size: '892 KB',
-      pages: 24,
-      folder: 'Scripts',
-      project: 'Short Film: "The Journey"',
-      uploaded: '2026-03-25',
-      thumbnail: '/document-icon.svg',
-      tags: ['script', 'draft', 'film'],
-      favorite: false,
-      author: 'Brian Ingwee'
-    },
-    {
-      id: 5,
-      name: 'Drone Footage - Nairobi Skyline',
-      type: 'video',
-      format: 'MP4',
-      size: '45.6 MB',
-      duration: '1:30',
-      dimensions: '4K',
-      folder: 'Footage',
-      project: 'Urban Drama Series',
-      uploaded: '2026-04-02',
-      thumbnail: 'https://picsum.photos/200/150?random=32',
-      tags: ['drone', 'nairobi', 'skyline'],
-      favorite: true,
-      author: 'David Chen'
-    },
-    {
-      id: 6,
-      name: 'Traditional African Patterns',
-      type: 'image',
-      format: 'PSD',
-      size: '12.3 MB',
-      dimensions: '2000x2000',
-      folder: 'Textures',
-      project: 'African Folktale Adaptation',
-      uploaded: '2026-03-20',
-      thumbnail: 'https://picsum.photos/200/150?random=33',
-      tags: ['patterns', 'african', 'texture'],
-      favorite: false,
-      author: 'Amina Hassan'
-    },
-    {
-      id: 7,
-      name: 'Malaika Character Concept',
-      type: 'image',
-      format: 'JPG',
-      size: '3.1 MB',
-      dimensions: '1200x1600',
-      folder: 'Characters',
-      project: 'Beneath the Silence',
-      uploaded: '2026-04-03',
-      thumbnail: 'https://picsum.photos/200/150?random=34',
-      tags: ['malaika', 'character', 'concept'],
-      favorite: true,
-      author: 'Brian Ingwee'
-    },
-    {
-      id: 8,
-      name: 'Jay Character Reference',
-      type: 'image',
-      format: 'PNG',
-      size: '2.8 MB',
-      dimensions: '1000x1400',
-      folder: 'Characters',
-      project: 'Beneath the Silence',
-      uploaded: '2026-04-03',
-      thumbnail: 'https://picsum.photos/200/150?random=35',
-      tags: ['jay', 'character', 'reference'],
-      favorite: false,
-      author: 'Sarah Kim'
-    }
-  ];
+  const [assets, setAssets] = useState([]);
+
+  useEffect(() => {
+    const fetchAssets = async () => {
+      try {
+        const res = await getAssets();
+        if (!res?.success) {
+          setAssets([]);
+          return;
+        }
+
+        const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+        const author = currentUser?.full_name || 'You';
+
+        const mapped = (res.data || []).map((a) => {
+          const fileExt = a.filename?.includes('.') ? a.filename.split('.').pop().toUpperCase() : (a.mime_type || '').split('/').pop()?.toUpperCase();
+          const sizeBytes = a.file_size || 0;
+          const sizeMb = sizeBytes > 0 ? `${(sizeBytes / (1024 * 1024)).toFixed(1)} MB` : '—';
+          const uploaded = a.uploaded_at || '';
+
+          return {
+            id: a.id,
+            name: a.original_filename || a.filename,
+            type: a.file_type || 'document',
+            format: fileExt || 'FILE',
+            size: sizeBytes > 0 ? sizeMb : '—',
+            dimensions: '',
+            folder: 'all',
+            project: a.project_id || 'Personal',
+            uploaded,
+            thumbnail: a.file_type === 'image' ? a.url : null,
+            tags: Array.isArray(a.tags) ? a.tags : [],
+            favorite: Boolean(a.favorite),
+            author,
+          };
+        });
+
+        setAssets(mapped);
+      } catch (e) {
+        setAssets([]);
+      }
+    };
+
+    fetchAssets();
+  }, []);
 
   const folders = ['all', 'Backgrounds', 'Characters', 'Audio', 'Scripts', 'Footage', 'Textures'];
 
