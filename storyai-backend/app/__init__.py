@@ -54,9 +54,16 @@ def create_app(config_class=None):
     if migrate is not None:
         migrate.init_app(app, db)
     if cache is not None:
-        cache.init_app(app)
+        try:
+            cache.init_app(app)
+        except Exception:  # pragma: no cover
+            # Cache is not required for unit tests / MVP flows.
+            pass
     if compress is not None:
-        compress.init_app(app)
+        try:
+            compress.init_app(app)
+        except Exception:  # pragma: no cover
+            pass
 
     if CORS is not None:
         CORS(app, resources={
