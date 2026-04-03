@@ -162,6 +162,39 @@ def generate_image_for_shot(shot_id):
     height = data.get('height') or 1024
     consistency = data.get('consistency') or {}
 
+    # Consistency locks:
+    # - When the frontend requests lockSeed/lockStyle, persist them into the shot's consistency_data
+    # - Include identity + style blocks in the generation prompt
+    shot.consistency_data = shot.consistency_data or {}
+    locked_seed = consistency.get('lockSeed', shot.consistency_data.get('lockedSeed', False))
+    locked_style = consistency.get('lockStyle', shot.consistency_data.get('lockedStyle', False))
+
+    shot.consistency_data['lockedSeed'] = bool(locked_seed)
+    shot.consistency_data['lockedStyle'] = bool(locked_style)
+
+    style_prompt = ''
+    global_seed = None
+    try:
+        storyboard = Storyboard.query.filter_by(id=shot.storyboard_id).first()
+        if storyboard:
+            project = Project.query.filter_by(id=storyboard.project_id, user_id=user_id).first()
+            if project and project.settings:
+                style_prompt = project.settings.get('global_style_prompt') or ''
+                global_seed = project.settings.get('global_seed')
+    except Exception:
+        # If settings can't be loaded, keep generation prompt best-effort.
+        pass
+
+    character_names = shot.consistency_data.get('character_names') or []
+    if isinstance(character_names, list) and character_names:
+        prompt = (
+            f"Identity continuity (consistent character design): {', '.join(character_names)}. "
+            f"{prompt}"
+        )
+
+    if locked_style and style_prompt:
+        prompt = f"{style_prompt}. {prompt}"
+
     # MVP "reference images" wiring:
     # - resolve asset IDs to known filenames
     # - append them to the prompt so a later model-specific provider can use them
@@ -184,9 +217,22 @@ def generate_image_for_shot(shot_id):
             'width': width,
             'height': height,
             'consistency': consistency,
+            **({'seed': global_seed} if locked_seed and global_seed is not None else {}),
         })
     except ValueError as e:
-        return jsonify({'success': False, 'error': {'code': 'SERVICE_NOT_AVAILABLE', 'message': str(e)}}), 503
+        # If the preferred provider isn't configured, fall back to DALL-E (often available with OPENAI_API_KEY).
+        if service_name != 'dalle':
+            try:
+                fallback_service = ai_service_manager.get_service('dalle')
+                result = fallback_service.generate_image(prompt, {
+                    'width': width,
+                    'height': height,
+                    'consistency': consistency,
+                })
+            except Exception:
+                return jsonify({'success': False, 'error': {'code': 'SERVICE_NOT_AVAILABLE', 'message': str(e)}}), 503
+        else:
+            return jsonify({'success': False, 'error': {'code': 'SERVICE_NOT_AVAILABLE', 'message': str(e)}}), 503
     except Exception as e:
         shot.image_status = 'failed'
         db.session.commit()

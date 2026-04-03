@@ -101,7 +101,7 @@ export default function StoryboardEditor() {
     };
 
     const res = await generateShotImage(panelId, {
-      service: 'dalle',
+      service: 'stable_diffusion',
       prompt: panel.prompt,
       width: 1024,
       height: 1024,

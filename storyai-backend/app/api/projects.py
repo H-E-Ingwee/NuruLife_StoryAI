@@ -1,7 +1,7 @@
 ﻿from flask import Blueprint, request, jsonify
 from marshmallow import Schema, fields, ValidationError
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from app.models import Project, User, Storyboard, Shot
+from app.models import Project, User, Storyboard, Shot, Character
 from app.extensions import db
 from app.nlp.script_parser import parse_script
 
@@ -131,6 +131,31 @@ def parse_project_script(project_id):
     project.settings.setdefault('global_style_prompt', 'cinematic storyboard style with consistent character design')
     project.settings.setdefault('global_seed', 12345)
 
+    # Persist extracted character identities for this project (lightweight MVP).
+    character_id_map = {}
+    if isinstance(characters, list) and characters:
+        for name in characters:
+            if not name:
+                continue
+            existing = (
+                Character.query.filter_by(project_id=project_id, name=name).first()
+            )
+            if not existing:
+                existing = Character(
+                    project_id=project_id,
+                    name=name,
+                    role=None,
+                    type=None,
+                    description='',
+                    traits=[],
+                    avatar_url=None,
+                    reference_images=[],
+                    consistency_settings={},
+                )
+                db.session.add(existing)
+                db.session.flush()
+            character_id_map[name] = existing.id
+
     storyboard = Storyboard(
         project_id=project_id,
         title=f"{project.title} - Storyboard",
@@ -144,6 +169,10 @@ def parse_project_script(project_id):
         consistency_data = sh.get('consistency_data') or {}
         consistency_data.setdefault('style_prompt', project.settings.get('global_style_prompt'))
         consistency_data.setdefault('style_seed', project.settings.get('global_seed'))
+        # If the shot parser produced character names, map them to persisted Character ids.
+        character_names = consistency_data.get('character_names') or []
+        if isinstance(character_names, list) and character_id_map:
+            consistency_data['character_ids'] = [character_id_map[n] for n in character_names if n in character_id_map]
         shot = Shot(
             storyboard_id=storyboard.id,
             scene_number=sh.get('scene_number'),
