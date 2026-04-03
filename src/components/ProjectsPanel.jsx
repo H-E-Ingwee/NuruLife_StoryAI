@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Plus,
   Search,
@@ -11,60 +11,113 @@ import {
   Calendar,
   Users,
   Eye,
-  Download
+  Download,
+  Loader2
 } from 'lucide-react';
+import { getProjects, createProject, updateProject, deleteProject } from '../services/api';
 
 export default function ProjectsPanel({ onNewProject, onSelectProject }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('all');
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [showNewProjectModal, setShowNewProjectModal] = useState(false);
+  const [newProjectData, setNewProjectData] = useState({
+    title: '',
+    description: '',
+    scriptText: ''
+  });
+  const [creatingProject, setCreatingProject] = useState(false);
+  const [openMenuId, setOpenMenuId] = useState(null);
 
-  // Mock projects data
-  const projects = [
-    {
-      id: 1,
-      name: 'African Folktale Adaptation',
-      description: 'Modern retelling of Anansi stories',
-      status: 'active',
-      lastModified: '2026-04-02',
-      collaborators: 3,
-      storyboards: 12,
-      thumbnail: 'https://picsum.photos/300/200?random=1'
-    },
-    {
-      id: 2,
-      name: 'Urban Drama Series',
-      description: 'Coming-of-age story in Nairobi',
-      status: 'draft',
-      lastModified: '2026-03-28',
-      collaborators: 1,
-      storyboards: 8,
-      thumbnail: 'https://picsum.photos/300/200?random=2'
-    },
-    {
-      id: 3,
-      name: 'Historical Documentary',
-      description: 'The Mau Mau uprising story',
-      status: 'completed',
-      lastModified: '2026-03-15',
-      collaborators: 5,
-      storyboards: 24,
-      thumbnail: 'https://picsum.photos/300/200?random=3'
-    },
-    {
-      id: 4,
-      name: 'Short Film: "The Journey"',
-      description: 'Road trip adventure across Kenya',
-      status: 'active',
-      lastModified: '2026-04-01',
-      collaborators: 2,
-      storyboards: 15,
-      thumbnail: 'https://picsum.photos/300/200?random=4'
+  // Fetch projects on component mount
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
+  const fetchProjects = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await getProjects();
+      if (response.success) {
+        setProjects(response.data || []);
+      } else {
+        setError(response.error?.message || 'Failed to load projects');
+      }
+    } catch (err) {
+      setError('Failed to load projects');
+      console.error('Error fetching projects:', err);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  const handleCreateProject = async () => {
+    if (!newProjectData.title.trim()) return;
+
+    try {
+      setCreatingProject(true);
+      const response = await createProject(
+        newProjectData.title,
+        newProjectData.description,
+        newProjectData.scriptText
+      );
+      
+      if (response.success) {
+        setProjects(prev => [response.data, ...prev]);
+        setShowNewProjectModal(false);
+        setNewProjectData({ title: '', description: '', scriptText: '' });
+      } else {
+        setError(response.error?.message || 'Failed to create project');
+      }
+    } catch (err) {
+      setError('Failed to create project');
+      console.error('Error creating project:', err);
+    } finally {
+      setCreatingProject(false);
+    }
+  };
+
+  const handleDeleteProject = async (projectId) => {
+    if (!confirm('Are you sure you want to delete this project?')) return;
+
+    try {
+      const response = await deleteProject(projectId);
+      if (response.success) {
+        setProjects(prev => prev.filter(p => p.id !== projectId));
+      } else {
+        setError(response.error?.message || 'Failed to delete project');
+      }
+    } catch (err) {
+      setError('Failed to delete project');
+      console.error('Error deleting project:', err);
+    }
+  };
+
+  const handleDuplicateProject = async (project) => {
+    try {
+      const response = await createProject(
+        `${project.title} (Copy)`,
+        project.description,
+        project.script_text
+      );
+      
+      if (response.success) {
+        setProjects(prev => [response.data, ...prev]);
+      } else {
+        setError(response.error?.message || 'Failed to duplicate project');
+      }
+    } catch (err) {
+      setError('Failed to duplicate project');
+      console.error('Error duplicating project:', err);
+    }
+  };
 
   const filteredProjects = projects.filter(project => {
-    const matchesSearch = project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         project.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (project.description || '').toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filter === 'all' || project.status === filter;
     return matchesSearch && matchesFilter;
   });
@@ -84,7 +137,7 @@ export default function ProjectsPanel({ onNewProject, onSelectProject }) {
       <div className="h-16 border-b border-gray-200 flex items-center justify-between px-6 bg-white">
         <h1 className="text-xl font-bold text-gray-900">Projects</h1>
         <button
-          onClick={onNewProject}
+          onClick={() => setShowNewProjectModal(true)}
           className="px-4 py-2 bg-[#0A233A] text-white rounded-lg hover:bg-opacity-90 flex items-center gap-2"
         >
           <Plus size={16} />
@@ -129,14 +182,13 @@ export default function ProjectsPanel({ onNewProject, onSelectProject }) {
           {filteredProjects.map(project => (
             <div
               key={project.id}
-              onClick={() => onSelectProject(project)}
               className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow cursor-pointer group"
             >
               {/* Project Thumbnail */}
-              <div className="aspect-video bg-gray-200 rounded-t-lg overflow-hidden">
+              <div className="aspect-video bg-gray-200 rounded-t-lg overflow-hidden relative">
                 <img
-                  src={project.thumbnail}
-                  alt={project.name}
+                  src={`https://picsum.photos/300/200?random=${project.id.slice(-1)}`}
+                  alt={project.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                 />
                 <div className="absolute top-2 right-2">
@@ -148,18 +200,18 @@ export default function ProjectsPanel({ onNewProject, onSelectProject }) {
 
               {/* Project Info */}
               <div className="p-4">
-                <h3 className="font-semibold text-gray-900 mb-2 line-clamp-1">{project.name}</h3>
-                <p className="text-sm text-gray-600 mb-3 line-clamp-2">{project.description}</p>
+                <h3 className="font-semibold text-gray-900 mb-2 line-clamp-1">{project.title}</h3>
+                <p className="text-sm text-gray-600 mb-3 line-clamp-2">{project.description || 'No description'}</p>
 
                 {/* Project Stats */}
                 <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
                   <div className="flex items-center gap-1">
                     <FolderOpen size={14} />
-                    <span>{project.storyboards} storyboards</span>
+                    <span>0 storyboards</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <Users size={14} />
-                    <span>{project.collaborators} collaborators</span>
+                    <span>1 collaborator</span>
                   </div>
                 </div>
 
@@ -167,14 +219,59 @@ export default function ProjectsPanel({ onNewProject, onSelectProject }) {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1 text-xs text-gray-500">
                     <Calendar size={14} />
-                    <span>Modified {project.lastModified}</span>
+                    <span>Modified {new Date(project.updated_at).toLocaleDateString()}</span>
                   </div>
 
                   {/* Actions Menu */}
                   <div className="relative">
-                    <button className="p-1 hover:bg-gray-100 rounded">
+                    <button 
+                      className="p-1 hover:bg-gray-100 rounded"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setOpenMenuId(openMenuId === project.id ? null : project.id);
+                      }}
+                    >
                       <MoreVertical size={16} className="text-gray-400" />
                     </button>
+                    
+                    {openMenuId === project.id && (
+                      <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 w-48">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            // TODO: Implement edit functionality
+                            setOpenMenuId(null);
+                            alert('Edit functionality coming soon!');
+                          }}
+                          className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center gap-2"
+                        >
+                          <Edit size={14} />
+                          Edit Project
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDuplicateProject(project);
+                            setOpenMenuId(null);
+                          }}
+                          className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center gap-2"
+                        >
+                          <Copy size={14} />
+                          Duplicate
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteProject(project.id);
+                            setOpenMenuId(null);
+                          }}
+                          className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center gap-2 text-red-600"
+                        >
+                          <Trash2 size={14} />
+                          Delete
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -182,20 +279,64 @@ export default function ProjectsPanel({ onNewProject, onSelectProject }) {
           ))}
         </div>
 
-        {filteredProjects.length === 0 && (
+        {filteredProjects.length === 0 && !loading && (
           <div className="text-center py-12">
             <FolderOpen size={48} className="text-gray-300 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">No projects found</h3>
             <p className="text-gray-500 mb-4">Try adjusting your search or filter criteria</p>
             <button
-              onClick={onNewProject}
+              onClick={() => setShowNewProjectModal(true)}
               className="px-4 py-2 bg-[#0A233A] text-white rounded-lg hover:bg-opacity-90"
             >
               Create Your First Project
             </button>
           </div>
         )}
+
+        {/* Loading State */}
+        {loading && (
+          <div className="text-center py-12">
+            <Loader2 size={48} className="text-gray-300 mx-auto mb-4 animate-spin" />
+            <p className="text-gray-500">Loading projects...</p>
+          </div>
+        )}
+
+        {/* Error State */}
+        {error && (
+          <div className="text-center py-12">
+            <div className="text-red-500 mb-4">⚠️ {error}</div>
+            <button
+              onClick={fetchProjects}
+              className="px-4 py-2 bg-[#0A233A] text-white rounded-lg hover:bg-opacity-90"
+            >
+              Try Again
+            </button>
+          </div>
+        )}
       </div>
-    </div>
-  );
-}
+
+      {/* New Project Modal */}
+      {showNewProjectModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Create New Project</h2>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Project Title *</label>
+                <input
+                  type="text"
+                  value={newProjectData.title}
+                  onChange={(e) => setNewProjectData(prev => ({ ...prev, title: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F28C00] focus:border-transparent"
+                  placeholder="Enter project title"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <textarea
+                  value={newProjectData.description}
+                  onChange={(e) => setNewProjectData(prev => ({ ...prev, description: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 foc

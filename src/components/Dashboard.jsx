@@ -152,7 +152,14 @@ export default function Dashboard() {
         )}
 
         {activeTab === 'projects' && (
-          <ProjectsPanel />
+          <ProjectsPanel 
+            onNewProject={() => setActiveTab('projects')} 
+            onSelectProject={(project) => {
+              // TODO: Implement project selection - could open project details or switch to storyboards
+              console.log('Selected project:', project);
+              setActiveTab('storyboards');
+            }} 
+          />
         )}
 
         {activeTab === 'storyboards' && (
