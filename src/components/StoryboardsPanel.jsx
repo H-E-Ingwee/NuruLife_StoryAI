@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Search,
   Filter,
@@ -18,74 +18,68 @@ import {
   ArrowRight
 } from 'lucide-react';
 
-export default function StoryboardsPanel({ onViewStoryboard, onEditStoryboard }) {
+import { getProjects, getStoryboards, getStoryboardShots } from '../services/api';
+
+export default function StoryboardsPanel({ onViewStoryboard = () => {}, onEditStoryboard = () => {} }) {
   const [viewMode, setViewMode] = useState('grid');
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('all');
+  const [storyboards, setStoryboards] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Mock storyboards data
-  const storyboards = [
-    {
-      id: 1,
-      title: 'Opening Scene - Market',
-      project: 'African Folktale Adaptation',
-      panels: 8,
-      status: 'completed',
-      lastModified: '2026-04-02',
-      thumbnail: 'https://picsum.photos/300/200?random=10',
-      creator: 'Brian Ingwee'
-    },
-    {
-      id: 2,
-      title: 'Character Introduction',
-      project: 'Urban Drama Series',
-      panels: 12,
-      status: 'in-progress',
-      lastModified: '2026-04-01',
-      thumbnail: 'https://picsum.photos/300/200?random=11',
-      creator: 'Brian Ingwee'
-    },
-    {
-      id: 3,
-      title: 'Climax Sequence',
-      project: 'Historical Documentary',
-      panels: 15,
-      status: 'completed',
-      lastModified: '2026-03-30',
-      thumbnail: 'https://picsum.photos/300/200?random=12',
-      creator: 'Sarah Johnson'
-    },
-    {
-      id: 4,
-      title: 'Ending Montage',
-      project: 'Short Film: "The Journey"',
-      panels: 6,
-      status: 'draft',
-      lastModified: '2026-03-28',
-      thumbnail: 'https://picsum.photos/300/200?random=13',
-      creator: 'Brian Ingwee'
-    },
-    {
-      id: 5,
-      title: 'Flashback Scene',
-      project: 'African Folktale Adaptation',
-      panels: 5,
-      status: 'completed',
-      lastModified: '2026-03-25',
-      thumbnail: 'https://picsum.photos/300/200?random=14',
-      creator: 'Brian Ingwee'
-    },
-    {
-      id: 6,
-      title: 'Dialogue Scene - Cafe',
-      project: 'Urban Drama Series',
-      panels: 9,
-      status: 'in-progress',
-      lastModified: '2026-03-29',
-      thumbnail: 'https://picsum.photos/300/200?random=15',
-      creator: 'Maria Rodriguez'
-    }
-  ];
+  useEffect(() => {
+    const fetchStoryboards = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const [sbRes, projectsRes] = await Promise.all([getStoryboards(), getProjects(1, 1000)]);
+
+        const projectMap = new Map();
+        if (projectsRes?.success && Array.isArray(projectsRes.data)) {
+          projectsRes.data.forEach((p) => projectMap.set(p.id, p.title));
+        }
+
+        if (!sbRes?.success || !Array.isArray(sbRes.data)) {
+          setStoryboards([]);
+          return;
+        }
+
+        const storyboardsWithMeta = await Promise.all(
+          sbRes.data.map(async (sb) => {
+            const shotsRes = await getStoryboardShots(sb.id);
+            const shots = shotsRes?.success ? shotsRes.data || [] : [];
+
+            const panels = shots.length;
+            const completedShots = shots.filter((s) => s.image_status === 'completed').length;
+            const isInProgress = shots.some((s) => s.image_status === 'processing' || s.image_status === 'pending');
+            const status = panels === 0 ? 'draft' : completedShots === panels ? 'completed' : isInProgress ? 'in-progress' : 'in-progress';
+
+            const thumbnail = shots.find((s) => s.image_status === 'completed')?.image_url || null;
+
+            return {
+              id: sb.id,
+              title: sb.title,
+              project: projectMap.get(sb.project_id) || sb.project_id,
+              panels,
+              status,
+              lastModified: sb.updated_at ? new Date(sb.updated_at).toLocaleDateString() : '',
+              thumbnail,
+            };
+          })
+        );
+
+        setStoryboards(storyboardsWithMeta);
+      } catch (e) {
+        setError(e?.message || 'Failed to load storyboards');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStoryboards();
+  }, []);
 
   const filteredStoryboards = storyboards.filter(storyboard => {
     const matchesSearch = storyboard.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -112,11 +106,15 @@ export default function StoryboardsPanel({ onViewStoryboard, onEditStoryboard })
         >
           {/* Thumbnail */}
           <div className="aspect-video bg-gray-200 rounded-t-lg overflow-hidden relative">
-            <img
-              src={storyboard.thumbnail}
-              alt={storyboard.title}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-            />
+            {storyboard.thumbnail ? (
+              <img
+                src={storyboard.thumbnail}
+                alt={storyboard.title}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+              />
+            ) : (
+              <div className="w-full h-full bg-gray-200" />
+            )}
             <div className="absolute top-2 right-2">
               <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(storyboard.status)}`}>
                 {storyboard.status}
@@ -164,11 +162,15 @@ export default function StoryboardsPanel({ onViewStoryboard, onEditStoryboard })
             <div className="flex-1 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <div className="flex items-start gap-4">
                 <div className="w-24 h-16 bg-gray-200 rounded overflow-hidden flex-shrink-0">
-                  <img
-                    src={storyboard.thumbnail}
-                    alt={storyboard.title}
-                    className="w-full h-full object-cover"
-                  />
+                  {storyboard.thumbnail ? (
+                    <img
+                      src={storyboard.thumbnail}
+                      alt={storyboard.title}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gray-200" />
+                  )}
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">

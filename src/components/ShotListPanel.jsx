@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Plus,
   Search,
@@ -15,78 +15,69 @@ import {
   Eye
 } from 'lucide-react';
 
-export default function ShotListPanel({ onNewShot, onEditShot }) {
+import { getStoryboards, getStoryboardShots } from '../services/api';
+
+export default function ShotListPanel({ onNewShot = () => {}, onEditShot = () => {} }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('all');
 
-  // Mock shot list data
-  const shots = [
-    {
-      id: 1,
-      number: '1A',
-      scene: 'INT. COFFEE SHOP - DAY',
-      description: 'Wide establishing shot of busy coffee shop',
-      shotSize: 'WS',
-      cameraAngle: 'Eye Level',
-      lens: '24mm',
-      duration: '5s',
-      status: 'completed',
-      notes: 'Establish morning atmosphere',
-      storyboardPanel: 1
-    },
-    {
-      id: 2,
-      number: '1B',
-      scene: 'INT. COFFEE SHOP - DAY',
-      description: 'Medium shot of Jane entering, looking anxious',
-      shotSize: 'MS',
-      cameraAngle: 'Eye Level',
-      lens: '50mm',
-      duration: '8s',
-      status: 'in-progress',
-      notes: 'Show character entrance and emotion',
-      storyboardPanel: 2
-    },
-    {
-      id: 3,
-      number: '1C',
-      scene: 'INT. COFFEE SHOP - DAY',
-      description: 'Close-up on Jane\'s hands fidgeting with coffee cup',
-      shotSize: 'CU',
-      cameraAngle: 'Low Angle',
-      lens: '85mm',
-      duration: '4s',
-      status: 'pending',
-      notes: 'Heighten tension through body language',
-      storyboardPanel: 3
-    },
-    {
-      id: 4,
-      number: '2A',
-      scene: 'EXT. CITY STREET - DAY',
-      description: 'Tracking shot following characters walking down street',
-      shotSize: 'MS',
-      cameraAngle: 'Eye Level',
-      lens: '35mm',
-      duration: '12s',
-      status: 'pending',
-      notes: 'Show relationship dynamic through movement',
-      storyboardPanel: 4
-    },
-    {
-      id: 5,
-      number: '2B',
-      scene: 'EXT. CITY STREET - DAY',
-      description: 'Cutaway to street performer playing guitar',
-      shotSize: 'WS',
-      cameraAngle: 'High Angle',
-      lens: '24mm',
-      duration: '6s',
-      status: 'draft',
-      notes: 'Add atmosphere and break up dialogue',
-      storyboardPanel: 5
-    }
-  ];
+  const [shots, setShots] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchShots = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const sbRes = await getStoryboards();
+        if (!sbRes?.success || !Array.isArray(sbRes.data) || sbRes.data.length === 0) {
+          setShots([]);
+          return;
+        }
+
+        // Pick the most recently updated storyboard for MVP shot listing.
+        const latestStoryboard = [...sbRes.data].sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))[0];
+        const shotsRes = await getStoryboardShots(latestStoryboard.id);
+        if (!shotsRes?.success) {
+          setShots([]);
+          return;
+        }
+
+        const uiShots = (shotsRes.data || []).map((sh) => {
+          const imageStatus = sh.image_status;
+          let status = 'draft';
+          if (imageStatus === 'completed') status = 'completed';
+          else if (imageStatus === 'processing') status = 'in-progress';
+          else if (imageStatus === 'pending') status = 'pending';
+          else if (imageStatus === 'failed') status = 'draft';
+
+          return {
+            id: sh.id,
+            number: `S${sh.scene_number}-${sh.shot_number}`,
+            scene: sh.scene,
+            description: sh.action || sh.prompt || '',
+            shotSize: sh.shotSize,
+            cameraAngle: sh.cameraAngle,
+            lens: sh.lens,
+            duration: '—',
+            status,
+            notes: sh.notes || '',
+          };
+        });
+
+        setShots(uiShots);
+      } catch (e) {
+        setError(e?.message || 'Failed to load shots');
+        setShots([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchShots();
+  }, []);
 
   const filteredShots = shots.filter(shot => {
     const matchesSearch = shot.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -250,7 +241,7 @@ export default function ShotListPanel({ onNewShot, onEditShot }) {
             </div>
           </div>
 
-          {filteredShots.length === 0 && (
+          {!loading && filteredShots.length === 0 && (
             <div className="text-center py-12">
               <Camera size={48} className="text-gray-300 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">No shots found</h3>

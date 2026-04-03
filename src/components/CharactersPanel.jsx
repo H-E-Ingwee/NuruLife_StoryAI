@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Plus,
   Search,
@@ -14,124 +14,48 @@ import {
   Copy
 } from 'lucide-react';
 
-export default function CharactersPanel({ onNewCharacter, onEditCharacter }) {
+import { getCharacters } from '../services/api';
+
+export default function CharactersPanel({ onNewCharacter = () => {}, onEditCharacter = () => {} }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('all');
 
-  // Mock characters data
-  const characters = [
-    {
-      id: 1,
-      name: 'Anansi',
-      role: 'Protagonist',
-      type: 'hero',
-      project: 'African Folktale Adaptation',
-      description: 'Trickster spider god, clever and mischievous',
-      traits: ['Clever', 'Mischievous', 'Wise', 'Transformative'],
-      appearances: 12,
-      avatar: 'https://picsum.photos/100/100?random=20'
-    },
-    {
-      id: 2,
-      name: 'Nomsa',
-      role: 'Love Interest',
-      type: 'supporting',
-      project: 'Urban Drama Series',
-      description: 'Young professional navigating city life',
-      traits: ['Ambitious', 'Compassionate', 'Resilient', 'Curious'],
-      appearances: 8,
-      avatar: 'https://picsum.photos/100/100?random=21'
-    },
-    {
-      id: 3,
-      name: 'Jomo Kenyatta',
-      role: 'Historical Figure',
-      type: 'historical',
-      project: 'Historical Documentary',
-      description: 'Kenyan political leader and anti-colonial activist',
-      traits: ['Charismatic', 'Determined', 'Visionary', 'Resolute'],
-      appearances: 6,
-      avatar: 'https://picsum.photos/100/100?random=22'
-    },
-    {
-      id: 4,
-      name: 'Mama Koinange',
-      role: 'Antagonist',
-      type: 'villain',
-      project: 'African Folktale Adaptation',
-      description: 'Powerful witch with dark magic abilities',
-      traits: ['Powerful', 'Manipulative', 'Ancient', 'Formidable'],
-      appearances: 5,
-      avatar: 'https://picsum.photos/100/100?random=23'
-    },
-    {
-      id: 5,
-      name: 'David',
-      role: 'Best Friend',
-      type: 'supporting',
-      project: 'Short Film: "The Journey"',
-      description: 'Loyal friend and travel companion',
-      traits: ['Loyal', 'Humorous', 'Supportive', 'Adventurous'],
-      appearances: 10,
-      avatar: 'https://picsum.photos/100/100?random=24'
-    },
-    // Characters from "Beneath the Silence"
-    {
-      id: 6,
-      name: 'Malaika',
-      role: 'Protagonist',
-      type: 'hero',
-      project: 'Beneath the Silence',
-      description: 'Talented but insecure church girl at Murang\'a University, struggles with faith and identity after secret abortion',
-      traits: ['Talented', 'Insecure', 'Faithful', 'Vulnerable', 'Resilient'],
-      appearances: 15,
-      avatar: 'https://picsum.photos/100/100?random=25'
-    },
-    {
-      id: 7,
-      name: 'Jay',
-      role: 'Antagonist',
-      type: 'villain',
-      project: 'Beneath the Silence',
-      description: 'Charismatic student leader who manipulates Malaika, inherits cycle of abuse from his father',
-      traits: ['Charismatic', 'Manipulative', 'Traumatized', 'Controlling', 'Broken'],
-      appearances: 12,
-      avatar: 'https://picsum.photos/100/100?random=26'
-    },
-    {
-      id: 8,
-      name: 'Nuru',
-      role: 'Supporting Friend',
-      type: 'supporting',
-      project: 'Beneath the Silence',
-      description: 'Malaika\'s unwavering friend who helps her heal, provides guidance and support',
-      traits: ['Compassionate', 'Wise', 'Supportive', 'Faithful', 'Strong'],
-      appearances: 10,
-      avatar: 'https://picsum.photos/100/100?random=27'
-    },
-    {
-      id: 9,
-      name: 'Sharon',
-      role: 'Roommate',
-      type: 'supporting',
-      project: 'Beneath the Silence',
-      description: 'Skeptical roommate who warns Malaika about Jay\'s reputation',
-      traits: ['Skeptical', 'Protective', 'Blunt', 'Caring'],
-      appearances: 8,
-      avatar: 'https://picsum.photos/100/100?random=28'
-    },
-    {
-      id: 10,
-      name: 'Maggy',
-      role: 'Roommate',
-      type: 'supporting',
-      project: 'Beneath the Silence',
-      description: 'Romantic roommate who sees the positive in relationships',
-      traits: ['Romantic', 'Optimistic', 'Supportive', 'Empathetic'],
-      appearances: 7,
-      avatar: 'https://picsum.photos/100/100?random=29'
-    }
-  ];
+  const [characters, setCharacters] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchCharacters = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const res = await getCharacters();
+        if (res?.success) {
+          const mapped = (res.data || []).map((c) => ({
+            id: c.id,
+            name: c.name,
+            role: c.role || '',
+            type: c.type || '',
+            project: c.project_id,
+            description: c.description || '',
+            traits: Array.isArray(c.traits) ? c.traits : [],
+            appearances: c.appearance_count || 0,
+            avatar: c.avatar_url || null,
+          }));
+          setCharacters(mapped);
+        } else {
+          setCharacters([]);
+        }
+      } catch (e) {
+        setError(e?.message || 'Failed to load characters');
+        setCharacters([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCharacters();
+  }, []);
 
   const filteredCharacters = characters.filter(character => {
     const matchesSearch = character.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -216,11 +140,15 @@ export default function CharactersPanel({ onNewCharacter, onEditCharacter }) {
               <div className="p-4 border-b border-gray-100">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-gray-200 rounded-full overflow-hidden">
-                    <img
-                      src={character.avatar}
-                      alt={character.name}
-                      className="w-full h-full object-cover"
-                    />
+                    {character.avatar ? (
+                      <img
+                        src={character.avatar}
+                        alt={character.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gray-200" />
+                    )}
                   </div>
                   <div className="flex-1">
                     <h3 className="font-semibold text-gray-900">{character.name}</h3>
@@ -288,7 +216,7 @@ export default function CharactersPanel({ onNewCharacter, onEditCharacter }) {
           ))}
         </div>
 
-        {filteredCharacters.length === 0 && (
+        {!loading && filteredCharacters.length === 0 && (
           <div className="text-center py-12">
             <Users size={48} className="text-gray-300 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">No characters found</h3>
