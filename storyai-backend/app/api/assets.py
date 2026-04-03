@@ -111,10 +111,10 @@ def upload_asset():
 
 
 @assets_bp.route('/<asset_id>/download', methods=['GET'])
-@jwt_required()
 def download_asset(asset_id):
-    user_id = get_jwt_identity()
-    asset = Asset.query.filter_by(id=asset_id, user_id=user_id).first()
+    # MVP note: assets are publicly readable so the frontend can render thumbnails.
+    # List/create/delete remain JWT-protected.
+    asset = Asset.query.filter_by(id=asset_id).first()
     if not asset:
         return jsonify({'success': False, 'error': {'code': 'ASSET_NOT_FOUND', 'message': 'Asset not found'}}), 404
 

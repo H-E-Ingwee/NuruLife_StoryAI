@@ -9,6 +9,7 @@ import {
   Layers,
   Download
 } from 'lucide-react';
+import { logoutUser } from '../services/api';
 import Sidebar from './Sidebar';
 import SettingsPanel from './SettingsPanel';
 import ProjectsPanel from './ProjectsPanel';
@@ -23,7 +24,7 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('dashboard');
 
   const handleLogout = () => {
-    // In a real app, this would clear auth tokens, etc.
+    logoutUser();
     navigate('/');
   };
 

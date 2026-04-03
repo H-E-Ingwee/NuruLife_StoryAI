@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useNavigate, Link } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useNavigate, Link, Navigate } from 'react-router-dom';
 import Dashboard from './components/Dashboard';
 import { 
   LayoutDashboard,
@@ -35,6 +35,7 @@ import {
   Share2,
   Video
 } from 'lucide-react';
+import { loginUser, registerUser } from './services/api';
 
 // --- CUSTOM GOOGLE ICON ---
 const GoogleIcon = () => (
@@ -221,10 +222,35 @@ function LandingPage() {
 function AuthPage({ mode }) {
   const navigate = useNavigate();
   const isLogin = mode === 'login';
+  const [error, setError] = useState(null);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    navigate('/dashboard');
+    setError(null);
+
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get('email')?.toString().trim();
+    const password = formData.get('password')?.toString();
+    const full_name = formData.get('full_name')?.toString().trim();
+
+    try {
+      const response = isLogin
+        ? await loginUser(email, password)
+        : await registerUser(email, password, full_name);
+
+      if (response?.success) {
+        navigate('/dashboard');
+        return;
+      }
+
+      const msg =
+        response?.error?.message ||
+        response?.error?.code ||
+        'Authentication failed. Please try again.';
+      setError(msg);
+    } catch (err) {
+      setError(err?.message || 'Authentication failed. Please try again.');
+    }
   };
 
   return (
@@ -242,23 +268,29 @@ function AuthPage({ mode }) {
             {!isLogin && (
                <div className="space-y-1">
                 <label className="block text-[10px] font-black text-[#0A233A] uppercase tracking-widest ml-1">Full Name</label>
-                <input type="text" className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-[#F28C00] outline-none font-bold text-sm" placeholder="e.g. Brian Ingwee" required />
+                <input type="text" name="full_name" className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-[#F28C00] outline-none font-bold text-sm" placeholder="e.g. Brian Ingwee" required />
                </div>
             )}
             <div className="space-y-1">
               <label className="block text-[10px] font-black text-[#0A233A] uppercase tracking-widest ml-1">Email Address</label>
               <div className="relative group">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#F28C00]" size={18} />
-                <input type="email" className="w-full pl-12 pr-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-[#F28C00] outline-none font-bold text-sm" placeholder="name@email.com" required />
+                <input type="email" name="email" className="w-full pl-12 pr-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-[#F28C00] outline-none font-bold text-sm" placeholder="name@email.com" required />
               </div>
             </div>
             <div className="space-y-1">
               <label className="block text-[10px] font-black text-[#0A233A] uppercase tracking-widest ml-1">Password</label>
               <div className="relative group">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#F28C00]" size={18} />
-                <input type="password" className="w-full pl-12 pr-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-[#F28C00] outline-none font-bold text-sm" placeholder="••••••••" required />
+                <input type="password" name="password" className="w-full pl-12 pr-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-[#F28C00] outline-none font-bold text-sm" placeholder="••••••••" required />
               </div>
             </div>
+
+            {error && (
+              <div className="text-red-600 text-sm font-bold px-2">
+                {error}
+              </div>
+            )}
             <button type="submit" className="w-full py-5 bg-[#7B1823] text-white font-black rounded-2xl shadow-xl hover:bg-[#0A233A] transition-all uppercase tracking-[0.2em] text-[10px]">
               {isLogin ? "Sign In" : "Create Account"}
             </button>
@@ -323,6 +355,14 @@ function PricingCard({ tier, price, sub, features, cta, featured = false, onActi
   );
 }
 
+function ProtectedRoute({ children }) {
+  const hasAccessToken = Boolean(localStorage.getItem('access_token'));
+  if (!hasAccessToken) {
+    return <Navigate to="/login" replace />;
+  }
+  return children;
+}
+
 // --- ROOT APP COMPONENT (ROUTING) ---
 export default function App() {
   return (
@@ -332,7 +372,7 @@ export default function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<AuthPage mode="login" />} />
           <Route path="/signup" element={<AuthPage mode="signup" />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         </Routes>
       </div>
     </BrowserRouter>

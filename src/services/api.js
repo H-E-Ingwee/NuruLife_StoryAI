@@ -379,6 +379,121 @@ export const getProjectStats = async (projectId) => {
 };
 
 // ============================================================================
+// Storyboards / Shots / Characters / Assets / Exports
+// ============================================================================
+
+export const getStoryboards = async () => {
+  try {
+    const response = await apiRequest('/storyboards', { method: 'GET' });
+    return response;
+  } catch (error) {
+    return { success: false, error };
+  }
+};
+
+export const getStoryboardShots = async (storyboardId) => {
+  try {
+    const response = await apiRequest(`/storyboards/${storyboardId}/shots`, { method: 'GET' });
+    return response;
+  } catch (error) {
+    return { success: false, error };
+  }
+};
+
+export const parseProjectScript = async (projectId, scriptText = null) => {
+  try {
+    const body = { script_text: scriptText };
+    const response = await apiRequest(`/projects/${projectId}/parse-script`, { method: 'POST', body });
+    return response;
+  } catch (error) {
+    return { success: false, error };
+  }
+};
+
+export const getCharacters = async () => {
+  try {
+    const response = await apiRequest('/characters', { method: 'GET' });
+    return response;
+  } catch (error) {
+    return { success: false, error };
+  }
+};
+
+export const getAssets = async () => {
+  try {
+    const response = await apiRequest('/assets', { method: 'GET' });
+    return response;
+  } catch (error) {
+    return { success: false, error };
+  }
+};
+
+export const getExports = async (projectId = null) => {
+  try {
+    const qs = projectId ? `?project_id=${projectId}` : '';
+    const response = await apiRequest(`/exports${qs}`, { method: 'GET' });
+    return response;
+  } catch (error) {
+    return { success: false, error };
+  }
+};
+
+export const createExport = async (projectId, exportType = 'images', settings = {}) => {
+  try {
+    const response = await apiRequest('/exports', {
+      method: 'POST',
+      body: { project_id: projectId, export_type: exportType, settings },
+    });
+    return response;
+  } catch (error) {
+    return { success: false, error };
+  }
+};
+
+export const downloadExportFile = async (exportId) => {
+  const token = localStorage.getItem('access_token');
+  const url = `${API_BASE_URL}/exports/${exportId}/download`;
+
+  const res = await fetch(url, {
+    method: 'GET',
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data?.error?.message || 'Export download failed');
+  }
+
+  const blob = await res.blob();
+  const objectUrl = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = objectUrl;
+  link.download = `storyai_export_${exportId}.zip`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(objectUrl);
+};
+
+export const generateShotImage = async (shotId, payload) => {
+  try {
+    const response = await apiRequest(`/shots/${shotId}/generate-image`, { method: 'POST', body: payload });
+    return response;
+  } catch (error) {
+    return { success: false, error };
+  }
+};
+
+export const getShotImageStatus = async (shotId) => {
+  try {
+    const response = await apiRequest(`/shots/${shotId}/image-status`, { method: 'GET' });
+    return response;
+  } catch (error) {
+    return { success: false, error };
+  }
+};
+
+// ============================================================================
 // ERROR HANDLING UTILITY
 // ============================================================================
 
@@ -432,6 +547,18 @@ export default {
   deleteProject,
   searchProjects,
   getProjectStats,
+
+  // Storyboards / Shots / Characters / Assets / Exports
+  getStoryboards,
+  getStoryboardShots,
+  parseProjectScript,
+  getCharacters,
+  getAssets,
+  getExports,
+  createExport,
+  downloadExportFile,
+  generateShotImage,
+  getShotImageStatus,
 
   // Utilities
   formatErrorMessage,
