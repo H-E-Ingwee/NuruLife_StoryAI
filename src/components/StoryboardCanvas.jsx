@@ -1,7 +1,7 @@
 import React from 'react';
 import { Image as ImageIcon, Sparkles, Lock } from 'lucide-react';
 
-export default function StoryboardCanvas({ scenes, generatingId, handleGenerateImage, updatePrompt }) {
+export default function StoryboardCanvas({ scenes, generatingId, handleGenerateImage, updatePrompt, onSelectPanel }) {
   return (
     <div className="flex-1 bg-[#F8F9FA] overflow-y-auto p-8">
       <div className="max-w-4xl mx-auto">
@@ -21,7 +21,11 @@ export default function StoryboardCanvas({ scenes, generatingId, handleGenerateI
         ) : (
           <div className="space-y-8">
             {scenes.map((scene, index) => (
-              <div key={scene.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col md:flex-row transition-all hover:shadow-md">
+              <div
+                key={scene.id}
+                onClick={() => onSelectPanel?.(scene.id)}
+                className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col md:flex-row transition-all hover:shadow-md cursor-pointer"
+              >
                 
                 {/* Image Preview Area */}
                 <div className="md:w-5/12 bg-gray-100 border-r border-gray-200 relative min-h-[250px] flex items-center justify-center group">
