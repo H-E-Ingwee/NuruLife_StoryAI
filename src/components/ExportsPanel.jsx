@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Download,
   Search,
@@ -17,85 +17,53 @@ import {
   RefreshCw
 } from 'lucide-react';
 
-export default function ExportsPanel({ onNewExport }) {
+import { downloadExportFile, getExports } from '../services/api';
+
+export default function ExportsPanel({ onNewExport = () => {} }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('all');
+  const [exports, setExports] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Mock exports data
-  const exports = [
-    {
-      id: 1,
-      name: 'African Folktale - Full Storyboard',
-      project: 'African Folktale Adaptation',
-      type: 'PDF',
-      format: 'A4 Portrait',
-      pages: 24,
-      size: '8.4 MB',
-      status: 'completed',
-      created: '2026-04-02 14:30',
-      downloadUrl: '#'
-    },
-    {
-      id: 2,
-      name: 'Character Reference Sheets',
-      project: 'Urban Drama Series',
-      type: 'PNG',
-      format: 'High Resolution',
-      pages: 12,
-      size: '45.2 MB',
-      status: 'completed',
-      created: '2026-04-01 09:15',
-      downloadUrl: '#'
-    },
-    {
-      id: 3,
-      name: 'Shot List - Scene 1-3',
-      project: 'Short Film: "The Journey"',
-      type: 'CSV',
-      format: 'Standard',
-      pages: 1,
-      size: '12 KB',
-      status: 'completed',
-      created: '2026-03-30 16:45',
-      downloadUrl: '#'
-    },
-    {
-      id: 4,
-      name: 'Storyboard Animatic',
-      project: 'Historical Documentary',
-      type: 'MP4',
-      format: '1080p',
-      duration: '4:32',
-      size: '156 MB',
-      status: 'processing',
-      created: '2026-04-02 11:20',
-      downloadUrl: null
-    },
-    {
-      id: 5,
-      name: 'Production Notes',
-      project: 'African Folktale Adaptation',
-      type: 'DOCX',
-      format: 'Detailed',
-      pages: 8,
-      size: '2.1 MB',
-      status: 'failed',
-      created: '2026-03-28 13:10',
-      downloadUrl: null
-    },
-    {
-      id: 6,
-      name: 'Mood Board Collection',
-      project: 'Urban Drama Series',
-      type: 'ZIP',
-      format: 'High Quality',
-      files: 45,
-      size: '234 MB',
-      status: 'completed',
-      created: '2026-03-25 10:30',
-      downloadUrl: '#'
-    }
-  ];
+  useEffect(() => {
+    const fetchExports = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const res = await getExports();
+        if (!res?.success) {
+          setExports([]);
+          return;
+        }
+
+        const mapped = (res.data || []).map((e) => ({
+          id: e.id,
+          name: `${(e.export_type || 'export').toUpperCase()} Export`,
+          project: e.project_id,
+          type: (e.export_type || 'images').toLowerCase(),
+          format: 'ZIP',
+          size: '—',
+          pages: null,
+          duration: null,
+          files: null,
+          status: e.status,
+          created: e.created_at ? new Date(e.created_at).toLocaleString() : '',
+          downloadUrl: e.file_url || null,
+        }));
+
+        setExports(mapped);
+      } catch (e) {
+        setError(e?.message || 'Failed to load exports');
+        setExports([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchExports();
+  }, []);
 
   const filteredExports = exports.filter(exportItem => {
     const matchesSearch = exportItem.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -172,11 +140,7 @@ export default function ExportsPanel({ onNewExport }) {
             >
               <option value="all">All Formats</option>
               <option value="pdf">PDF</option>
-              <option value="png">PNG</option>
-              <option value="mp4">MP4</option>
-              <option value="csv">CSV</option>
-              <option value="docx">DOCX</option>
-              <option value="zip">ZIP</option>
+              <option value="images">Images</option>
             </select>
           </div>
         </div>
