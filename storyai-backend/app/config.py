@@ -12,13 +12,6 @@ class Config:
     # Database
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'sqlite:///app.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_ENGINE_OPTIONS = {
-        'poolclass': QueuePool,
-        'pool_size': 10,
-        'max_overflow': 20,
-        'pool_recycle': 3600,
-        'pool_pre_ping': True
-    }
 
     # Redis/Celery
     CELERY_BROKER_URL = os.getenv('REDIS_URL', 'redis://localhost:6379/0')

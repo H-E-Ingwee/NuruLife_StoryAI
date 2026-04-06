@@ -73,8 +73,8 @@ def create_app(config_class=None):
                 }
             })
 
-    if Limiter is not None and get_remote_address is not None:
-        Limiter(app=app, key_func=get_remote_address, default_limits=['200/day', '50/hour'])
+    # if Limiter is not None and get_remote_address is not None:
+    #     Limiter(app=app, key_func=get_remote_address, default_limits=['200/day', '50/hour'])
 
     from app.api import api_bp
     app.register_blueprint(api_bp, url_prefix='/api')
