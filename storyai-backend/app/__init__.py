@@ -1,4 +1,4 @@
-rom flask import Flask, jsonify
+from flask import Flask, jsonify
 try:
     from flask_cors import CORS
 except ModuleNotFoundError:  # pragma: no cover

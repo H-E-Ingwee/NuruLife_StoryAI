@@ -1,4 +1,4 @@
-rom flask import Flask, jsonify
+from flask import Flask, jsonify
 from datetime import datetime
 import os
 from dotenv import load_dotenv

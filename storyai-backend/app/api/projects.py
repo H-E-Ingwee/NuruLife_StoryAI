@@ -1,4 +1,4 @@
-rom flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify
 from marshmallow import Schema, fields, ValidationError
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.models import Project, User, Storyboard, Shot, Character

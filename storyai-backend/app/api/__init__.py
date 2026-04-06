@@ -1,4 +1,4 @@
-rom flask import Blueprint
+from flask import Blueprint
 from app.api.auth import auth_bp
 from app.api.projects import projects_bp
 from app.api.characters import characters_bp
