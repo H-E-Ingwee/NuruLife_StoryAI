@@ -9,9 +9,9 @@ projects_bp = Blueprint('projects', __name__)
 
 class ProjectSchema(Schema):
     title = fields.Str(required=True)
-    description = fields.Str(missing='')
-    script_text = fields.Str(missing='')
-    status = fields.Str(missing='draft')
+    description = fields.Str(default='')
+    script_text = fields.Str(default='')
+    status = fields.Str(default='draft')
 
 
 class ParseScriptRequestSchema(Schema):
