@@ -65,26 +65,9 @@ npm run dev
 4. Paste this sample screenplay:
 
 ```
-INT. COFFEE SHOP - DAY
-
-JOHN (35, handsome) sits at a corner table, nursing his coffee. Morning 
-light streams through the windows. He's nervous, fingers tapping.
-
-CLOSE ON his trembling hands as they open an envelope.
-
-SARAH (30, elegant) enters. She spots John immediately. Their eyes meet 
-across the room. Recognition. Hesitation.
-
-A long moment. Then she walks toward him.
-
-SARAH
-You came.
-
-JOHN
-I said I would.
-
-CLOSE ON their hands both reaching for the coffee cup between them, 
-almost touching but not quite.
+cd storyai-backend
+$env:PYTHONPATH = "."
+python run.py
 ```
 
 5. Click **"Parse Script & Generate Storyboard"**

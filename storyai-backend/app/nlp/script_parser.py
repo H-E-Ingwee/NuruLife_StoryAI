@@ -388,7 +388,7 @@ def parse_script(
                     'character_names': mentioned_chars,
                     'location': location,
                 },
-                'cameras_settings': {
+                'camera_settings': {
                     'field_of_view': lens,
                     'angle': camera_angle,
                 },
