@@ -75,7 +75,26 @@ const apiRequest = async (endpoint, options = {}) => {
     const response = await fetch(url, fetchOptions);
     clearTimeout(timeoutId);
 
-    const data = await response.json();
+    // Check content-type before parsing as JSON
+    const contentType = response.headers.get('content-type');
+    let data;
+    
+    if (contentType && contentType.includes('application/json')) {
+      data = await response.json();
+    } else {
+      // If server returns HTML (like error pages), read as text
+      const text = await response.text();
+      if (!response.ok) {
+        console.error('Non-JSON Error Response:', text.substring(0, 200));
+        throw {
+          status: response.status,
+          code: 'SERVER_ERROR',
+          message: `Server error (${response.status}). Check backend logs.`,
+          details: null,
+        };
+      }
+      return text;
+    }
 
     if (!response.ok) {
       // Handle specific error codes
