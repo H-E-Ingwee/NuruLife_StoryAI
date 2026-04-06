@@ -122,90 +122,107 @@ def parse_project_script(project_id):
     if not script_text or not script_text.strip():
         return jsonify({'success': False, 'error': {'code': 'VALIDATION_ERROR', 'message': 'script_text is empty'}}), 400
 
-    parsed = parse_script(script_text)
-    shots_data = parsed.get('shots') or []
-    characters = parsed.get('characters') or []
+    try:
+        parsed = parse_script(script_text)
+        shots_data = parsed.get('shots') or []
+        characters = parsed.get('characters') or []
 
-    # Ensure global style/seed settings exist for consistency across panels.
-    project.settings = project.settings or {}
-    project.settings.setdefault('global_style_prompt', 'cinematic storyboard style with consistent character design')
-    project.settings.setdefault('global_seed', 12345)
+        # Ensure global style/seed settings exist for consistency across panels.
+        project.settings = project.settings or {}
+        project.settings.setdefault('global_style_prompt', 'cinematic storyboard style with consistent character design')
+        project.settings.setdefault('global_seed', 12345)
 
-    # Persist extracted character identities for this project (lightweight MVP).
-    character_id_map = {}
-    if isinstance(characters, list) and characters:
-        for name in characters:
-            if not name:
-                continue
-            existing = (
-                Character.query.filter_by(project_id=project_id, name=name).first()
-            )
-            if not existing:
-                existing = Character(
-                    project_id=project_id,
-                    name=name,
-                    role=None,
-                    type=None,
-                    description='',
-                    traits=[],
-                    avatar_url=None,
-                    reference_images=[],
-                    consistency_settings={},
+        # Persist extracted character identities for this project (lightweight MVP).
+        character_id_map = {}
+        if isinstance(characters, list) and characters:
+            for name in characters:
+                if not name:
+                    continue
+                existing = (
+                    Character.query.filter_by(project_id=project_id, name=name).first()
                 )
-                db.session.add(existing)
-                db.session.flush()
-            character_id_map[name] = existing.id
+                if not existing:
+                    existing = Character(
+                        project_id=project_id,
+                        name=name,
+                        role=None,
+                        type=None,
+                        description='',
+                        traits=[],
+                        avatar_url=None,
+                        reference_images=[],
+                        consistency_settings={},
+                    )
+                    db.session.add(existing)
+                    db.session.flush()
+                character_id_map[name] = existing.id
 
-    storyboard = Storyboard(
-        project_id=project_id,
-        title=f"{project.title} - Storyboard",
-        description='',
-        layout=[],
-    )
-    db.session.add(storyboard)
-    db.session.flush()  # Get storyboard.id before inserting shots
-
-    for sh in shots_data:
-        consistency_data = sh.get('consistency_data') or {}
-        consistency_data.setdefault('style_prompt', project.settings.get('global_style_prompt'))
-        consistency_data.setdefault('style_seed', project.settings.get('global_seed'))
-        # If the shot parser produced character names, map them to persisted Character ids.
-        character_names = consistency_data.get('character_names') or []
-        if isinstance(character_names, list) and character_id_map:
-            consistency_data['character_ids'] = [character_id_map[n] for n in character_names if n in character_id_map]
-        shot = Shot(
-            storyboard_id=storyboard.id,
-            scene_number=sh.get('scene_number'),
-            shot_number=sh.get('shot_number'),
-            scene=sh.get('scene'),
-            action=sh.get('action'),
-            prompt=sh.get('prompt'),
-            shot_size=sh.get('shotSize'),
-            camera_angle=sh.get('cameraAngle'),
-            lens=sh.get('lens'),
-            notes=sh.get('notes'),
-            consistency_data=consistency_data,
-            camera_settings={},
-            image_status='pending',
+        storyboard = Storyboard(
+            project_id=project_id,
+            title=f"{project.title} - Storyboard",
+            description='',
+            layout=[],
         )
-        db.session.add(shot)
+        db.session.add(storyboard)
+        db.session.flush()  # Get storyboard.id before inserting shots
 
-    # Mark project as "active" after parsing (simple lifecycle for MVP).
-    project.status = 'active'
-    project.settings['last_parse'] = {
-        'characters_found': characters,
-        'shots_created': len(shots_data),
-    }
+        for sh in shots_data:
+            consistency_data = sh.get('consistency_data') or {}
+            consistency_data.setdefault('style_prompt', project.settings.get('global_style_prompt'))
+            consistency_data.setdefault('style_seed', project.settings.get('global_seed'))
+            # If the shot parser produced character names, map them to persisted Character ids.
+            character_names = consistency_data.get('character_names') or []
+            if isinstance(character_names, list) and character_id_map:
+                consistency_data['character_ids'] = [character_id_map[n] for n in character_names if n in character_id_map]
+            shot = Shot(
+                storyboard_id=storyboard.id,
+                scene_number=sh.get('scene_number'),
+                shot_number=sh.get('shot_number'),
+                scene=sh.get('scene'),
+                action=sh.get('action'),
+                prompt=sh.get('prompt'),
+                shot_size=sh.get('shotSize'),
+                camera_angle=sh.get('cameraAngle'),
+                lens=sh.get('lens'),
+                notes=sh.get('notes'),
+                consistency_data=consistency_data,
+                camera_settings={},
+                image_status='pending',
+            )
+            db.session.add(shot)
 
-    db.session.commit()
-
-    # Reload shots from DB for consistent to_dict values.
-    created_shots = Shot.query.filter_by(storyboard_id=storyboard.id).order_by(Shot.shot_number.asc()).all()
-
-    return jsonify({
-        'success': True,
-        'data': {
-            'storyboard_id': storyboard.id,
-            'shots': [s.to_dict() for s in created_shots],
+        # Mark project as "active" after parsing (simple lifecycle for MVP).
+        project.status = 'active'
+        project.settings['last_parse'] = {
+            'characters_found': characters,
+            'shots_created': len(shots_data),
         }
-    }), 200
+
+        db.session.commit()
+
+        # Reload shots from DB for consistent to_dict values.
+        created_shots = Shot.query.filter_by(storyboard_id=storyboard.id).order_by(Shot.shot_number.asc()).all()
+
+        return jsonify({
+            'success': True,
+            'data': {
+                'storyboard_id': storyboard.id,
+                'shots': [s.to_dict() for s in created_shots],
+            }
+        }), 200
+
+    except Exception as e:
+        db.session.rollback()
+        import traceback
+        error_msg = str(e)
+        error_trace = traceback.format_exc()
+        print(f"PARSE_SCRIPT_ERROR: {error_msg}")
+        print(f"TRACEBACK: {error_trace}")
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'PARSE_SCRIPT_ERROR',
+                'message': error_msg,
+                'trace': error_trace if True else None  # Set to False to hide trace in production
+            }
+        }), 500
