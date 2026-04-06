@@ -1,4 +1,4 @@
-from pathlib import Path
+rom pathlib import Path
 
 files = [
     'C:/Users/mutcu/OneDrive/Documents/GitHub/NuruLife_StoryAI/storyai-backend/app/api/auth.py',

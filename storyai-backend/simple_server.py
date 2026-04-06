@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+!/usr/bin/env python3
 """
 Simple Flask backend server for NuruLife StoryAI
 Runs on port 8000

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+!/usr/bin/env python3
 """
 NuruLife StoryAI Backend - System Check & Diagnostics
 Run this script to verify your backend setup before starting the server

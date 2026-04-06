@@ -1,4 +1,4 @@
-﻿from flask import Blueprint, request, jsonify
+rom flask import Blueprint, request, jsonify
 from marshmallow import Schema, fields, ValidationError
 from flask_jwt_extended import jwt_required, get_jwt_identity, decode_token
 from app.auth.auth_service import AuthService
