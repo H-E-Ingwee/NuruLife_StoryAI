@@ -1,5 +1,6 @@
 import os
 from datetime import timedelta
+from sqlalchemy.pool import QueuePool
 
 class Config:
     """Base configuration"""
@@ -12,7 +13,7 @@ class Config:
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'sqlite:///app.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ENGINE_OPTIONS = {
-        'poolclass': 'QueuePool',
+        'poolclass': QueuePool,
         'pool_size': 10,
         'max_overflow': 20,
         'pool_recycle': 3600,

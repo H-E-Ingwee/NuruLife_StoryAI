@@ -20,7 +20,7 @@ class Asset(db.Model):
     file_type = db.Column(db.String(50))  # image, video, audio, document
 
     tags = db.Column(db.JSON, default=list)  # list[str]
-    metadata = db.Column(db.JSON, default=dict)
+    asset_metadata = db.Column(db.JSON, default=dict)
     uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
     is_favorite = db.Column(db.Boolean, default=False)
 
@@ -36,7 +36,7 @@ class Asset(db.Model):
             'mime_type': self.mime_type,
             'file_type': self.file_type,
             'tags': self.tags or [],
-            'metadata': self.metadata or {},
+            'asset_metadata': self.asset_metadata or {},
             'uploaded_at': self.uploaded_at.isoformat() if self.uploaded_at else None,
             'favorite': self.is_favorite,
             # `url` is filled by the storage layer / later endpoints

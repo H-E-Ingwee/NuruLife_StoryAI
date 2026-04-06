@@ -55,7 +55,6 @@ def me():
         return jsonify({'success': False, 'error': {'code': 'USER_NOT_FOUND', 'message': 'User not found'}}), 404
     return jsonify({'success': True, 'data': user.to_dict()}), 200
 
-
 @auth_bp.route('/refresh', methods=['POST'])
 def refresh():
     """
