@@ -2,6 +2,12 @@ import os
 from datetime import timedelta
 from sqlalchemy.pool import QueuePool
 
+# Calculate database path at module level before class definition
+_app_dir = os.path.dirname(os.path.abspath(__file__))  # storyai-backend/app
+_backend_dir = os.path.dirname(_app_dir)  # storyai-backend
+_db_path = os.path.join(_backend_dir, 'app.db')
+_db_path_normalized = _db_path.replace('\\', '/') if os.name == 'nt' else _db_path
+
 class Config:
     """Base configuration"""
     SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-key')
@@ -9,14 +15,7 @@ class Config:
     JWT_ACCESS_TOKEN_EXPIRE = timedelta(seconds=int(os.getenv('JWT_ACCESS_TOKEN_EXPIRE', 900)))
     JWT_REFRESH_TOKEN_EXPIRE = timedelta(seconds=int(os.getenv('JWT_REFRESH_TOKEN_EXPIRE', 604800)))
 
-    # Database - Use absolute path with forward slashes for SQLite
-    # __file__ = storyai-backend/app/config.py
-    # Go up two levels: app/config.py -> app -> storyai-backend
-    _app_dir = os.path.dirname(os.path.abspath(__file__))  # storyai-backend/app
-    _backend_dir = os.path.dirname(_app_dir)  # storyai-backend
-    _db_path = os.path.join(_backend_dir, 'app.db')
-    # Convert backslashes to forward slashes for SQLite URI
-    _db_path_normalized = _db_path.replace('\\', '/') if os.name == 'nt' else _db_path
+    # Database - Use module-level calculated absolute path
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', f'sqlite:///{_db_path_normalized}')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
