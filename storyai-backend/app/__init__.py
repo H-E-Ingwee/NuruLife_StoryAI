@@ -3,41 +3,14 @@ try:
     from flask_cors import CORS
 except ModuleNotFoundError:  # pragma: no cover
     CORS = None
-from flask_jwt_extended import JWTManager
-from flask_sqlalchemy import SQLAlchemy
-try:
-    # Optional dependency: migrations are not required for MVP/test execution.
-    from flask_migrate import Migrate
-except ModuleNotFoundError:  # pragma: no cover
-    Migrate = None
-try:
-    from flask_caching import Cache
-except ModuleNotFoundError:  # pragma: no cover
-    Cache = None
-
-try:
-    from flask_limiter import Limiter
-    from flask_limiter.util import get_remote_address
-except ModuleNotFoundError:  # pragma: no cover
-    Limiter = None
-    get_remote_address = None
-
-try:
-    from flask_compress import Compress
-except ModuleNotFoundError:  # pragma: no cover
-    Compress = None
 from datetime import datetime
 from dotenv import load_dotenv
 
+# Import extensions from the dedicated extensions module
+from app.extensions import db, jwt, migrate, cache, compress
+
 # Load environment variables
 load_dotenv()
-
-# Initialize extensions
-db = SQLAlchemy()
-jwt = JWTManager()
-migrate = Migrate() if Migrate is not None else None
-cache = Cache() if Cache is not None else None
-compress = Compress() if Compress is not None else None
 
 def create_app(config_class=None):
     app = Flask(__name__)
