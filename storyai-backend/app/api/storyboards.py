@@ -182,3 +182,105 @@ def create_storyboard_shot(storyboard_id):
     db.session.commit()
     return jsonify({'success': True, 'data': shot.to_dict()}), 201
 
+
+@storyboards_bp.route('/parse-script', methods=['POST'])
+@jwt_required()
+def parse_script_endpoint():
+    """
+    Parse a script and auto-generate storyboard with shots.
+    
+    Request body:
+    {
+        "project_id": "project_id",
+        "storyboard_title": "optional, defaults to 'Untitled Storyboard'",
+        "script_text": "full script text",
+        "max_shots_per_scene": 4
+    }
+    
+    Returns:
+        storyboard with all parsed shots
+    """
+    try:
+        req_data = request.json or {}
+        project_id = req_data.get('project_id')
+        script_text = req_data.get('script_text', '')
+        storyboard_title = req_data.get('storyboard_title', 'Untitled Storyboard').strip()
+        max_shots_per_scene = req_data.get('max_shots_per_scene', 4)
+        
+        if not project_id or not script_text.strip():
+            return jsonify({
+                'success': False, 
+                'error': {'code': 'INVALID_INPUT', 'message': 'project_id and script_text are required'}
+            }), 400
+    except Exception as e:
+        return jsonify({
+            'success': False, 
+            'error': {'code': 'PARSE_ERROR', 'message': str(e)}
+        }), 400
+    
+    user_id = get_jwt_identity()
+    
+    # Verify project exists and belongs to user
+    project = Project.query.filter_by(id=project_id, user_id=user_id).first()
+    if not project:
+        return jsonify({
+            'success': False, 
+            'error': {'code': 'PROJECT_NOT_FOUND', 'message': 'Project not found'}
+        }), 404
+    
+    try:
+        # Import the NLP parser
+        from app.nlp.script_parser import parse_script
+        
+        # Parse the script
+        parse_result = parse_script(script_text, max_shots_per_scene=max_shots_per_scene)
+        
+        # Create storyboard
+        storyboard = Storyboard(
+            project_id=project_id,
+            title=storyboard_title,
+            description=f"Auto-parsed from script. {len(parse_result['shots'])} shots generated.",
+            layout=[],
+        )
+        db.session.add(storyboard)
+        db.session.flush()  # Get the ID without committing yet
+        
+        # Create shots from parsed data
+        shots_created = []
+        for shot_data in parse_result['shots']:
+            shot = Shot(
+                storyboard_id=storyboard.id,
+                scene_number=shot_data.get('scene_number'),
+                shot_number=shot_data.get('shot_number'),
+                scene=shot_data.get('scene'),
+                action=shot_data.get('action'),
+                prompt=shot_data.get('prompt'),
+                shot_size=shot_data.get('shotSize'),
+                camera_angle=shot_data.get('cameraAngle'),
+                lens=shot_data.get('lens'),
+                notes=shot_data.get('notes'),
+                consistency_data=shot_data.get('consistency_data') or {},
+                camera_settings=shot_data.get('camera_settings') or {},
+                image_status='pending',
+            )
+            db.session.add(shot)
+            shots_created.append(shot)
+        
+        db.session.commit()
+        
+        # Return storyboard with shots
+        response_data = storyboard.to_dict()
+        response_data['shots'] = [sh.to_dict() for sh in shots_created]
+        response_data['characters'] = parse_result.get('characters', [])
+        response_data['locations'] = parse_result.get('locations', [])
+        response_data['total_shots'] = len(shots_created)
+       
+        return jsonify({'success': True, 'data': response_data}), 201
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'error': {'code': 'SCRIPT_PARSE_ERROR', 'message': f'Failed to parse script: {str(e)}'}
+        }), 500
+

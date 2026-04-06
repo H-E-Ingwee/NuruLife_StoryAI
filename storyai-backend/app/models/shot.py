@@ -10,12 +10,14 @@ class Shot(db.Model):
     id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
 
     storyboard_id = db.Column(db.String(36), db.ForeignKey('storyboards.id'), nullable=False)
+    storyboard = db.relationship('Storyboard', backref='shots')
 
     # Script-derived metadata (client expects scene/action)
     scene_number = db.Column(db.Integer)
     shot_number = db.Column(db.Integer)
     scene = db.Column(db.Text)
     action = db.Column(db.Text)
+    time_of_day = db.Column(db.String(32), default='DAY')  # DAY, NIGHT, DUSK, etc.
 
     # Generation prompt controls
     prompt = db.Column(db.Text)
@@ -44,6 +46,7 @@ class Shot(db.Model):
             'shot_number': self.shot_number,
             'scene': self.scene,
             'action': self.action,
+            'time_of_day': self.time_of_day,
             'prompt': self.prompt,
 
             # Client-friendly naming
