@@ -19,12 +19,27 @@ class AIServiceManager:
             return self._dalle
 
         if service_name in {'stable_diffusion', 'sd', 'sdxl', 'replicate', 'stability-ai'}:
-            if self._sd is None:
-                sd_mod = import_module('app.ai.stable_diffusion_service')
-                self._sd = sd_mod.StableDiffusionService(api_token=os.getenv('REPLICATE_API_TOKEN'))
-            return self._sd
+            # Try to load Stable Diffusion, but fall back to DALLE if it fails
+            # (e.g., on Python 3.14+ where replicate has compatibility issues)
+            try:
+                if self._sd is None:
+                    sd_mod = import_module('app.ai.stable_diffusion_service')
+                    self._sd = sd_mod.StableDiffusionService(api_token=os.getenv('REPLICATE_API_TOKEN'))
+                return self._sd
+            except (ImportError, ValueError, Exception) as e:
+                # If SD fails, fall back to DALLE
+                print(f"[WARNING] Stable Diffusion service failed ({e}). Falling back to DALLE.")
+                if self._dalle is None:
+                    dalle_mod = import_module('app.ai.dalle_service')
+                    self._dalle = dalle_mod.DalleService(api_key=os.getenv('OPENAI_API_KEY'))
+                return self._dalle
 
-        raise ValueError(f"Unknown AI service '{service_name}'")
+        # Default to DALLE for unknown services
+        print(f"[WARNING] Unknown AI service '{service_name}'. Defaulting to DALLE.")
+        if self._dalle is None:
+            dalle_mod = import_module('app.ai.dalle_service')
+            self._dalle = dalle_mod.DalleService(api_key=os.getenv('OPENAI_API_KEY'))
+        return self._dalle
 
 
 ai_service_manager = AIServiceManager()

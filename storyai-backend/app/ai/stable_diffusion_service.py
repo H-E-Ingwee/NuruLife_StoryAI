@@ -3,7 +3,12 @@ import uuid
 from typing import Any, Dict, Optional
 from urllib.request import urlopen
 
-import replicate
+try:
+    import replicate
+    REPLICATE_AVAILABLE = True
+except Exception as e:
+    REPLICATE_AVAILABLE = False
+    print(f"Warning: replicate module not available ({e}). Fallback to DALL-E will be used.")
 
 from app.ai.ai_service import AIImageService
 
@@ -25,6 +30,11 @@ class StableDiffusionService(AIImageService):
     DEFAULT_MODEL_VERSION = "stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b"
 
     def __init__(self, api_token: Optional[str] = None):
+        if not REPLICATE_AVAILABLE:
+            raise ValueError(
+                'replicate module is not available (Python 3.14+ compatibility issue). '
+                'Using DALL-E instead. Set OPENAI_API_KEY environment variable.'
+            )
         api_token = api_token or os.getenv('REPLICATE_API_TOKEN')
         if not api_token:
             raise ValueError('REPLICATE_API_TOKEN is not set')

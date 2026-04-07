@@ -107,7 +107,7 @@ export default function StoryboardsPanel() {
     try {
       const res = await generateShotImage(shot.id, {
         prompt: shot.prompt,
-        service: 'stable_diffusion',
+        service: 'dalle',
         width: 1920,
         height: 1080,
         consistency: {
