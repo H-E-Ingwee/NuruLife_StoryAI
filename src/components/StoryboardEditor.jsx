@@ -78,11 +78,23 @@ export default function StoryboardEditor({ projectId = null, onBack }) {
   const loadProjects = async () => {
     try {
       setIsLoading(true);
-      const res = await getProjects();
-      if (res.success) {
-        setProjects(res.data);
+      const res = await getProjects(1, 100);
+      
+      // Handle different response formats
+      if (res?.success) {
+        const projectsData = Array.isArray(res.data) ? res.data : res.data?.items || [];
+        setProjects(projectsData);
+        
+        if (projectsData.length > 0 && !activeProject) {
+          setActiveProject(projectsData[0]);
+          setScriptText(projectsData[0].script_text || '');
+        }
+      } else {
+        console.warn('Failed to load projects:', res?.error);
+        showNotification("Failed to load projects: " + (res?.error?.message || 'Unknown error'), "error");
       }
     } catch (e) {
+      console.error('Error loading projects:', e);
       showNotification("Failed to load projects.", "error");
     } finally {
       setIsLoading(false);

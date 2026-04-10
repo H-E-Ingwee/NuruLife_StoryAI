@@ -14,6 +14,7 @@ import Sidebar from './Sidebar';
 import SettingsPanel from './SettingsPanel';
 import ProjectsPanel from './ProjectsPanel';
 import StoryboardEditor from './StoryboardEditor';
+import StoryboardsPanel from './StoryboardsPanel';
 import CharactersPanel from './CharactersPanel';
 import AssetsLibraryPanel from './AssetsLibraryPanel';
 import ShotListPanel from './ShotListPanel';
@@ -164,7 +165,7 @@ export default function Dashboard() {
         )}
 
         {activeTab === 'storyboards' && (
-          <StoryboardEditor />
+          <StoryboardsPanel />
         )}
 
         {activeTab === 'characters' && (
