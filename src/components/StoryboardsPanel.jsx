@@ -281,32 +281,32 @@ export default function StoryboardsPanel() {
 
   // ==================== Render ====================
   return (
-    <div className="flex h-full gap-4">
+    <div className="flex flex-col lg:flex-row h-full lg:gap-4 bg-gray-50">
       {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden bg-gray-50">
+      <div className="flex-1 flex flex-col overflow-hidden lg:bg-gray-50">
         {/* Header */}
-        <div className="bg-white border-b border-gray-200 p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-              <Film size={24} className="text-[#F28C00]" />
+        <div className="bg-white border-b border-gray-200 p-4 md:p-6">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 md:gap-4 mb-4">
+            <h2 className="text-xl md:text-2xl font-bold text-gray-900 flex items-center gap-2">
+              <Film size={20} md:size={24} className="text-[#F28C00]" />
               Storyboards
             </h2>
             {selectedProject && (
-              <div className="text-sm text-gray-600">
+              <div className="text-xs md:text-sm text-gray-600 order-3 md:order-2">
                 Project: <strong>{selectedProject.title}</strong>
               </div>
             )}
           </div>
 
-          {/* Project Selector */}
-          <div className="flex gap-3 items-center mb-4">
+          {/* Project Selector - Responsive Stack */}
+          <div className="flex flex-col sm:flex-row gap-2 md:gap-3 items-stretch sm:items-center mb-4">
             <select
               value={selectedProject?.id || ''}
               onChange={(e) => {
                 const p = projects.find(proj => proj.id === e.target.value);
                 setSelectedProject(p);
               }}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F28C00] flex-1"
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F28C00] flex-1 text-sm md:text-base"
             >
               <option value="">Select a project...</option>
               {projects.map(p => (
@@ -315,7 +315,7 @@ export default function StoryboardsPanel() {
             </select>
             <button
               onClick={handleCreateProject}
-              className="px-4 py-2 bg-[#F28C00] text-white rounded-lg font-medium hover:bg-[#E07D00] transition-colors flex items-center gap-2"
+              className="px-4 py-2 bg-[#F28C00] text-white rounded-lg font-medium hover:bg-[#E07D00] transition-colors flex items-center justify-center gap-2 text-sm md:text-base whitespace-nowrap"
             >
               <Plus size={16} />
               New
@@ -324,27 +324,27 @@ export default function StoryboardsPanel() {
 
           {/* Error Alert */}
           {parseError && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4 flex items-start gap-2">
+            <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4 flex items-start gap-2 text-xs md:text-sm">
               <AlertCircle size={16} className="text-red-600 mt-0.5 flex-shrink-0" />
-              <p className="text-sm text-red-600">{parseError}</p>
+              <p className="text-red-600">{parseError}</p>
             </div>
           )}
 
           {/* Script Input */}
-          <div className="space-y-3">
-            <label className="block text-sm font-medium text-gray-700">
+          <div className="space-y-2 md:space-y-3">
+            <label className="block text-xs md:text-sm font-medium text-gray-700">
               Script Text
             </label>
             <textarea
               value={scriptText}
               onChange={(e) => setScriptText(e.target.value)}
               placeholder="Paste your screenplay here... (supports standard screenplay format: INT./EXT. scene headings)"
-              className="w-full h-32 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F28C00] font-mono text-sm resize-none"
+              className="w-full h-24 md:h-32 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F28C00] font-mono text-xs md:text-sm resize-none"
             />
             <button
               onClick={handleParseScript}
               disabled={parsing || !selectedProject || !scriptText.trim()}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-[#0A233A] to-[#1a3a52] text-white rounded-lg font-medium hover:from-[#1a3a52] hover:to-[#2a4a62] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              className="w-full flex items-center justify-center gap-2 px-4 py-2 md:py-3 bg-gradient-to-r from-[#0A233A] to-[#1a3a52] text-white rounded-lg font-medium hover:from-[#1a3a52] hover:to-[#2a4a62] disabled:opacity-50 disabled:cursor-not-allowed transition-all text-sm md:text-base"
             >
               {parsing ? (
                 <>
@@ -362,21 +362,21 @@ export default function StoryboardsPanel() {
         </div>
 
         {/* Storyboards Content */}
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-4 md:p-6">
           {storyboards.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-center">
-              <Film size={48} className="text-gray-300 mb-4" />
-              <h3 className="text-lg font-semibold text-gray-600 mb-2">
+            <div className="flex flex-col items-center justify-center h-full text-center px-4">
+              <Film size={40} md:size={48} className="text-gray-300 mb-3 md:mb-4" />
+              <h3 className="text-base md:text-lg font-semibold text-gray-600 mb-2">
                 No Storyboards Yet
               </h3>
-              <p className="text-gray-500 max-w-md">
+              <p className="text-gray-500 max-w-md text-sm md:text-base">
                 {projects.length === 0 
                   ? "Create a new project from the Projects panel to get started"
                   : "Paste a script above and click \"Parse Script\" to generate your first storyboard"}
               </p>
             </div>
           ) : (
-            <div className="space-y-6">
+            <div className="space-y-4 md:space-y-6">
               {storyboards.map((storyboard) => (
                 <div key={storyboard.id} className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
                   {/* Storyboard Header */}
@@ -384,12 +384,12 @@ export default function StoryboardsPanel() {
                     onClick={() => setSelectedStoryboard(
                       selectedStoryboard?.id === storyboard.id ? null : storyboard
                     )}
-                    className="bg-gradient-to-r from-[#0A233A] to-[#1a3a52] p-4 cursor-pointer text-white flex items-center justify-between"
+                    className="bg-gradient-to-r from-[#0A233A] to-[#1a3a52] p-3 md:p-4 cursor-pointer text-white flex items-center justify-between"
                   >
-                    <div className="flex items-center gap-3">
-                      <Film size={20} />
-                      <div>
-                        <h3 className="font-semibold">{storyboard.title}</h3>
+                    <div className="flex items-center gap-2 md:gap-3 min-w-0">
+                      <Film size={18} md:size={20} className="flex-shrink-0" />
+                      <div className="min-w-0">
+                        <h3 className="font-semibold text-sm md:text-base truncate">{storyboard.title}</h3>
                         <p className="text-xs text-gray-300">
                           {storyboard.totalShots} shots • {storyboard.characters?.length || 0} characters
                         </p>
@@ -397,19 +397,18 @@ export default function StoryboardsPanel() {
                     </div>
                     <ChevronRight
                       size={20}
-                      className={`transition-transform ${
-                        selectedStoryboard?.id === storyboard.id ? 'rotate-90' : ''
-                      }`}
+                      className={`flex-shrink-0 transition-transform ml-2`}
+                      style={{transform: selectedStoryboard?.id === storyboard.id ? 'rotate(90deg)' : 'none'}}
                     />
                   </div>
 
                   {/* Storyboard Shots Grid */}
                   {selectedStoryboard?.id === storyboard.id && (
-                    <div className="p-4 bg-gray-50 border-t border-gray-200">
+                    <div className="p-3 md:p-4 bg-gray-50 border-t border-gray-200">
                       {storyboard.shots?.length === 0 ? (
-                        <p className="text-gray-500 text-center py-8">No shots in this storyboard</p>
+                        <p className="text-gray-500 text-center py-8 text-sm md:text-base">No shots in this storyboard</p>
                       ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
                           {storyboard.shots.map((shot, idx) => (
                             <ShotCard
                               key={shot.id}
@@ -432,103 +431,112 @@ export default function StoryboardsPanel() {
         </div>
       </div>
 
-      {/* Inspector Panel */}
+      {/* Inspector Panel - Responsive Modal/Sidebar */}
       {selectedShot && (
-        <div className="w-96 bg-white border-l border-gray-200 flex flex-col overflow-hidden shadow-lg">
-          {/* Close Button */}
-          <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50">
-            <h3 className="font-semibold text-gray-900">Shot Inspector</h3>
-            <button
-              onClick={() => setSelectedShot(null)}
-              className="text-gray-500 hover:text-gray-700 font-bold"
-            >
-              ✕
-            </button>
-          </div>
-
-          {/* Shot Details */}
-          <div className="flex-1 overflow-y-auto space-y-4 p-4">
-            {/* Scene */}
-            <div>
-              <label className="block text-xs font-semibold text-gray-600 uppercase mb-1">
-                Scene
-              </label>
-              <p className="text-sm text-gray-900">{selectedShot.scene}</p>
+        <>
+          {/* Mobile Overlay */}
+          <div
+            className="fixed inset-0 bg-black/50 lg:hidden z-40"
+            onClick={() => setSelectedShot(null)}
+          />
+          
+          {/* Inspector - Fixed Sidebar on Desktop, Fixed Drawer on Mobile */}
+          <div className="fixed bottom-0 left-0 right-0 lg:static lg:bottom-auto lg:left-auto lg:right-auto w-full lg:w-96 h-4/5 lg:h-auto bg-white border-t lg:border-t-0 lg:border-l border-gray-200 flex flex-col overflow-hidden shadow-lg lg:shadow-none z-50 lg:z-auto">
+            {/* Close Button */}
+            <div className="flex items-center justify-between p-3 md:p-4 border-b border-gray-200 bg-gray-50 flex-shrink-0">
+              <h3 className="font-semibold text-gray-900 text-sm md:text-base">Shot Inspector</h3>
+              <button
+                onClick={() => setSelectedShot(null)}
+                className="text-gray-500 hover:text-gray-700 font-bold text-lg"
+              >
+                ✕
+              </button>
             </div>
 
-            {/* Action */}
-            <div>
-              <label className="block text-xs font-semibold text-gray-600 uppercase mb-1">
-                Action
-              </label>
-              <p className="text-sm text-gray-700 line-clamp-3">{selectedShot.action}</p>
-            </div>
+            {/* Shot Details */}
+            <div className="flex-1 overflow-y-auto space-y-3 md:space-y-4 p-3 md:p-4">
+              {/* Scene */}
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 uppercase mb-1">
+                  Scene
+                </label>
+                <p className="text-sm text-gray-900">{selectedShot.scene}</p>
+              </div>
 
-            {/* Film Terminology */}
-            <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
-              <h4 className="text-xs font-semibold text-blue-900 mb-3 uppercase">
-                Shooting Parameters
-              </h4>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-700">Shot Size:</span>
-                  <span className="font-medium text-gray-900">{selectedShot.shotSize}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-700">Camera Angle:</span>
-                  <span className="font-medium text-gray-900">{selectedShot.cameraAngle}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-700">Lens:</span>
-                  <span className="font-medium text-gray-900">{selectedShot.lens}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-700">Time of Day:</span>
-                  <span className="font-medium text-gray-900">{selectedShot.time_of_day || 'DAY'}</span>
+              {/* Action */}
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 uppercase mb-1">
+                  Action
+                </label>
+                <p className="text-xs md:text-sm text-gray-700 line-clamp-3">{selectedShot.action}</p>
+              </div>
+
+              {/* Film Terminology */}
+              <div className="bg-blue-50 rounded-lg p-2 md:p-3 border border-blue-200">
+                <h4 className="text-xs font-semibold text-blue-900 mb-2 md:mb-3 uppercase">
+                  Shooting Parameters
+                </h4>
+                <div className="space-y-1 md:space-y-2 text-xs md:text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-700">Shot Size:</span>
+                    <span className="font-medium text-gray-900">{selectedShot.shotSize}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-700">Camera Angle:</span>
+                    <span className="font-medium text-gray-900">{selectedShot.cameraAngle}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-700">Lens:</span>
+                    <span className="font-medium text-gray-900">{selectedShot.lens}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-700">Time of Day:</span>
+                    <span className="font-medium text-gray-900">{selectedShot.time_of_day || 'DAY'}</span>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Prompt */}
-            <div>
-              <label className="block text-xs font-semibold text-gray-600 uppercase mb-1">
-                AI Prompt
-              </label>
-              <p className="text-xs text-gray-700 leading-relaxed line-clamp-4">
-                {selectedShot.prompt}
-              </p>
-            </div>
-
-            {/* Consistency */}
-            {selectedShot.consistency_data?.character_names?.length > 0 && (
-              <div className="bg-purple-50 rounded-lg p-3 border border-purple-200">
-                <h4 className="text-xs font-semibold text-purple-900 mb-2 uppercase">
-                  Consistency
-                </h4>
-                <p className="text-xs text-purple-700">
-                  <strong>Characters:</strong> {selectedShot.consistency_data.character_names.join(', ')}
+              {/* Prompt */}
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 uppercase mb-1">
+                  AI Prompt
+                </label>
+                <p className="text-xs text-gray-700 leading-relaxed line-clamp-4">
+                  {selectedShot.prompt}
                 </p>
               </div>
-            )}
 
-            {/* Image Status */}
-            {selectedShot.image_status && (
-              <div className={`rounded-lg p-3 flex items-center gap-2 ${getShotStatusColor(selectedShot.image_status)}`}>
-                {getShotStatusIcon(selectedShot.image_status)}
-                <span className="text-xs font-medium capitalize">
-                  {selectedShot.image_status === 'pending' ? 'Ready to generate' : selectedShot.image_status}
-                </span>
-              </div>
-            )}
+              {/* Consistency */}
+              {selectedShot.consistency_data?.character_names?.length > 0 && (
+                <div className="bg-purple-50 rounded-lg p-2 md:p-3 border border-purple-200">
+                  <h4 className="text-xs font-semibold text-purple-900 mb-2 uppercase">
+                    Consistency
+                  </h4>
+                  <p className="text-xs text-purple-700">
+                    <strong>Characters:</strong> {selectedShot.consistency_data.character_names.join(', ')}
+                  </p>
+                </div>
+              )}
+
+              {/* Image Status */}
+              {selectedShot.image_status && (
+                <div className={`rounded-lg p-2 md:p-3 flex items-center gap-2 text-xs md:text-sm ${getShotStatusColor(selectedShot.image_status)}`}>
+                  {getShotStatusIcon(selectedShot.image_status)}
+                  <span className="font-medium capitalize">
+                    {selectedShot.image_status === 'pending' ? 'Ready to generate' : selectedShot.image_status}
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );
 }
 
 /**
- * Shot Card Component
+ * Shot Card Component - Fully Responsive
  */
 function ShotCard({ shot, index, isGenerating, onGenerate, onSelect, isSelected }) {
   return (
@@ -558,7 +566,7 @@ function ShotCard({ shot, index, isGenerating, onGenerate, onSelect, isSelected 
           </div>
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center gap-2">
-            <Eye size={24} className="text-gray-300" />
+            <Eye size={20} md:size={24} className="text-gray-300" />
             <span className="text-xs text-gray-400">Not generated</span>
           </div>
         )}
@@ -572,7 +580,7 @@ function ShotCard({ shot, index, isGenerating, onGenerate, onSelect, isSelected 
             }}
             className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
           >
-            <div className="flex items-center gap-2 bg-[#F28C00] text-white px-3 py-2 rounded-lg font-medium text-sm">
+            <div className="flex items-center gap-2 bg-[#F28C00] text-white px-3 py-2 rounded-lg font-medium text-xs md:text-sm">
               <Wand2 size={14} />
               Generate
             </div>
@@ -580,15 +588,15 @@ function ShotCard({ shot, index, isGenerating, onGenerate, onSelect, isSelected 
         )}
       </div>
 
-      {/* Info */}
-      <div className="p-3 bg-white">
-        <div className="flex items-start justify-between mb-2">
-          <h4 className="text-sm font-semibold text-gray-900">Shot {index}</h4>
+      {/* Info - Responsive Padding */}
+      <div className="p-2 md:p-3 bg-white">
+        <div className="flex items-start justify-between gap-2 mb-1 md:mb-2">
+          <h4 className="text-xs md:text-sm font-semibold text-gray-900">Shot {index}</h4>
           {shot.image_status === 'completed' && (
-            <CheckCircle size={14} className="text-green-600" />
+            <CheckCircle size={14} className="text-green-600 flex-shrink-0" />
           )}
         </div>
-        <p className="text-xs text-gray-600 mb-2 line-clamp-1">
+        <p className="text-xs text-gray-600 mb-1 md:mb-2 line-clamp-1">
           {shot.scene}
         </p>
         <p className="text-xs text-gray-500">
