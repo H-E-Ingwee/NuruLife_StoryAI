@@ -3,7 +3,9 @@ from marshmallow import Schema, fields, ValidationError
 from flask_jwt_extended import jwt_required, get_jwt_identity, decode_token
 from app.auth.auth_service import AuthService
 from app.models import User
+import logging
 
+logger = logging.getLogger(__name__)
 auth_bp = Blueprint('auth', __name__)
 
 class RegisterSchema(Schema):
@@ -21,8 +23,10 @@ class RefreshSchema(Schema):
 @auth_bp.route('/register', methods=['POST'])
 def register():
     try:
+        logger.info("Register request received")
         data = RegisterSchema().load(request.json)
     except ValidationError as e:
+        logger.error(f"Validation error: {e.messages}")
         return jsonify({'success': False, 'error': {'code': 'VALIDATION_ERROR', 'details': e.messages}}), 400
 
     user, err = AuthService.register_user(data['email'], data['password'], data['full_name'])
@@ -35,16 +39,28 @@ def register():
 @auth_bp.route('/login', methods=['POST'])
 def login():
     try:
+        logger.info(f"Login request received: {request.data}")
         data = LoginSchema().load(request.json)
+        logger.info(f"Login data validated for: {data.get('email')}")
     except ValidationError as e:
+        logger.error(f"Validation error: {e.messages}")
         return jsonify({'success': False, 'error': {'code': 'VALIDATION_ERROR', 'details': e.messages}}), 400
+    except Exception as e:
+        logger.error(f"Request parsing error: {e}")
+        return jsonify({'success': False, 'error': {'code': 'REQUEST_ERROR', 'message': str(e)}}), 400
 
-    user = AuthService.authenticate_user(data['email'], data['password'])
-    if user is None:
-        return jsonify({'success': False, 'error': {'code': 'INVALID_CREDENTIALS', 'message': 'Email or password invalid'}}), 401
+    try:
+        user = AuthService.authenticate_user(data['email'], data['password'])
+        if user is None:
+            logger.warning(f"Failed login attempt for: {data['email']}")
+            return jsonify({'success': False, 'error': {'code': 'INVALID_CREDENTIALS', 'message': 'Email or password invalid'}}), 401
 
-    tokens = AuthService.create_tokens(user)
-    return jsonify({'success': True, 'data': {'user': user.to_dict(), **tokens}}), 200
+        tokens = AuthService.create_tokens(user)
+        logger.info(f"User logged in: {user.email}")
+        return jsonify({'success': True, 'data': {'user': user.to_dict(), **tokens}}), 200
+    except Exception as e:
+        logger.error(f"Login error: {e}", exc_info=True)
+        return jsonify({'success': False, 'error': {'code': 'SERVER_ERROR', 'message': 'Internal server error'}}), 500
 
 @auth_bp.route('/me', methods=['GET'])
 @jwt_required()
