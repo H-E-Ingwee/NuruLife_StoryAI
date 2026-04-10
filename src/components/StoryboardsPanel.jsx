@@ -41,6 +41,15 @@ export default function StoryboardsPanel() {
     }
   }, [selectedProject]);
 
+  // Sync storyboards when selectedStoryboard changes
+  useEffect(() => {
+    if (selectedStoryboard) {
+      // Sync shots state with the selected storyboard's shots
+      const storyboardShots = storyboards.find(sb => sb.id === selectedStoryboard.id)?.shots || [];
+      setShots(storyboardShots);
+    }
+  }, [selectedStoryboard, storyboards]);
+
   // ==================== Fetching ====================
   const fetchProjects = async () => {
     try {
@@ -60,6 +69,41 @@ export default function StoryboardsPanel() {
     } catch (error) {
       console.error('Error during project fetch:', error);
       setParseError(`Error: ${error?.message || 'Failed to fetch projects'}`);
+    }
+  };
+
+  // ==================== State Sync Helpers ====================
+  /**
+   * Helper function to update a shot in both shots state and storyboards array
+   * This ensures data consistency across the component
+   */
+  const updateShotInAllStates = (shotId, shotUpdates) => {
+    // Update shots state
+    setShots(prevShots =>
+      prevShots.map(s =>
+        s.id === shotId ? { ...s, ...shotUpdates } : s
+      )
+    );
+
+    // Update storyboards array to keep it in sync
+    setStoryboards(prevStoryboards =>
+      prevStoryboards.map(sb => ({
+        ...sb,
+        shots: (sb.shots || []).map(s =>
+          s.id === shotId ? { ...s, ...shotUpdates } : s
+        ),
+      }))
+    );
+
+    // Update selectedStoryboard if it contains this shot
+    if (selectedStoryboard) {
+      const updatedShots = (selectedStoryboard.shots || []).map(s =>
+        s.id === shotId ? { ...s, ...shotUpdates } : s
+      );
+      setSelectedStoryboard({
+        ...selectedStoryboard,
+        shots: updatedShots,
+      });
     }
   };
 
@@ -131,13 +175,11 @@ export default function StoryboardsPanel() {
       });
 
       if (res?.success) {
-        // Update shot with job info
-        const updatedShots = shots.map(s => 
-          s.id === shot.id 
-            ? { ...s, generation_job_id: res.data?.job_id, image_status: 'processing' }
-            : s
-        );
-        setShots(updatedShots);
+        // Update shot with job info using the sync helper
+        updateShotInAllStates(shot.id, {
+          generation_job_id: res.data?.job_id,
+          image_status: 'processing',
+        });
 
         // Start polling for completion
         if (res.data?.job_id) {
@@ -148,13 +190,10 @@ export default function StoryboardsPanel() {
       }
     } catch (error) {
       console.error('Generation error:', error);
-      // Update shot status to failed
-      const updatedShots = shots.map(s => 
-        s.id === shot.id 
-          ? { ...s, image_status: 'failed' }
-          : s
-      );
-      setShots(updatedShots);
+      // Update shot status to failed using the sync helper
+      updateShotInAllStates(shot.id, {
+        image_status: 'failed',
+      });
     } finally {
       setGeneratingShots(prev => {
         const newSet = new Set(prev);
@@ -177,17 +216,11 @@ export default function StoryboardsPanel() {
         if (res?.success) {
           const status = res.data?.image_status;
           
-          // Update shot
-          const updatedShots = shots.map(s =>
-            s.id === shotId
-              ? {
-                  ...s,
-                  image_status: status,
-                  image: status === 'completed' ? res.data?.image_url : s.image,
-                }
-              : s
-          );
-          setShots(updatedShots);
+          // Update shot in all states using the sync helper
+          updateShotInAllStates(shotId, {
+            image_status: status,
+            image: status === 'completed' ? res.data?.image_url : undefined,
+          });
 
           // Stop polling if complete or failed
           if (status === 'completed' || status === 'failed') {
