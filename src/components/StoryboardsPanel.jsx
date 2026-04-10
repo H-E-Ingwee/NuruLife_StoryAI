@@ -4,7 +4,7 @@ import {
   ChevronRight, Zap, Lock, Unlock, Settings, Film, AlertCircle, CheckCircle,
   Clock, Wand2
 } from 'lucide-react';
-import { getProjects, parseProjectScript, generateShotImage, getShotImageStatus } from '../services/api';
+import { getProjects, createProject, parseProjectScript, generateShotImage, getShotImageStatus } from '../services/api';
 
 /**
  * Professional Storyboarding Panel
@@ -77,7 +77,12 @@ export default function StoryboardsPanel() {
       const res = await parseProjectScript(selectedProject.id, scriptText);
       
       if (!res?.success) {
-        throw new Error(res?.error?.message || 'Failed to parse script');
+        const errorMsg = res?.error?.message || res?.error?.code || 'Failed to parse script';
+        throw new Error(errorMsg);
+      }
+
+      if (!res.data) {
+        throw new Error('No data returned from parse operation');
       }
 
       // Create storyboard from response
@@ -88,17 +93,19 @@ export default function StoryboardsPanel() {
         shots: res.data?.shots || [],
         characters: res.data?.characters || [],
         locations: res.data?.locations || [],
-        totalShots: res.data?.total_shots || 0,
+        totalShots: res.data?.total_shots || res.data?.shots?.length || 0,
         createdAt: new Date().toISOString(),
       };
 
       setStoryboards([storyboardData, ...storyboards]);
       setSelectedStoryboard(storyboardData);
-      setShots(storyboardData.shots);
+      setShots(storyboardData.shots || []);
       setParseError(null);
 
     } catch (error) {
-      setParseError(error.message || 'Failed to parse script');
+      const errorMsg = error?.message || error || 'Failed to parse script';
+      console.error('Parse error:', error);
+      setParseError(errorMsg);
     } finally {
       setParsing(false);
     }
@@ -202,6 +209,25 @@ export default function StoryboardsPanel() {
   };
 
   // ==================== Helpers ====================
+  const handleCreateProject = async () => {
+    const projectTitle = prompt('Enter project title:', 'New Project');
+    if (!projectTitle) return;
+
+    try {
+      const res = await createProject(projectTitle, 'Auto-created project', '');
+      if (res?.success) {
+        const newProject = res.data;
+        setProjects([newProject, ...projects]);
+        setSelectedProject(newProject);
+        setParseError(null);
+      } else {
+        setParseError('Failed to create project');
+      }
+    } catch (error) {
+      setParseError('Error creating project: ' + error.message);
+    }
+  };
+
   const getShotStatusColor = (status) => {
     switch (status) {
       case 'completed': return 'text-green-600 bg-green-50';
@@ -247,13 +273,20 @@ export default function StoryboardsPanel() {
                 const p = projects.find(proj => proj.id === e.target.value);
                 setSelectedProject(p);
               }}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F28C00]"
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F28C00] flex-1"
             >
               <option value="">Select a project...</option>
               {projects.map(p => (
                 <option key={p.id} value={p.id}>{p.title}</option>
               ))}
             </select>
+            <button
+              onClick={handleCreateProject}
+              className="px-4 py-2 bg-[#F28C00] text-white rounded-lg font-medium hover:bg-[#E07D00] transition-colors flex items-center gap-2"
+            >
+              <Plus size={16} />
+              New
+            </button>
           </div>
 
           {/* Error Alert */}
@@ -303,8 +336,10 @@ export default function StoryboardsPanel() {
               <h3 className="text-lg font-semibold text-gray-600 mb-2">
                 No Storyboards Yet
               </h3>
-              <p className="text-gray-500">
-                Paste a script above and click "Parse Script" to generate your first storyboard
+              <p className="text-gray-500 max-w-md">
+                {projects.length === 0 
+                  ? "Create a new project from the Projects panel to get started"
+                  : "Paste a script above and click \"Parse Script\" to generate your first storyboard"}
               </p>
             </div>
           ) : (
