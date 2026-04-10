@@ -14,13 +14,25 @@ class AIServiceManager:
 
         if service_name in {'dalle', 'openai', 'dall-e', 'openai_dalle'}:
             if self._dalle is None:
-                dalle_mod = import_module('app.ai.dalle_service')
-                self._dalle = dalle_mod.DalleService(api_key=os.getenv('OPENAI_API_KEY'))
+                # Try real DALLE service first, fall back to mock if API key not configured
+                api_key = os.getenv('OPENAI_API_KEY')
+                if api_key:
+                    try:
+                        dalle_mod = import_module('app.ai.dalle_service')
+                        self._dalle = dalle_mod.DalleService(api_key=api_key)
+                    except Exception as e:
+                        print(f"[WARNING] Failed to initialize real DALLE service: {e}. Using mock.")
+                        mock_mod = import_module('app.ai.mock_dalle_service')
+                        self._dalle = mock_mod.MockDalleService()
+                else:
+                    # No API key - use mock for demo
+                    print("[INFO] OPENAI_API_KEY not set. Using mock DALLE service for demo.")
+                    mock_mod = import_module('app.ai.mock_dalle_service')
+                    self._dalle = mock_mod.MockDalleService()
             return self._dalle
 
         if service_name in {'stable_diffusion', 'sd', 'sdxl', 'replicate', 'stability-ai'}:
             # Try to load Stable Diffusion, but fall back to DALLE if it fails
-            # (e.g., on Python 3.14+ where replicate has compatibility issues)
             try:
                 if self._sd is None:
                     sd_mod = import_module('app.ai.stable_diffusion_service')
@@ -29,17 +41,11 @@ class AIServiceManager:
             except (ImportError, ValueError, Exception) as e:
                 # If SD fails, fall back to DALLE
                 print(f"[WARNING] Stable Diffusion service failed ({e}). Falling back to DALLE.")
-                if self._dalle is None:
-                    dalle_mod = import_module('app.ai.dalle_service')
-                    self._dalle = dalle_mod.DalleService(api_key=os.getenv('OPENAI_API_KEY'))
-                return self._dalle
+                return self.get_service('dalle')
 
         # Default to DALLE for unknown services
         print(f"[WARNING] Unknown AI service '{service_name}'. Defaulting to DALLE.")
-        if self._dalle is None:
-            dalle_mod = import_module('app.ai.dalle_service')
-            self._dalle = dalle_mod.DalleService(api_key=os.getenv('OPENAI_API_KEY'))
-        return self._dalle
+        return self.get_service('dalle')
 
 
 ai_service_manager = AIServiceManager()
