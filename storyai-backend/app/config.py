@@ -10,8 +10,8 @@ _db_path_normalized = _db_path.replace('\\', '/') if os.name == 'nt' else _db_pa
 
 class Config:
     """Base configuration"""
-    SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-key')
-    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'dev-jwt-secret')
+    SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-key-must-be-longer-for-security')
+    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'dev-jwt-secret-key-must-be-at-least-32-bytes-for-sha256-ha')
     JWT_ACCESS_TOKEN_EXPIRE = timedelta(seconds=int(os.getenv('JWT_ACCESS_TOKEN_EXPIRE', 900)))
     JWT_REFRESH_TOKEN_EXPIRE = timedelta(seconds=int(os.getenv('JWT_REFRESH_TOKEN_EXPIRE', 604800)))
 

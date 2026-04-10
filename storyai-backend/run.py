@@ -19,7 +19,8 @@ if __name__ == '__main__':
     port = int(os.getenv('PORT', 8000))
     try:
         print(f"Starting server on port {port}...")
-        app.run(host='0.0.0.0', port=port, debug=False, use_reloader=False)
+        # Use 127.0.0.1 to bind to localhost only
+        app.run(host='127.0.0.1', port=port, debug=True, use_reloader=False, threaded=True)
     except Exception as e:
         print(f"✗ Server failed: {e}")
         import traceback
