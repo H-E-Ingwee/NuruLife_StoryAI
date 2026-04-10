@@ -45,14 +45,21 @@ export default function StoryboardsPanel() {
   const fetchProjects = async () => {
     try {
       const res = await getProjects(1, 100);
-      if (res?.success) {
-        setProjects(res.data || []);
-        if (res.data?.length > 0 && !selectedProject) {
-          setSelectedProject(res.data[0]);
+      
+      if (res?.success && res.data) {
+        const projectsArray = Array.isArray(res.data) ? res.data : [];
+        setProjects(projectsArray);
+        
+        if (projectsArray.length > 0 && !selectedProject) {
+          setSelectedProject(projectsArray[0]);
         }
+      } else {
+        console.error('Failed to fetch projects:', res?.error);
+        setParseError(`Failed to load projects: ${res?.error?.message || 'Unknown error'}`);
       }
     } catch (error) {
-      console.error('Failed to fetch projects:', error);
+      console.error('Error during project fetch:', error);
+      setParseError(`Error: ${error?.message || 'Failed to fetch projects'}`);
     }
   };
 
